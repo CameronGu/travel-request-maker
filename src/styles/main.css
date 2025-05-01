@@ -24,14 +24,34 @@
   }
 
   .card {
-    @apply bg-white shadow-sm rounded-lg p-6;
+    @apply bg-white p-6 rounded-lg shadow-md;
   }
 
   .tab {
-    @apply px-4 py-2 text-sm font-medium text-secondary-500 hover:text-secondary-700 hover:bg-secondary-50 rounded-md focus:outline-none focus:text-secondary-700 focus:bg-secondary-100;
+    @apply px-6 py-3 text-sm font-medium text-secondary-600 border-b-2 border-transparent transition-all duration-300 ease-in-out focus:outline-none relative;
   }
 
-  .tab-active {
-    @apply text-primary-700 bg-primary-50;
+  /* Non-active tab hover state */
+  .tab:not(.tab-active):hover {
+    @apply text-secondary-800 border-secondary-300;
+  }
+
+  /* Active tab state - higher specificity to override hover */
+  .tab.tab-active {
+    @apply text-primary-600 border-primary-500 bg-white !important;
+  }
+
+  .tab-content {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .tab-content.hidden {
+    @apply opacity-0 translate-x-4;
+  }
+
+  /* Add styles for unsaved indicator */
+  [data-tab].unsaved::after {
+    content: '*';
+    @apply ml-1 text-red-500 font-bold;
   }
 } 
