@@ -39,22 +39,61 @@
             <div class="mt-6">
                 <!-- Hotel Form -->
                 <div id="hotelForm" class="tab-content">
-                    <div class="card">
-                        <!-- Hotel form content will be added here -->
+                    <div class="card space-y-6">
+                        <div>
+                            <label for="hotelName" class="form-label">Hotel Name</label>
+                            <input type="text" id="hotelName" name="hotelName" class="form-input" placeholder="Enter hotel name">
+                        </div>
+                        <div>
+                            <label for="hotelDates" class="form-label">Stay Dates</label>
+                            <input type="text" id="hotelDates" name="hotelDates" class="form-input" placeholder="MM/DD/YYYY - MM/DD/YYYY">
+                        </div>
+                        <div>
+                            <label for="hotelNotes" class="form-label">Special Requests</label>
+                            <textarea id="hotelNotes" name="hotelNotes" rows="3" class="form-input" placeholder="Any special requests or notes"></textarea>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Flight Form -->
-                <div id="flightForm" class="tab-content hidden">
-                    <div class="card">
-                        <!-- Flight form content will be added here -->
+                <div id="flightForm" class="tab-content hidden opacity-0">
+                    <div class="card space-y-6">
+                        <div>
+                            <label for="flightDeparture" class="form-label">Departure Airport</label>
+                            <input type="text" id="flightDeparture" name="flightDeparture" class="form-input" placeholder="Enter departure airport code">
+                        </div>
+                        <div>
+                            <label for="flightArrival" class="form-label">Arrival Airport</label>
+                            <input type="text" id="flightArrival" name="flightArrival" class="form-input" placeholder="Enter arrival airport code">
+                        </div>
+                        <div>
+                            <label for="flightDates" class="form-label">Flight Dates</label>
+                            <input type="text" id="flightDates" name="flightDates" class="form-input" placeholder="MM/DD/YYYY">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Rental Car Form -->
-                <div id="carForm" class="tab-content hidden">
-                    <div class="card">
-                        <!-- Rental car form content will be added here -->
+                <div id="carForm" class="tab-content hidden opacity-0">
+                    <div class="card space-y-6">
+                        <div>
+                            <label for="carType" class="form-label">Car Type</label>
+                            <select id="carType" name="carType" class="form-input">
+                                <option value="">Select car type</option>
+                                <option value="economy">Economy</option>
+                                <option value="midsize">Midsize</option>
+                                <option value="suv">SUV</option>
+                                <option value="luxury">Luxury</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="carDates" class="form-label">Rental Dates</label>
+                            <input type="text" id="carDates" name="carDates" class="form-input" placeholder="MM/DD/YYYY - MM/DD/YYYY">
+                        </div>
+                        <div>
+                            <label for="carLocation" class="form-label">Pickup Location</label>
+                            <input type="text" id="carLocation" name="carLocation" class="form-input" placeholder="Enter pickup location">
+                        </div>
                     </div>
                 </div>
             </div>
