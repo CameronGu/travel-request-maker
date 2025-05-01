@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Request Form</title>
+    <link href="./dist/output.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Travel Request Form</h1>
+            <p class="mt-2 text-gray-600">Generate formatted travel requests for hotels, flights, and rental cars.</p>
+        </header>
+
+        <main>
+            <!-- Traveler Selection -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between">
+                    <div class="relative w-64">
+                        <select id="travelerSelect" class="form-input">
+                            <option value="">Select Traveler</option>
+                        </select>
+                        <button id="addTraveler" class="btn-primary ml-2">Add New</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button class="tab tab-active" data-tab="hotel">Hotel</button>
+                    <button class="tab" data-tab="flight">Flight</button>
+                    <button class="tab" data-tab="car">Rental Car</button>
+                </nav>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="mt-6">
+                <!-- Hotel Form -->
+                <div id="hotelForm" class="tab-content">
+                    <div class="card">
+                        <!-- Hotel form content will be added here -->
+                    </div>
+                </div>
+
+                <!-- Flight Form -->
+                <div id="flightForm" class="tab-content hidden">
+                    <div class="card">
+                        <!-- Flight form content will be added here -->
+                    </div>
+                </div>
+
+                <!-- Rental Car Form -->
+                <div id="carForm" class="tab-content hidden">
+                    <div class="card">
+                        <!-- Rental car form content will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="mt-8">
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Request Summary</h2>
+                    <div id="summary" class="prose max-w-none">
+                        <!-- Summary content will be added here -->
+                    </div>
+                    <div class="mt-4 flex justify-end space-x-4">
+                        <button id="copyBtn" class="btn-secondary">Copy to Clipboard</button>
+                        <button id="shareBtn" class="btn-primary">Share Request</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="./src/js/main.js" type="module"></script>
+</body>
+</html>

@@ -1,16 +1,32 @@
 {
   "name": "travel-request-maker",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "A simple travel request form generator using Tailwind CSS",
+  "main": "src/js/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:css": "tailwindcss -i ./src/styles/main.css -o ./dist/output.css",
+    "watch:css": "tailwindcss -i ./src/styles/main.css -o ./dist/output.css --watch",
+    "build": "npm run build:css",
+    "dev": "npm run watch:css",
+    "serve": "npx http-server . -o -c-1"
   },
-  "keywords": [],
+  "keywords": [
+    "travel",
+    "form",
+    "tailwindcss"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "task-master-ai": "^0.12.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "autoprefixer": "^10.4.17",
+    "http-server": "^14.1.1",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1"
   }
 }
