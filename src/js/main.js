@@ -7,6 +7,7 @@ const tabs = document.querySelectorAll('[data-tab]');
 const tabContents = document.querySelectorAll('.tab-content');
 const copyBtn = document.getElementById('copyBtn');
 const shareBtn = document.getElementById('shareBtn');
+const travelerSearch = document.getElementById('travelerSearch');
 
 // State Management
 let currentTraveler = null;
@@ -54,6 +55,7 @@ addTravelerBtn.addEventListener('click', showAddTravelerModal);
 travelerSelect.addEventListener('change', handleTravelerChange);
 copyBtn.addEventListener('click', copyToClipboard);
 shareBtn.addEventListener('click', shareRequest);
+travelerSearch.addEventListener('input', handleTravelerSearch);
 
 // Form Data Management
 function serializeForm(tabType) {
@@ -304,16 +306,54 @@ function addDebugButton() {
     document.body.appendChild(debugBtn);
 }
 
+// Utility to render traveler dropdown options
+function renderTravelerDropdown(travelers, selectedId = null) {
+    travelerSelect.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Select Traveler';
+    travelerSelect.appendChild(defaultOption);
+    travelers.forEach(traveler => {
+        const option = document.createElement('option');
+        option.value = traveler.id;
+        option.textContent = `${traveler.name} (${traveler.nationality || ''})`;
+        if (traveler.id === selectedId) option.selected = true;
+        travelerSelect.appendChild(option);
+    });
+    // Add New Traveler option
+    const addOption = document.createElement('option');
+    addOption.value = '__add_new__';
+    addOption.textContent = '➕ Add New Traveler';
+    travelerSelect.appendChild(addOption);
+}
+
+// Filter and update dropdown as user types
+function handleTravelerSearch() {
+    const query = travelerSearch.value.trim().toLowerCase();
+    const allTravelers = TravelerService.getAll();
+    const filtered = allTravelers.filter(t =>
+        t.name.toLowerCase().includes(query) ||
+        (t.nationality && t.nationality.toLowerCase().includes(query)) ||
+        (t.email && t.email.toLowerCase().includes(query))
+    );
+    renderTravelerDropdown(filtered, travelerSelect.value);
+}
+
+// Handle selection of 'Add New Traveler' option
+travelerSelect.addEventListener('change', (e) => {
+    if (travelerSelect.value === '__add_new__') {
+        showAddTravelerModal();
+        travelerSelect.value = currentTraveler || '';
+        return;
+    }
+    handleTravelerChange(e);
+});
+
 // Initialize
 function init() {
     try {
         const travelers = TravelerService.getAll();
-        travelers.forEach(traveler => {
-            const option = document.createElement('option');
-            option.value = traveler.id;
-            option.textContent = traveler.name;
-            travelerSelect.appendChild(option);
-        });
+        renderTravelerDropdown(travelers);
 
         // Load stored form data if it exists
         const storedData = storage.getFormData();
