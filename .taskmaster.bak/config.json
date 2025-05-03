@@ -1,0 +1,15 @@
+{
+  "model": "claude-3-7-sonnet-20250219",
+  "maxTokens": 64000,
+  "temperature": 0.2,
+  "defaultSubtasks": 5,
+  "defaultPriority": "medium",
+  "apiKeys": {
+    "anthropic": "${ANTHROPIC_API_KEY}",
+    "perplexity": "${PERPLEXITY_API_KEY}"
+  },
+  "anthropic": {
+    "apiKey": "${ANTHROPIC_API_KEY}",
+    "model": "claude-3-7-sonnet-20250219"
+  }
+} 

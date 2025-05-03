@@ -1,0 +1,21 @@
+{
+  "model": "claude-3-7-sonnet-20250219",
+  "maxTokens": 64000,
+  "temperature": 0.2,
+  "defaultSubtasks": 5,
+  "defaultPriority": "medium",
+  "apiKeys": {
+    "anthropic": "${ANTHROPIC_API_KEY}",
+    "perplexity": "${PERPLEXITY_API_KEY}",
+    "openai": "${OPENAI_API_KEY}",
+    "google": "${GOOGLE_API_KEY}",
+    "mistral": "${MISTRAL_API_KEY}",
+    "openrouter": "${OPENROUTER_API_KEY}",
+    "xai": "${XAI_API_KEY}",
+    "azure": "${AZURE_OPENAI_API_KEY}"
+  },
+  "anthropic": {
+    "apiKey": "${ANTHROPIC_API_KEY}",
+    "model": "claude-3-7-sonnet-20250219"
+  }
+} 
