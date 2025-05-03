@@ -1,4 +1,6 @@
 import { TravelerService } from './travelerService.js';
+// DEV ONLY: Expose TravelerService for browser console testing. Remove before production.
+window.TravelerService = TravelerService;
 
 // DOM Elements
 const travelerSelect = document.getElementById('travelerSelect');
@@ -7,7 +9,7 @@ const tabs = document.querySelectorAll('[data-tab]');
 const tabContents = document.querySelectorAll('.tab-content');
 const copyBtn = document.getElementById('copyBtn');
 const shareBtn = document.getElementById('shareBtn');
-const travelerSearch = document.getElementById('travelerSearch');
+const travelerCombobox = document.getElementById('travelerCombobox');
 
 // State Management
 let currentTraveler = null;
@@ -52,10 +54,9 @@ tabs.forEach(tab => {
 });
 
 addTravelerBtn.addEventListener('click', showAddTravelerModal);
-travelerSelect.addEventListener('change', handleTravelerChange);
+travelerCombobox.addEventListener('change', handleTravelerChange);
 copyBtn.addEventListener('click', copyToClipboard);
 shareBtn.addEventListener('click', shareRequest);
-travelerSearch.addEventListener('input', handleTravelerSearch);
 
 // Form Data Management
 function serializeForm(tabType) {
@@ -218,6 +219,7 @@ function switchTab(newTab) {
 function showAddTravelerModal() {
     // TODO: Implement add traveler modal
     console.log('Add traveler modal not yet implemented');
+    refreshTravelerCombobox();
 }
 
 function handleTravelerChange(event) {
@@ -225,7 +227,7 @@ function handleTravelerChange(event) {
         const confirmed = window.confirm('You have unsaved changes. Do you want to discard them and switch travelers?');
         if (!confirmed) {
             event.preventDefault();
-            travelerSelect.value = currentTraveler; // Revert selection
+            travelerCombobox.value = currentTraveler; // Revert selection
             return;
         }
     }
@@ -235,6 +237,7 @@ function handleTravelerChange(event) {
     
     currentTraveler = event.target.value;
     loadTravelerData();
+    refreshTravelerCombobox();
 }
 
 function loadTravelerData() {
@@ -306,54 +309,10 @@ function addDebugButton() {
     document.body.appendChild(debugBtn);
 }
 
-// Utility to render traveler dropdown options
-function renderTravelerDropdown(travelers, selectedId = null) {
-    travelerSelect.innerHTML = '';
-    const defaultOption = document.createElement('option');
-    defaultOption.value = '';
-    defaultOption.textContent = 'Select Traveler';
-    travelerSelect.appendChild(defaultOption);
-    travelers.forEach(traveler => {
-        const option = document.createElement('option');
-        option.value = traveler.id;
-        option.textContent = `${traveler.name} (${traveler.nationality || ''})`;
-        if (traveler.id === selectedId) option.selected = true;
-        travelerSelect.appendChild(option);
-    });
-    // Add New Traveler option
-    const addOption = document.createElement('option');
-    addOption.value = '__add_new__';
-    addOption.textContent = '➕ Add New Traveler';
-    travelerSelect.appendChild(addOption);
-}
-
-// Filter and update dropdown as user types
-function handleTravelerSearch() {
-    const query = travelerSearch.value.trim().toLowerCase();
-    const allTravelers = TravelerService.getAll();
-    const filtered = allTravelers.filter(t =>
-        t.name.toLowerCase().includes(query) ||
-        (t.nationality && t.nationality.toLowerCase().includes(query)) ||
-        (t.email && t.email.toLowerCase().includes(query))
-    );
-    renderTravelerDropdown(filtered, travelerSelect.value);
-}
-
-// Handle selection of 'Add New Traveler' option
-travelerSelect.addEventListener('change', (e) => {
-    if (travelerSelect.value === '__add_new__') {
-        showAddTravelerModal();
-        travelerSelect.value = currentTraveler || '';
-        return;
-    }
-    handleTravelerChange(e);
-});
-
 // Initialize
 function init() {
     try {
         const travelers = TravelerService.getAll();
-        renderTravelerDropdown(travelers);
 
         // Load stored form data if it exists
         const storedData = storage.getFormData();
@@ -417,4 +376,139 @@ function init() {
 }
 
 // Wait for DOM to be fully loaded before initializing
-document.addEventListener('DOMContentLoaded', init); 
+document.addEventListener('DOMContentLoaded', init);
+
+class TravelerCombobox {
+    constructor(container, onSelect) {
+        this.container = container;
+        this.onSelect = onSelect;
+        this.input = document.createElement('input');
+        this.input.type = 'text';
+        this.input.className = 'form-input w-full';
+        this.input.placeholder = 'Select or search traveler...';
+        this.dropdown = document.createElement('ul');
+        this.dropdown.className = 'absolute z-10 w-full bg-white border border-gray-300 rounded shadow max-h-60 overflow-auto mt-1 hidden';
+        this.dropdown.setAttribute('role', 'listbox');
+        this.container.classList.add('relative');
+        this.container.appendChild(this.input);
+        this.container.appendChild(this.dropdown);
+        this.travelerList = [];
+        this.filtered = [];
+        this.selectedIndex = -1;
+        this.input.addEventListener('input', () => this.filter());
+        this.input.addEventListener('focus', () => this.open());
+        this.input.addEventListener('keydown', (e) => this.handleKey(e));
+        document.addEventListener('click', (e) => {
+            if (!this.container.contains(e.target)) this.close();
+        });
+        this.dropdown.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+        });
+        this.render();
+    }
+    setTravelers(travelers) {
+        this.travelerList = travelers;
+        this.filter();
+    }
+    filter() {
+        const q = this.input.value.trim().toLowerCase();
+        this.filtered = this.travelerList.filter(t =>
+            t.name.toLowerCase().includes(q) ||
+            (t.nationality && t.nationality.toLowerCase().includes(q)) ||
+            (t.email && t.email.toLowerCase().includes(q))
+        );
+        this.selectedIndex = -1;
+        this.render();
+        this.open();
+    }
+    open() {
+        this.dropdown.classList.remove('hidden');
+        this.render();
+    }
+    close() {
+        this.dropdown.classList.add('hidden');
+        this.selectedIndex = -1;
+    }
+    handleKey(e) {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (this.selectedIndex < this.filtered.length) this.selectedIndex++;
+            this.render();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (this.selectedIndex > 0) this.selectedIndex--;
+            this.render();
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (this.selectedIndex === this.filtered.length) {
+                this.onSelect('__add_new__');
+                this.input.value = '';
+                this.close();
+            } else if (this.selectedIndex >= 0 && this.selectedIndex < this.filtered.length) {
+                this.onSelect(this.filtered[this.selectedIndex].id);
+                this.input.value = this.filtered[this.selectedIndex].name;
+                this.close();
+            }
+        } else if (e.key === 'Escape') {
+            this.close();
+        }
+    }
+    render() {
+        this.dropdown.innerHTML = '';
+        this.filtered.forEach((traveler, i) => {
+            const li = document.createElement('li');
+            li.className = 'px-4 py-2 cursor-pointer hover:bg-blue-100' + (i === this.selectedIndex ? ' bg-blue-100' : '');
+            li.textContent = `${traveler.name} ${traveler.nationality ? '(' + traveler.nationality + ')' : ''}`;
+            li.setAttribute('role', 'option');
+            li.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                this.onSelect(traveler.id);
+                this.input.value = traveler.name;
+                this.close();
+            });
+            this.dropdown.appendChild(li);
+        });
+        // Add New Traveler option
+        const addLi = document.createElement('li');
+        addLi.className = 'px-4 py-2 cursor-pointer text-blue-600 hover:bg-blue-50 border-t border-gray-200' + (this.selectedIndex === this.filtered.length ? ' bg-blue-100' : '');
+        addLi.textContent = '➕ Add New Traveler';
+        addLi.setAttribute('role', 'option');
+        addLi.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            this.onSelect('__add_new__');
+            this.input.value = '';
+            this.close();
+        });
+        this.dropdown.appendChild(addLi);
+    }
+    setValue(travelerId) {
+        const t = this.travelerList.find(t => t.id === travelerId);
+        if (t) this.input.value = t.name;
+        else this.input.value = '';
+    }
+}
+
+// Initialize custom combobox
+const travelerComboboxDiv = document.getElementById('travelerCombobox');
+let travelerComboboxInstance = null;
+if (travelerComboboxDiv) {
+    travelerComboboxInstance = new TravelerCombobox(travelerComboboxDiv, (selectedId) => {
+        if (selectedId === '__add_new__') {
+            showAddTravelerModal();
+        } else {
+            currentTraveler = selectedId;
+            // Optionally trigger form reload or update
+            loadTravelerData();
+        }
+    });
+    // Load travelers initially
+    travelerComboboxInstance.setTravelers(TravelerService.getAll());
+}
+
+// When travelers are added/edited, update combobox
+function refreshTravelerCombobox() {
+    if (travelerComboboxInstance) {
+        travelerComboboxInstance.setTravelers(TravelerService.getAll());
+        travelerComboboxInstance.setValue(currentTraveler);
+    }
+} 
