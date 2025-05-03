@@ -1,3 +1,5 @@
+import { TravelerService } from './travelerService.js';
+
 // DOM Elements
 const travelerSelect = document.getElementById('travelerSelect');
 const addTravelerBtn = document.getElementById('addTraveler');
@@ -305,7 +307,7 @@ function addDebugButton() {
 // Initialize
 function init() {
     try {
-        const travelers = storage.getTravelers();
+        const travelers = TravelerService.getAll();
         travelers.forEach(traveler => {
             const option = document.createElement('option');
             option.value = traveler.id;
