@@ -2,13 +2,20 @@
 /**
  * @typedef {Object} Traveler
  * @property {string} id - Unique identifier (UUID)
- * @property {string} name - Traveler's full name
- * @property {number} age - Traveler's age
- * @property {string} passportNumber - Passport number
- * @property {string} nationality - Nationality
- * @property {string} email - Email address
- * @property {string} phone - Phone number
- * // Add more fields as needed from PRD
+ * @property {string} firstName - First name (required)
+ * @property {string} middleName - Middle name (optional)
+ * @property {string} lastName - Last name (required)
+ * @property {string} preferredName - Preferred name/nickname (optional)
+ * @property {string} primaryPhone - Primary phone number (required)
+ * @property {string} primaryPhoneCountry - Country code for primary phone (required)
+ * @property {string} primaryEmail - Primary email address (required)
+ * @property {string} secondaryEmail - Secondary email address (optional)
+ * @property {string} dateOfBirth - Date of birth (optional, MM/DD/YYYY)
+ * @property {string} gender - Gender (optional, 'Male', 'Female', 'X')
+ * @property {string} passportIssuingCountry - Passport issuing country (optional)
+ * @property {string} nationality - Nationality (optional)
+ * @property {string} passportNumber - Passport number (optional)
+ * @property {string} notes - Additional traveler notes (optional)
  */
 
 /**
@@ -117,13 +124,22 @@ export class TravelerService {
     static validate(traveler) {
         if (!traveler) return false;
         if (typeof traveler.id !== 'string' || !traveler.id) return false;
-        if (typeof traveler.name !== 'string' || !traveler.name) return false;
-        if (typeof traveler.age !== 'number' || traveler.age <= 0) return false;
-        if (typeof traveler.passportNumber !== 'string' || !traveler.passportNumber) return false;
-        if (typeof traveler.nationality !== 'string' || !traveler.nationality) return false;
-        if (typeof traveler.email !== 'string' || !traveler.email) return false;
-        if (typeof traveler.phone !== 'string' || !traveler.phone) return false;
-        // Add more validation as needed
+        if (typeof traveler.firstName !== 'string' || !traveler.firstName) return false;
+        if (typeof traveler.lastName !== 'string' || !traveler.lastName) return false;
+        if (typeof traveler.primaryPhone !== 'string' || !traveler.primaryPhone) return false;
+        if (typeof traveler.primaryPhoneCountry !== 'string' || !traveler.primaryPhoneCountry) return false;
+        if (typeof traveler.primaryEmail !== 'string' || !traveler.primaryEmail) return false;
+        // Optional fields: middleName, preferredName, secondaryEmail, dateOfBirth, gender, passportIssuingCountry, nationality, passportNumber, notes
+        // Validate optional fields if present
+        if (traveler.secondaryEmail && typeof traveler.secondaryEmail !== 'string') return false;
+        if (traveler.middleName && typeof traveler.middleName !== 'string') return false;
+        if (traveler.preferredName && typeof traveler.preferredName !== 'string') return false;
+        if (traveler.dateOfBirth && typeof traveler.dateOfBirth !== 'string') return false;
+        if (traveler.gender && typeof traveler.gender !== 'string') return false;
+        if (traveler.passportIssuingCountry && typeof traveler.passportIssuingCountry !== 'string') return false;
+        if (traveler.nationality && typeof traveler.nationality !== 'string') return false;
+        if (traveler.passportNumber && typeof traveler.passportNumber !== 'string') return false;
+        if (traveler.notes && typeof traveler.notes !== 'string') return false;
         return true;
     }
 } 
