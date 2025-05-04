@@ -12,6 +12,7 @@ const tabContents = document.querySelectorAll('.tab-content');
 const copyBtn = document.getElementById('copyBtn');
 const shareBtn = document.getElementById('shareBtn');
 const travelerCombobox = document.getElementById('travelerCombobox');
+const travelerChipsDiv = document.getElementById('travelerChips');
 
 // State Management
 let currentTraveler = null;
@@ -947,7 +948,13 @@ if (travelerComboboxDiv) {
             showAddTravelerModal();
         } else {
             currentTraveler = selectedId;
-            // Optionally trigger form reload or update
+            // Add to selectedTravelers if not already present
+            if (!formData.selectedTravelers) formData.selectedTravelers = [];
+            if (!formData.selectedTravelers.includes(selectedId)) {
+                formData.selectedTravelers.push(selectedId);
+                storage.saveFormData(formData);
+                renderTravelerChips();
+            }
             loadTravelerData();
         }
     });
@@ -1014,4 +1021,164 @@ function testTravelerPhoneValidation() {
     const all = TravelerService.getAll();
     console.log('Traveler added:', all.find(t => t.id === traveler.id));
 }
-window.testTravelerPhoneValidation = testTravelerPhoneValidation; 
+window.testTravelerPhoneValidation = testTravelerPhoneValidation;
+
+// --- Traveler Chip/Tag Display Component ---
+
+// Helper: Get selected travelers for the current request
+function getSelectedTravelers() {
+    // Store selected traveler IDs in formData.selectedTravelers (global to all tabs)
+    if (!formData.selectedTravelers) formData.selectedTravelers = [];
+    return formData.selectedTravelers.map(id => TravelerService.getAll().find(t => t.id === id)).filter(Boolean);
+}
+
+// Helper: Set selected travelers for the current request
+function setSelectedTravelers(ids) {
+    formData.selectedTravelers = ids;
+    storage.saveFormData(formData);
+    renderTravelerChips();
+}
+
+// Render traveler chips/tags
+function renderTravelerChips() {
+    if (!travelerChipsDiv) return;
+    travelerChipsDiv.innerHTML = '';
+    const travelers = getSelectedTravelers();
+    travelers.forEach(traveler => {
+        const chip = document.createElement('span');
+        chip.className = 'flex items-center space-x-2 bg-blue-100 border border-blue-300 rounded-full px-3 py-1 text-sm shadow-sm';
+        chip.style.maxWidth = '100%';
+        // Traveler name
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'truncate max-w-xs';
+        nameSpan.textContent = getTravelerDisplayName(traveler);
+        chip.appendChild(nameSpan);
+        // Edit icon
+        const editBtn = document.createElement('button');
+        editBtn.className = 'ml-1 text-blue-600 hover:text-blue-800 focus:outline-none';
+        editBtn.title = 'Edit Traveler';
+        editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6m-2 2h6" /></svg>';
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showEditTravelerModal(traveler.id);
+        });
+        chip.appendChild(editBtn);
+        // Remove icon
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'ml-1 text-red-500 hover:text-red-700 focus:outline-none';
+        removeBtn.title = 'Remove Traveler';
+        removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Remove traveler from selectedTravelers for this request only
+            const ids = formData.selectedTravelers.filter(id => id !== traveler.id);
+            setSelectedTravelers(ids);
+        });
+        chip.appendChild(removeBtn);
+        travelerChipsDiv.appendChild(chip);
+    });
+}
+
+// Show edit traveler modal (reuse add modal, but prefill and update)
+function showEditTravelerModal(travelerId) {
+    const traveler = TravelerService.getAll().find(t => t.id === travelerId);
+    if (!traveler) return;
+    // Reuse showAddTravelerModal, but prefill and update on submit
+    const container = document.getElementById('travelerModalContainer');
+    container.innerHTML = '';
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center';
+    overlay.tabIndex = -1;
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('role', 'dialog');
+    const modal = document.createElement('div');
+    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative';
+    modal.innerHTML = `
+      <h2 class="text-2xl font-bold mb-4">Edit Traveler</h2>
+      <form id="editTravelerForm" class="space-y-4"></form>
+    `;
+    overlay.appendChild(modal);
+    container.appendChild(overlay);
+    // Build form fields (reuse add form fields, prefilled)
+    const form = modal.querySelector('#editTravelerForm');
+    form.innerHTML = '';
+    [
+        { label: 'First Name *', name: 'firstName', type: 'text', required: true },
+        { label: 'Middle Name', name: 'middleName', type: 'text' },
+        { label: 'Last Name *', name: 'lastName', type: 'text', required: true },
+        { label: 'Preferred Name', name: 'preferredName', type: 'text' },
+        { label: 'Primary Phone *', name: 'primaryPhone', type: 'tel', required: true },
+        { label: 'Primary Email *', name: 'primaryEmail', type: 'email', required: true },
+        { label: 'Secondary Email', name: 'secondaryEmail', type: 'email' },
+        { label: 'Date of Birth', name: 'dateOfBirth', type: 'date' },
+        { label: 'Gender', name: 'gender', type: 'text' },
+        { label: 'Passport Issuing Country', name: 'passportIssuingCountry', type: 'text' },
+        { label: 'Nationality', name: 'nationality', type: 'text' },
+        { label: 'Passport Number', name: 'passportNumber', type: 'text' },
+        { label: 'Additional Notes', name: 'notes', type: 'textarea' },
+    ].forEach(field => {
+        const div = document.createElement('div');
+        const label = document.createElement('label');
+        label.className = 'form-label';
+        label.textContent = field.label;
+        div.appendChild(label);
+        let input;
+        if (field.type === 'textarea') {
+            input = document.createElement('textarea');
+            input.rows = 2;
+        } else {
+            input = document.createElement('input');
+            input.type = field.type;
+        }
+        input.name = field.name;
+        input.className = 'form-input w-full';
+        if (field.required) input.required = true;
+        input.value = traveler[field.name] || '';
+        div.appendChild(input);
+        form.appendChild(div);
+    });
+    // Error display
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'text-red-600 text-sm';
+    form.appendChild(errorDiv);
+    // Buttons
+    const btnRow = document.createElement('div');
+    btnRow.className = 'flex justify-between items-center mt-4';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.className = 'btn-secondary';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.addEventListener('click', () => { container.innerHTML = ''; });
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'submit';
+    saveBtn.className = 'btn-primary';
+    saveBtn.textContent = 'Save';
+    btnRow.appendChild(cancelBtn);
+    btnRow.appendChild(saveBtn);
+    form.appendChild(btnRow);
+    // Submit handler
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        // Validate required fields
+        if (!data.firstName || !data.lastName || !data.primaryPhone || !data.primaryEmail) {
+            errorDiv.textContent = 'Please fill out all required fields.';
+            return;
+        }
+        // Update traveler in TravelerService
+        const all = TravelerService.getAll();
+        const idx = all.findIndex(t => t.id === travelerId);
+        if (idx === -1) {
+            errorDiv.textContent = 'Traveler not found.';
+            return;
+        }
+        all[idx] = { ...all[idx], ...data };
+        TravelerService.saveAll(all);
+        container.innerHTML = '';
+        refreshTravelerCombobox();
+        renderTravelerChips();
+    });
+}
+
+// Initial render of traveler chips
+renderTravelerChips(); 
