@@ -386,44 +386,70 @@ class TravelerCombobox {
         this.input.type = 'text';
         this.input.className = 'form-input w-full';
         this.input.placeholder = 'Select or search traveler...';
-        this.dropdown = document.createElement('ul');
-        this.dropdown.className = 'absolute z-10 w-full bg-white border border-gray-300 rounded shadow max-h-60 overflow-auto mt-1 hidden';
+        this.dropdown = document.createElement('div');
+        this.dropdown.className = 'absolute z-10 w-full bg-white border border-gray-300 rounded shadow max-h-60 mt-1 hidden';
         this.dropdown.setAttribute('role', 'listbox');
+        // Create a scrollable list container inside the dropdown
+        this.listContainer = document.createElement('ul');
+        this.listContainer.className = 'overflow-auto max-h-60 relative';
+        // Shadows as fixed overlays inside dropdown
+        this.topShadow = document.createElement('div');
+        this.topShadow.className = 'pointer-events-none absolute left-0 right-0 h-4 top-0 z-20 bg-gradient-to-b from-gray-100 to-transparent opacity-0 transition-opacity';
+        this.bottomShadow = document.createElement('div');
+        this.bottomShadow.className = 'pointer-events-none absolute left-0 right-0 h-4 bottom-0 z-20 bg-gradient-to-t from-gray-100 to-transparent opacity-0 transition-opacity';
         this.container.classList.add('relative');
         this.container.appendChild(this.input);
         this.container.appendChild(this.dropdown);
+        this.dropdown.appendChild(this.listContainer);
+        this.dropdown.appendChild(this.topShadow);
+        this.dropdown.appendChild(this.bottomShadow);
         this.travelerList = [];
         this.filtered = [];
         this.selectedIndex = -1;
-        this.input.addEventListener('input', () => this.filter());
-        this.input.addEventListener('focus', () => this.open());
+        this.input.addEventListener('focus', () => this.handleFocus());
+        this.input.addEventListener('input', () => this.handleInput());
         this.input.addEventListener('keydown', (e) => this.handleKey(e));
         document.addEventListener('click', (e) => {
             if (!this.container.contains(e.target)) this.close();
         });
-        this.dropdown.addEventListener('mousedown', (e) => {
+        this.listContainer.addEventListener('mousedown', (e) => {
             e.preventDefault();
         });
         this.render();
     }
     setTravelers(travelers) {
         this.travelerList = travelers;
-        this.filter();
-    }
-    filter() {
-        const q = this.input.value.trim().toLowerCase();
-        this.filtered = this.travelerList.filter(t =>
-            t.name.toLowerCase().includes(q) ||
-            (t.nationality && t.nationality.toLowerCase().includes(q)) ||
-            (t.email && t.email.toLowerCase().includes(q))
-        );
+        this.filtered = travelers.slice();
         this.selectedIndex = -1;
         this.render();
+    }
+    handleFocus() {
+        if (this.input.value.trim() === '') {
+            this.filtered = this.travelerList.slice();
+        } else {
+            this.handleInput();
+        }
+        this.selectedIndex = -1;
         this.open();
+        this.render();
+    }
+    handleInput() {
+        const q = this.input.value.trim().toLowerCase();
+        if (q === '') {
+            this.filtered = this.travelerList.slice();
+        } else {
+            this.filtered = this.travelerList.filter(t =>
+                t.name.toLowerCase().includes(q) ||
+                (t.nationality && t.nationality.toLowerCase().includes(q)) ||
+                (t.email && t.email.toLowerCase().includes(q))
+            );
+        }
+        this.selectedIndex = -1;
+        this.open();
+        this.render();
     }
     open() {
         this.dropdown.classList.remove('hidden');
-        this.render();
     }
     close() {
         this.dropdown.classList.add('hidden');
@@ -454,7 +480,8 @@ class TravelerCombobox {
         }
     }
     render() {
-        this.dropdown.innerHTML = '';
+        // Remove all traveler options before re-rendering
+        this.listContainer.innerHTML = '';
         this.filtered.forEach((traveler, i) => {
             const li = document.createElement('li');
             li.className = 'px-4 py-2 cursor-pointer hover:bg-blue-100' + (i === this.selectedIndex ? ' bg-blue-100' : '');
@@ -466,7 +493,7 @@ class TravelerCombobox {
                 this.input.value = traveler.name;
                 this.close();
             });
-            this.dropdown.appendChild(li);
+            this.listContainer.appendChild(li);
         });
         // Add New Traveler option
         const addLi = document.createElement('li');
@@ -479,7 +506,25 @@ class TravelerCombobox {
             this.input.value = '';
             this.close();
         });
-        this.dropdown.appendChild(addLi);
+        this.listContainer.appendChild(addLi);
+        // Scroll highlighted option into view
+        if (this.selectedIndex >= 0 && this.selectedIndex <= this.filtered.length) {
+            const optionEls = this.listContainer.querySelectorAll('li');
+            if (optionEls[this.selectedIndex]) {
+                optionEls[this.selectedIndex].scrollIntoView({ block: 'nearest' });
+            }
+        }
+        // Show/hide scroll shadows only if dropdown is open
+        if (!this.dropdown.classList.contains('hidden')) {
+            const scrollTop = this.listContainer.scrollTop;
+            const scrollHeight = this.listContainer.scrollHeight;
+            const clientHeight = this.listContainer.clientHeight;
+            this.topShadow.style.opacity = scrollTop > 0 ? '1' : '0';
+            this.bottomShadow.style.opacity = (scrollTop + clientHeight < scrollHeight) ? '1' : '0';
+        } else {
+            this.topShadow.style.opacity = '0';
+            this.bottomShadow.style.opacity = '0';
+        }
     }
     setValue(travelerId) {
         const t = this.travelerList.find(t => t.id === travelerId);
