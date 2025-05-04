@@ -588,8 +588,12 @@ function showAddTravelerModal() {
         }
         try {
             TravelerService.add(data);
+            if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
+            if (!formData.selectedTravelers.includes(data.id)) formData.selectedTravelers.push(data.id);
+            storage.saveFormData(formData);
             container.innerHTML = '';
             refreshTravelerCombobox();
+            renderTravelerChips();
         } catch (err) {
             showTravelerFormError('Failed to add traveler: ' + (err.message || err));
         }
@@ -765,6 +769,9 @@ function init() {
 
         // Always show debug button for now since we're in development
         addDebugButton();
+
+        // --- FIX: Render traveler chips on page load to show persisted selection ---
+        renderTravelerChips();
     } catch (error) {
         console.error('Error during initialization:', error);
     }
@@ -947,19 +954,39 @@ if (travelerComboboxDiv) {
         if (selectedId === '__add_new__') {
             showAddTravelerModal();
         } else {
-            currentTraveler = selectedId;
-            // Add to selectedTravelers if not already present
-            if (!formData.selectedTravelers) formData.selectedTravelers = [];
+            // Only add to chips, do not set currentTraveler or call loadTravelerData (prevents chip replacement)
+            if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
             if (!formData.selectedTravelers.includes(selectedId)) {
                 formData.selectedTravelers.push(selectedId);
                 storage.saveFormData(formData);
                 renderTravelerChips();
             }
-            loadTravelerData();
+            // Clear combobox input, focus, and open dropdown with full list
+            if (travelerComboboxInstance && travelerComboboxInstance.input) {
+                travelerComboboxInstance.input.value = '';
+                travelerComboboxInstance.filtered = travelerComboboxInstance.travelerList.slice();
+                travelerComboboxInstance.open();
+                travelerComboboxInstance.render();
+                travelerComboboxInstance.input.focus();
+            }
         }
     });
     // Load travelers initially
     travelerComboboxInstance.setTravelers(TravelerService.getAll());
+    // Always show full list on focus or click if input is empty
+    travelerComboboxInstance.input.addEventListener('focus', () => {
+        if (travelerComboboxInstance.input.value.trim() === '') {
+            travelerComboboxInstance.filtered = travelerComboboxInstance.travelerList.slice();
+            travelerComboboxInstance.open();
+            travelerComboboxInstance.render();
+        }
+    });
+    travelerComboboxInstance.input.addEventListener('click', () => {
+        travelerComboboxInstance.input.value = '';
+        travelerComboboxInstance.filtered = travelerComboboxInstance.travelerList.slice();
+        travelerComboboxInstance.open();
+        travelerComboboxInstance.render();
+    });
 }
 
 // When travelers are added/edited, update combobox
@@ -1027,13 +1054,13 @@ window.testTravelerPhoneValidation = testTravelerPhoneValidation;
 
 // Helper: Get selected travelers for the current request
 function getSelectedTravelers() {
-    // Store selected traveler IDs in formData.selectedTravelers (global to all tabs)
-    if (!formData.selectedTravelers) formData.selectedTravelers = [];
+    if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
     return formData.selectedTravelers.map(id => TravelerService.getAll().find(t => t.id === id)).filter(Boolean);
 }
 
 // Helper: Set selected travelers for the current request
 function setSelectedTravelers(ids) {
+    if (!Array.isArray(ids)) ids = [];
     formData.selectedTravelers = ids;
     storage.saveFormData(formData);
     renderTravelerChips();
@@ -1042,6 +1069,7 @@ function setSelectedTravelers(ids) {
 // Render traveler chips/tags
 function renderTravelerChips() {
     if (!travelerChipsDiv) return;
+    if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
     travelerChipsDiv.innerHTML = '';
     const travelers = getSelectedTravelers();
     travelers.forEach(traveler => {
@@ -1070,7 +1098,7 @@ function renderTravelerChips() {
         removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
         removeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            // Remove traveler from selectedTravelers for this request only
+            if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
             const ids = formData.selectedTravelers.filter(id => id !== traveler.id);
             setSelectedTravelers(ids);
         });
@@ -1083,7 +1111,6 @@ function renderTravelerChips() {
 function showEditTravelerModal(travelerId) {
     const traveler = TravelerService.getAll().find(t => t.id === travelerId);
     if (!traveler) return;
-    // Reuse showAddTravelerModal, but prefill and update on submit
     const container = document.getElementById('travelerModalContainer');
     container.innerHTML = '';
     const overlay = document.createElement('div');
@@ -1091,14 +1118,21 @@ function showEditTravelerModal(travelerId) {
     overlay.tabIndex = -1;
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('role', 'dialog');
+    // Center modal, max-w-screen-sm, scrollable if needed
     const modal = document.createElement('div');
-    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative';
+    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-screen-sm max-h-[90vh] overflow-y-auto p-6 relative';
     modal.innerHTML = `
       <h2 class="text-2xl font-bold mb-4">Edit Traveler</h2>
       <form id="editTravelerForm" class="space-y-4"></form>
     `;
     overlay.appendChild(modal);
     container.appendChild(overlay);
+    // Click-outside-to-close
+    overlay.addEventListener('mousedown', (e) => {
+        if (e.target === overlay) {
+            container.innerHTML = '';
+        }
+    });
     // Build form fields (reuse add form fields, prefilled)
     const form = modal.querySelector('#editTravelerForm');
     form.innerHTML = '';
@@ -1160,12 +1194,10 @@ function showEditTravelerModal(travelerId) {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(form).entries());
-        // Validate required fields
         if (!data.firstName || !data.lastName || !data.primaryPhone || !data.primaryEmail) {
             errorDiv.textContent = 'Please fill out all required fields.';
             return;
         }
-        // Update traveler in TravelerService
         const all = TravelerService.getAll();
         const idx = all.findIndex(t => t.id === travelerId);
         if (idx === -1) {
