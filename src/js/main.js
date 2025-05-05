@@ -243,17 +243,15 @@ function loadCountryPhoneCodes() {
 
 async function getSortedCountryCodes() {
     const codes = await loadCountryPhoneCodes();
-    const top = [
-        { name: 'United States', dial_code: '+1', emoji: '🇺🇸', code: 'US' },
-        { name: 'Canada', dial_code: '+1', emoji: '🇨🇦', code: 'CA' },
-        { name: 'Mexico', dial_code: '+52', emoji: '🇲🇽', code: 'MX' }
-    ];
-    const rest = codes.filter(c => !['US', 'CA', 'MX'].includes(c.code))
+    // Use the actual objects from the loaded country list for the top 3
+    const topCodes = ['US', 'CA', 'MX'];
+    const top = topCodes.map(code => codes.find(c => c.code === code)).filter(Boolean);
+    const rest = codes.filter(c => !topCodes.includes(c.code))
         .sort((a, b) => a.name.localeCompare(b.name));
     return [...top, ...rest];
 }
 
-async function createCountryCodeDropdown(selectedCode = '+1') {
+async function createCountryCodeDropdown(selectedCode = 'US') {
     // Wrapper for label + input in a column, matching phone input style
     const wrapper = document.createElement('div');
     wrapper.className = 'flex flex-col w-32';
@@ -287,7 +285,7 @@ async function createCountryCodeDropdown(selectedCode = '+1') {
     dropdown.style.minWidth = '100%';
     let countryList = await getSortedCountryCodes();
     let filtered = countryList;
-    let selected = countryList.find(c => c.dial_code === selectedCode) || countryList[0];
+    let selected = countryList.find(c => c.code === selectedCode) || countryList[0];
     function renderDropdown() {
         dropdown.innerHTML = '';
         filtered.forEach((country, i) => {
@@ -477,7 +475,7 @@ function showAddTravelerModal() {
     // After country codes are loaded, render dropdown
     loadCountryPhoneCodes().then(() => {
         dropdownContainer.innerHTML = '';
-        createCountryCodeDropdown('+1').then(countryDropdown => {
+        createCountryCodeDropdown('US').then(countryDropdown => {
             dropdownContainer.appendChild(countryDropdown.wrapper);
             // Phone mask logic
             const phoneInput = modal.querySelector('input[name="primaryPhone"]');
@@ -797,13 +795,14 @@ class TravelerCombobox {
         this.input.type = 'text';
         this.input.className = 'form-input w-full';
         this.input.placeholder = 'Select or search traveler...';
+        // Dropdown
         this.dropdown = document.createElement('div');
         this.dropdown.className = 'absolute z-10 w-full bg-white border border-gray-300 rounded shadow max-h-60 mt-1 hidden';
         this.dropdown.setAttribute('role', 'listbox');
-        // Create a scrollable list container inside the dropdown
+        // List container
         this.listContainer = document.createElement('ul');
         this.listContainer.className = 'overflow-auto max-h-60 relative';
-        // Shadows as fixed overlays inside dropdown
+        // Shadows
         this.topShadow = document.createElement('div');
         this.topShadow.className = 'pointer-events-none absolute left-0 right-0 h-4 top-0 z-20 bg-gradient-to-b from-gray-100 to-transparent opacity-0 transition-opacity';
         this.bottomShadow = document.createElement('div');
@@ -835,21 +834,16 @@ class TravelerCombobox {
         this.render();
     }
     handleFocus() {
-        if (this.input.value.trim() === '') {
-            this.filtered = this.travelerList.slice();
-        } else {
-            this.handleInput();
-        }
+        this.handleInput();
         this.selectedIndex = -1;
         this.open();
         this.render();
     }
     handleInput() {
         const q = this.input.value.trim().toLowerCase();
-        if (q === '') {
-            this.filtered = this.travelerList.slice();
-        } else {
-            this.filtered = this.travelerList.filter(t =>
+        let filtered = this.travelerList;
+        if (q !== '') {
+            filtered = filtered.filter(t =>
                 (t.firstName && t.firstName.toLowerCase().includes(q)) ||
                 (t.lastName && t.lastName.toLowerCase().includes(q)) ||
                 (t.preferredName && t.preferredName.toLowerCase().includes(q)) ||
@@ -857,6 +851,7 @@ class TravelerCombobox {
                 (t.primaryEmail && t.primaryEmail.toLowerCase().includes(q))
             );
         }
+        this.filtered = filtered;
         this.selectedIndex = -1;
         this.open();
         this.render();
@@ -893,12 +888,20 @@ class TravelerCombobox {
         }
     }
     render() {
-        // Remove all traveler options before re-rendering
         this.listContainer.innerHTML = '';
         this.filtered.forEach((traveler, i) => {
             const li = document.createElement('li');
-            li.className = 'px-4 py-2 cursor-pointer hover:bg-blue-100' + (i === this.selectedIndex ? ' bg-blue-100' : '');
-            li.textContent = getTravelerDisplayName(traveler);
+            li.className = 'px-4 py-2 cursor-pointer flex items-center space-x-2 hover:bg-blue-100' + (i === this.selectedIndex ? ' bg-blue-100' : '');
+            // The status dot is a visual indicator of traveler status. Green = 'active' (default), gray = 'inactive', yellow = 'other'. If no status is present, 'active' is assumed.
+            const status = traveler.status || 'active';
+            const statusColor = status === 'active' ? 'bg-green-400' : status === 'inactive' ? 'bg-gray-400' : 'bg-yellow-400';
+            const dot = document.createElement('span');
+            dot.className = `inline-block w-2 h-2 rounded-full ${statusColor}`;
+            li.appendChild(dot);
+            // Name
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = getTravelerDisplayName(traveler);
+            li.appendChild(nameSpan);
             li.setAttribute('role', 'option');
             li.addEventListener('mousedown', (e) => {
                 e.preventDefault();
@@ -1076,6 +1079,12 @@ function renderTravelerChips() {
         const chip = document.createElement('span');
         chip.className = 'flex items-center space-x-2 bg-blue-100 border border-blue-300 rounded-full px-3 py-1 text-sm shadow-sm';
         chip.style.maxWidth = '100%';
+        // The status dot is a visual indicator of traveler status. Green = 'active' (default), gray = 'inactive', yellow = 'other'. If no status is present, 'active' is assumed.
+        const status = traveler.status || 'active';
+        const statusColor = status === 'active' ? 'bg-green-400' : status === 'inactive' ? 'bg-gray-400' : 'bg-yellow-400';
+        const dot = document.createElement('span');
+        dot.className = `inline-block w-2 h-2 rounded-full ${statusColor}`;
+        chip.appendChild(dot);
         // Traveler name
         const nameSpan = document.createElement('span');
         nameSpan.className = 'truncate max-w-xs';
@@ -1118,98 +1127,266 @@ function showEditTravelerModal(travelerId) {
     overlay.tabIndex = -1;
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('role', 'dialog');
-    // Center modal, max-w-screen-sm, scrollable if needed
     const modal = document.createElement('div');
-    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-screen-sm max-h-[90vh] overflow-y-auto p-6 relative';
+    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative';
     modal.innerHTML = `
       <h2 class="text-2xl font-bold mb-4">Edit Traveler</h2>
-      <form id="editTravelerForm" class="space-y-4"></form>
+      <form id="editTravelerForm" class="space-y-4">
+        <div class="flex space-x-2">
+          <div class="flex-1">
+            <label class="form-label">First Name *</label>
+            <input name="firstName" type="text" class="form-input w-full" required value="${traveler.firstName || ''}" />
+          </div>
+          <div class="flex-1">
+            <label class="form-label">Middle Name</label>
+            <input name="middleName" type="text" class="form-input w-full" value="${traveler.middleName || ''}" />
+          </div>
+          <div class="flex-1">
+            <label class="form-label">Last Name *</label>
+            <input name="lastName" type="text" class="form-input w-full" required value="${traveler.lastName || ''}" />
+          </div>
+        </div>
+        <div>
+          <label class="form-label">Preferred Name</label>
+          <input name="preferredName" type="text" class="form-input w-full" value="${traveler.preferredName || ''}" />
+        </div>
+        <div class="flex space-x-2 items-end">
+          <div id="editCountryCodeDropdownContainer"></div>
+          <div class="flex-1">
+            <label class="form-label">Primary Phone *</label>
+            <input name="primaryPhone" type="tel" class="form-input w-full" required placeholder="" value="" />
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <div class="flex-1">
+            <label class="form-label">Primary Email *</label>
+            <input name="primaryEmail" type="email" class="form-input w-full" required value="${traveler.primaryEmail || ''}" />
+          </div>
+          <div class="flex-1">
+            <label class="form-label">Secondary Email</label>
+            <input name="secondaryEmail" type="email" class="form-input w-full" value="${traveler.secondaryEmail || ''}" />
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <div class="flex-1">
+            <label class="form-label">Date of Birth</label>
+            <input name="dateOfBirth" type="date" class="form-input w-full" value="${traveler.dateOfBirth || ''}" />
+          </div>
+          <div class="flex-1">
+            <label class="form-label">Gender</label>
+            <select name="gender" class="form-input w-full">
+              <option value="">Select</option>
+              <option value="Male"${traveler.gender === 'Male' ? ' selected' : ''}>Male</option>
+              <option value="Female"${traveler.gender === 'Female' ? ' selected' : ''}>Female</option>
+              <option value="X"${traveler.gender === 'X' ? ' selected' : ''}>X</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <div class="flex-1">
+            <label class="form-label">Passport Issuing Country</label>
+            <input name="passportIssuingCountry" type="text" class="form-input w-full" value="${traveler.passportIssuingCountry || ''}" />
+          </div>
+          <div class="flex-1">
+            <label class="form-label">Nationality</label>
+            <input name="nationality" type="text" class="form-input w-full" value="${traveler.nationality || ''}" />
+          </div>
+        </div>
+        <div>
+          <label class="form-label">Passport Number</label>
+          <input name="passportNumber" type="text" class="form-input w-full" value="${traveler.passportNumber || ''}" />
+        </div>
+        <div>
+          <label class="form-label">Additional Notes</label>
+          <textarea name="notes" class="form-input w-full" rows="2">${traveler.notes || ''}</textarea>
+        </div>
+        <div id="editTravelerFormError" class="text-red-600 text-sm"></div>
+        <div class="flex justify-between items-center mt-4">
+          <span class="text-xs text-gray-500">Traveler data is stored locally in your browser only.</span>
+          <div class="space-x-2">
+            <button type="button" id="cancelEditTravelerModal" class="btn-secondary">Cancel</button>
+            <button type="submit" class="btn-primary">Save</button>
+          </div>
+        </div>
+      </form>
     `;
+    // Insert loading indicator while fetching country codes
+    const dropdownContainer = modal.querySelector('#editCountryCodeDropdownContainer');
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'text-sm text-gray-500 py-2';
+    loadingDiv.textContent = 'Loading country codes...';
+    dropdownContainer.appendChild(loadingDiv);
+    // Show modal immediately
     overlay.appendChild(modal);
     container.appendChild(overlay);
-    // Click-outside-to-close
-    overlay.addEventListener('mousedown', (e) => {
+    // Track the current selected country code
+    let currentCountryCode = traveler.primaryPhoneCountry || 'US';
+    let countryList = [];
+    // After country codes are loaded, render dropdown
+    loadCountryPhoneCodes().then((codes) => {
+        countryList = codes;
+        dropdownContainer.innerHTML = '';
+        createCountryCodeDropdown(currentCountryCode).then(countryDropdown => {
+            dropdownContainer.appendChild(countryDropdown.wrapper);
+            const phoneInput = modal.querySelector('input[name="primaryPhone"]');
+            // Helper to get digits from any phone string
+            function getDigits(str) {
+                return (str || '').replace(/\D/g, '');
+            }
+            // Set initial phone value in correct format for selected country
+            function setPhoneInputValueForCountry(country, phoneRaw) {
+                let digits = getDigits(phoneRaw);
+                if (country.code === 'US') {
+                    if (digits.length === 11 && digits.startsWith('1')) digits = digits.slice(1);
+                    if (digits.length === 10) {
+                        phoneInput.value = digits.slice(0,3) + '-' + digits.slice(3,6) + '-' + digits.slice(6);
+                    } else {
+                        phoneInput.value = '';
+                    }
+                } else {
+                    phoneInput.value = digits;
+                }
+            }
+            // Initial set
+            setPhoneInputValueForCountry(countryDropdown.getSelected(), traveler.primaryPhone);
+            // On country change, reformat phone input value, preserving digits, and update currentCountryCode
+            countryDropdown.input.addEventListener('countrychange', (e) => {
+                const digits = getDigits(phoneInput.value);
+                setPhoneInputValueForCountry(countryDropdown.getSelected(), digits);
+                currentCountryCode = countryDropdown.getSelected().code;
+            });
+            // Phone mask logic
+            function updatePhoneMask() {
+                const country = countryDropdown.getSelected();
+                if (country.code === 'US') {
+                    phoneInput.placeholder = 'xxx-xxx-xxxx';
+                    phoneInput.maxLength = 12;
+                    if (!phoneInput._usMaskHandler) {
+                        phoneInput._usMaskHandler = function(e) {
+                            let v = phoneInput.value.replace(/\D/g, '');
+                            if (v.length > 10) v = v.slice(0, 10);
+                            let out = '';
+                            if (v.length > 6) out = v.slice(0,3) + '-' + v.slice(3,6) + '-' + v.slice(6);
+                            else if (v.length > 3) out = v.slice(0,3) + '-' + v.slice(3);
+                            else out = v;
+                            phoneInput.value = out;
+                        };
+                        phoneInput.addEventListener('input', phoneInput._usMaskHandler);
+                    }
+                } else {
+                    phoneInput.placeholder = '';
+                    phoneInput.maxLength = 30;
+                    if (phoneInput._usMaskHandler) {
+                        phoneInput.removeEventListener('input', phoneInput._usMaskHandler);
+                        phoneInput._usMaskHandler = null;
+                    }
+                }
+            }
+            countryDropdown.input.addEventListener('countrychange', updatePhoneMask);
+            updatePhoneMask();
+        });
+    }).catch(() => {
+        dropdownContainer.innerHTML = '<div class="text-red-600 text-sm">Failed to load country codes.</div>';
+    });
+    // Close modal on overlay click or cancel
+    overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
             container.innerHTML = '';
         }
     });
-    // Build form fields (reuse add form fields, prefilled)
-    const form = modal.querySelector('#editTravelerForm');
-    form.innerHTML = '';
-    [
-        { label: 'First Name *', name: 'firstName', type: 'text', required: true },
-        { label: 'Middle Name', name: 'middleName', type: 'text' },
-        { label: 'Last Name *', name: 'lastName', type: 'text', required: true },
-        { label: 'Preferred Name', name: 'preferredName', type: 'text' },
-        { label: 'Primary Phone *', name: 'primaryPhone', type: 'tel', required: true },
-        { label: 'Primary Email *', name: 'primaryEmail', type: 'email', required: true },
-        { label: 'Secondary Email', name: 'secondaryEmail', type: 'email' },
-        { label: 'Date of Birth', name: 'dateOfBirth', type: 'date' },
-        { label: 'Gender', name: 'gender', type: 'text' },
-        { label: 'Passport Issuing Country', name: 'passportIssuingCountry', type: 'text' },
-        { label: 'Nationality', name: 'nationality', type: 'text' },
-        { label: 'Passport Number', name: 'passportNumber', type: 'text' },
-        { label: 'Additional Notes', name: 'notes', type: 'textarea' },
-    ].forEach(field => {
-        const div = document.createElement('div');
-        const label = document.createElement('label');
-        label.className = 'form-label';
-        label.textContent = field.label;
-        div.appendChild(label);
-        let input;
-        if (field.type === 'textarea') {
-            input = document.createElement('textarea');
-            input.rows = 2;
-        } else {
-            input = document.createElement('input');
-            input.type = field.type;
-        }
-        input.name = field.name;
-        input.className = 'form-input w-full';
-        if (field.required) input.required = true;
-        input.value = traveler[field.name] || '';
-        div.appendChild(input);
-        form.appendChild(div);
+    modal.querySelector('#cancelEditTravelerModal').addEventListener('click', () => {
+        container.innerHTML = '';
     });
-    // Error display
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'text-red-600 text-sm';
-    form.appendChild(errorDiv);
-    // Buttons
-    const btnRow = document.createElement('div');
-    btnRow.className = 'flex justify-between items-center mt-4';
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = 'button';
-    cancelBtn.className = 'btn-secondary';
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.addEventListener('click', () => { container.innerHTML = ''; });
-    const saveBtn = document.createElement('button');
-    saveBtn.type = 'submit';
-    saveBtn.className = 'btn-primary';
-    saveBtn.textContent = 'Save';
-    btnRow.appendChild(cancelBtn);
-    btnRow.appendChild(saveBtn);
-    form.appendChild(btnRow);
-    // Submit handler
-    form.addEventListener('submit', function(e) {
+    // Error display helper
+    function showTravelerFormError(msg) {
+        modal.querySelector('#editTravelerFormError').textContent = msg;
+    }
+    // Handle form submission
+    modal.querySelector('#editTravelerForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        const form = e.target;
         const data = Object.fromEntries(new FormData(form).entries());
-        if (!data.firstName || !data.lastName || !data.primaryPhone || !data.primaryEmail) {
-            errorDiv.textContent = 'Please fill out all required fields.';
+        // Use tracked currentCountryCode for country code
+        data.primaryPhoneCountry = currentCountryCode;
+        // Use the loaded countryList to find the country object
+        const country = countryList.find(c => c.code === currentCountryCode) || { code: 'US', dial_code: '+1' };
+        // Validate phone number
+        const phoneInputVal = modal.querySelector('input[name="primaryPhone"]').value;
+        if (!validatePhoneNumber(phoneInputVal, country)) {
+            showTravelerFormError('Invalid phone number for selected country.');
             return;
         }
+        data.primaryPhone = formatPhoneForStorage(phoneInputVal, country);
+        // Convert dateOfBirth to string if present
+        if (data.dateOfBirth instanceof Date) {
+            data.dateOfBirth = data.dateOfBirth.toISOString().split('T')[0];
+        }
+        // Required fields
+        const requiredFields = ['firstName', 'lastName', 'primaryPhone', 'primaryPhoneCountry', 'primaryEmail'];
+        for (const field of requiredFields) {
+            if (!data[field] || !data[field].trim()) {
+                showTravelerFormError('Please fill out all required fields.');
+                return;
+            }
+        }
+        // Duplicate check (exclude current traveler)
         const all = TravelerService.getAll();
+        const duplicate = all.find(t =>
+            t.id !== travelerId &&
+            t && typeof t === 'object' &&
+            typeof t.firstName === 'string' && typeof t.lastName === 'string' &&
+            ((t.firstName.trim().toLowerCase() === data.firstName.trim().toLowerCase() &&
+              t.lastName.trim().toLowerCase() === data.lastName.trim().toLowerCase()) ||
+             (t.primaryEmail && t.primaryEmail.trim().toLowerCase() === data.primaryEmail.trim().toLowerCase()) ||
+             (t.primaryPhone && t.primaryPhone.trim() === data.primaryPhone.trim()))
+        );
+        if (duplicate) {
+            let conflict = [];
+            if (duplicate.primaryEmail === data.primaryEmail) conflict.push('email');
+            if (duplicate.primaryPhone === data.primaryPhone) conflict.push('phone');
+            if (duplicate.firstName === data.firstName && duplicate.lastName === data.lastName) conflict.push('name');
+            showTravelerFormError('Duplicate traveler: ' + conflict.join(', '));
+            return;
+        }
+        // Validate with TravelerService
+        const updatedTraveler = { ...traveler, ...data };
+        if (!TravelerService.validate(updatedTraveler)) {
+            showTravelerFormError('Invalid traveler data. Please check your entries.');
+            return;
+        }
+        // Save
         const idx = all.findIndex(t => t.id === travelerId);
         if (idx === -1) {
-            errorDiv.textContent = 'Traveler not found.';
+            showTravelerFormError('Traveler not found.');
             return;
         }
-        all[idx] = { ...all[idx], ...data };
+        all[idx] = updatedTraveler;
         TravelerService.saveAll(all);
         container.innerHTML = '';
         refreshTravelerCombobox();
         renderTravelerChips();
     });
+    // Restrict non-US phone input to numeric only as user types
+    modal.addEventListener('input', function(e) {
+        if (e.target && e.target.name === 'primaryPhone') {
+            const countryDropdownEl = dropdownContainer.querySelector('.relative');
+            let country = null;
+            if (countryDropdownEl && countryDropdownEl.input) {
+                country = countryDropdownEl.getSelected();
+            } else if (countryPhoneCodes && countryPhoneCodes.length) {
+                country = countryPhoneCodes[0];
+            }
+            if (country && country.code !== 'US') {
+                // Only allow digits
+                const digits = e.target.value.replace(/\D/g, '');
+                if (e.target.value !== digits) {
+                    e.target.value = digits;
+                }
+            }
+        }
+    });
+    modal.tabIndex = 0;
+    modal.focus();
 }
 
 // Initial render of traveler chips
