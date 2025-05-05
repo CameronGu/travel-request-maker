@@ -8,23 +8,15 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Travel Request Form</h1>
-            <p class="mt-2 text-gray-600">Generate formatted travel requests for hotels, flights, and rental cars.</p>
+        <header class="mb-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Travel Request Form</h1>
+                <p class="mt-2 text-gray-600">Generate formatted travel requests for hotels, flights, and rental cars.</p>
+            </div>
+            <button id="manageTravelersBtn" class="btn-secondary">Manage Travelers</button>
         </header>
 
         <main>
-            <!-- Traveler Selection -->
-            <div class="mb-6">
-                <div class="flex items-center justify-between">
-                    <div class="relative w-64">
-                        <div id="travelerCombobox"></div>
-                        <button id="addTraveler" class="btn-primary ml-2">Add New</button>
-                    </div>
-                </div>
-                <div id="travelerChips" class="flex flex-wrap gap-2 mt-2"></div>
-            </div>
-
             <!-- Tab Navigation -->
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
@@ -39,6 +31,7 @@
                 <!-- Hotel Form -->
                 <div id="hotelForm" class="tab-content">
                     <div class="card space-y-6">
+                        <div id="hotelTravelerSelector"></div>
                         <div>
                             <label for="hotelName" class="form-label">Hotel Name</label>
                             <input type="text" id="hotelName" name="hotelName" class="form-input" placeholder="Enter hotel name">
@@ -57,6 +50,7 @@
                 <!-- Flight Form -->
                 <div id="flightForm" class="tab-content hidden opacity-0">
                     <div class="card space-y-6">
+                        <div id="flightTravelerSelector"></div>
                         <div>
                             <label for="flightDeparture" class="form-label">Departure Airport</label>
                             <input type="text" id="flightDeparture" name="flightDeparture" class="form-input" placeholder="Enter departure airport code">
@@ -75,6 +69,7 @@
                 <!-- Rental Car Form -->
                 <div id="carForm" class="tab-content hidden opacity-0">
                     <div class="card space-y-6">
+                        <div id="carTravelerSelector"></div>
                         <div>
                             <label for="carType" class="form-label">Car Type</label>
                             <select id="carType" name="carType" class="form-input">

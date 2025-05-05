@@ -11,21 +11,26 @@ const tabs = document.querySelectorAll('[data-tab]');
 const tabContents = document.querySelectorAll('.tab-content');
 const copyBtn = document.getElementById('copyBtn');
 const shareBtn = document.getElementById('shareBtn');
-const travelerCombobox = document.getElementById('travelerCombobox');
-const travelerChipsDiv = document.getElementById('travelerChips');
+const manageTravelersBtn = document.getElementById('manageTravelersBtn');
+
+// Per-form traveler selectors
+const travelerSelectors = {
+    hotel: document.getElementById('hotelTravelerSelector'),
+    flight: document.getElementById('flightTravelerSelector'),
+    car: document.getElementById('carTravelerSelector'),
+};
 
 // State Management
-let currentTraveler = null;
 let currentTab = 'hotel';
 let formData = {
-    hotel: {},
-    flight: {},
-    car: {}
+    hotel: { selectedTravelers: [] },
+    flight: { selectedTravelers: [] },
+    car: { selectedTravelers: [] }
 };
 let initialFormData = {
-    hotel: {},
-    flight: {},
-    car: {}
+    hotel: { selectedTravelers: [] },
+    flight: { selectedTravelers: [] },
+    car: { selectedTravelers: [] }
 };
 let hasUnsavedChanges = false;
 let isTransitioning = false;
@@ -56,8 +61,6 @@ tabs.forEach(tab => {
     });
 });
 
-addTravelerBtn.addEventListener('click', showAddTravelerModal);
-travelerCombobox.addEventListener('change', handleTravelerChange);
 copyBtn.addEventListener('click', copyToClipboard);
 shareBtn.addEventListener('click', shareRequest);
 
@@ -251,6 +254,7 @@ async function getSortedCountryCodes() {
     return [...top, ...rest];
 }
 
+// --- Country Dropdown: Keyboard Navigation and Retain Selection ---
 async function createCountryCodeDropdown(selectedCode = 'US') {
     // Wrapper for label + input in a column, matching phone input style
     const wrapper = document.createElement('div');
@@ -285,12 +289,18 @@ async function createCountryCodeDropdown(selectedCode = 'US') {
     dropdown.style.minWidth = '100%';
     let countryList = await getSortedCountryCodes();
     let filtered = countryList;
-    let selected = countryList.find(c => c.code === selectedCode) || countryList[0];
+    let selected = countryList.find(c => c.code === selectedCode);
+    if (!selected) {
+        // Debug log to help diagnose country reset issues
+        console.warn('[CountryDropdown] Could not find country for code:', selectedCode, 'Defaulting to US.');
+        selected = countryList.find(c => c.code === 'US') || countryList[0];
+    }
+    let dropdownIndex = -1; // For keyboard navigation
     function renderDropdown() {
         dropdown.innerHTML = '';
         filtered.forEach((country, i) => {
             const li = document.createElement('div');
-            li.className = 'flex flex-col px-2 py-1 cursor-pointer hover:bg-blue-100 text-sm w-full';
+            li.className = 'flex flex-col px-2 py-1 cursor-pointer hover:bg-blue-100 text-sm w-full' + (i === dropdownIndex ? ' bg-blue-100' : '');
             li.innerHTML = `
               <div class=\"flex items-center space-x-2\">
                 <span>${country.emoji}</span>
@@ -317,10 +327,10 @@ async function createCountryCodeDropdown(selectedCode = 'US') {
     }
     function closeDropdown() {
         dropdown.classList.add('hidden');
+        dropdownIndex = -1;
     }
     function selectCountry(country) {
         selected = country;
-        // Show chip with flag, code letters, and dial code
         chip.innerHTML = `<span>${country.emoji}</span><span class="ml-1 font-medium">${country.code}</span><span class="ml-1">${country.dial_code}</span>`;
         chip.style.display = 'flex';
         input.value = '';
@@ -330,6 +340,7 @@ async function createCountryCodeDropdown(selectedCode = 'US') {
         input.setAttribute('data-country-name', country.name);
         input.setAttribute('data-flag', country.emoji);
         input.dispatchEvent(new CustomEvent('countrychange', { detail: country }));
+        closeDropdown();
     }
     // Make input searchable and always show dropdown on focus/click
     function clearChipAndInput() {
@@ -345,21 +356,50 @@ async function createCountryCodeDropdown(selectedCode = 'US') {
             c.dial_code.replace('+', '').includes(q.replace('+', '')) ||
             c.code.toLowerCase().includes(q)
         );
+        dropdownIndex = -1;
         openDropdown();
     });
     input.addEventListener('focus', () => {
         clearChipAndInput();
         filtered = countryList;
+        dropdownIndex = -1;
         openDropdown();
     });
     input.addEventListener('click', () => {
         clearChipAndInput();
         filtered = countryList;
+        dropdownIndex = -1;
         openDropdown();
     });
+    // Keyboard navigation for country dropdown
     input.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowDown' || e.key === 'Enter') openDropdown();
-        if (e.key === 'Escape') closeDropdown();
+        if (dropdown.classList.contains('hidden')) {
+            if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                openDropdown();
+                e.preventDefault();
+            }
+            return;
+        }
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (dropdownIndex < filtered.length - 1) dropdownIndex++;
+            else dropdownIndex = 0;
+            renderDropdown();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (dropdownIndex > 0) dropdownIndex--;
+            else dropdownIndex = filtered.length - 1;
+            renderDropdown();
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (dropdownIndex >= 0 && dropdownIndex < filtered.length) {
+                selectCountry(filtered[dropdownIndex]);
+            } else if (filtered.length === 1) {
+                selectCountry(filtered[0]);
+            }
+        } else if (e.key === 'Escape') {
+            closeDropdown();
+        }
     });
     document.addEventListener('mousedown', (e) => {
         if (!wrapper.contains(e.target)) closeDropdown();
@@ -372,7 +412,7 @@ async function createCountryCodeDropdown(selectedCode = 'US') {
     return { wrapper, input, getSelected: () => selected, setSelected: selectCountry };
 }
 
-function showAddTravelerModal() {
+function showAddTravelerModal(onSave, fromManageTravelers, fromComboBox, comboFormType) {
     const container = document.getElementById('travelerModalContainer');
     container.innerHTML = '';
     const overlay = document.createElement('div');
@@ -475,12 +515,21 @@ function showAddTravelerModal() {
     // After country codes are loaded, render dropdown
     loadCountryPhoneCodes().then(() => {
         dropdownContainer.innerHTML = '';
-        createCountryCodeDropdown('US').then(countryDropdown => {
+        const initialCode = 'US';
+        if (!countryPhoneCodes.find(c => c.code === initialCode)) {
+            console.warn('[AddTraveler] Initial country code not found in country list:', initialCode, countryPhoneCodes);
+        }
+        createCountryCodeDropdown(initialCode).then(countryDropdown => {
             dropdownContainer.appendChild(countryDropdown.wrapper);
+            // Track the currently selected country
+            let currentCountry = countryPhoneCodes.find(c => c.code === initialCode) || countryPhoneCodes[0];
+            countryDropdown.input.addEventListener('countrychange', (e) => {
+                currentCountry = e.detail;
+            });
             // Phone mask logic
             const phoneInput = modal.querySelector('input[name="primaryPhone"]');
             function updatePhoneMask() {
-                const country = countryDropdown.getSelected();
+                const country = currentCountry;
                 if (country.code === 'US') {
                     phoneInput.placeholder = 'xxx-xxx-xxxx';
                     phoneInput.value = '';
@@ -509,6 +558,79 @@ function showAddTravelerModal() {
             }
             countryDropdown.input.addEventListener('countrychange', updatePhoneMask);
             updatePhoneMask();
+            // Save handler uses currentCountry
+            modal.querySelector('#addTravelerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const data = Object.fromEntries(new FormData(form).entries());
+                // Defensive: If code is missing or not found, default to 'US'
+                let country = currentCountry;
+                if (!country || !country.code || !countryPhoneCodes.find(c => c.code === country.code)) {
+                    console.warn('[AddTraveler] Selected country code invalid, defaulting to US:', country);
+                    country = countryPhoneCodes.find(c => c.code === 'US') || countryPhoneCodes[0];
+                }
+                // Log the country code being saved
+                console.log('[AddTraveler] Saving country code:', country.code);
+                data.primaryPhoneCountry = country ? country.code : 'US';
+                data.primaryPhone = formatPhoneForStorage(phoneInput.value, country);
+                // Convert dateOfBirth to string if present
+                if (data.dateOfBirth instanceof Date) {
+                    data.dateOfBirth = data.dateOfBirth.toISOString().split('T')[0];
+                }
+                // Generate a UUID for the new traveler
+                data.id = crypto.randomUUID();
+                // Validate required fields
+                const requiredFields = ['firstName', 'lastName', 'primaryPhone', 'primaryPhoneCountry', 'primaryEmail'];
+                for (const field of requiredFields) {
+                    if (!data[field] || !data[field].trim()) {
+                        showTravelerFormError('Please fill out all required fields.');
+                        return;
+                    }
+                }
+                // Uniqueness validation (guard against undefined/null travelers)
+                const travelers = TravelerService.getAll();
+                const duplicate = travelers.find(t =>
+                    t && typeof t === 'object' &&
+                    typeof t.firstName === 'string' && typeof t.lastName === 'string' &&
+                    ((t.firstName.trim().toLowerCase() === data.firstName.trim().toLowerCase() &&
+                     t.lastName.trim().toLowerCase() === data.lastName.trim().toLowerCase()) ||
+                    (t.primaryEmail && t.primaryEmail.trim().toLowerCase() === data.primaryEmail.trim().toLowerCase()) ||
+                    (t.primaryPhone && t.primaryPhone.trim() === data.primaryPhone.trim()))
+                );
+                if (duplicate) {
+                    let conflict = [];
+                    if (duplicate.primaryEmail === data.primaryEmail) conflict.push('email');
+                    if (duplicate.primaryPhone === data.primaryPhone) conflict.push('phone');
+                    if (duplicate.firstName === data.firstName && duplicate.lastName === data.lastName) conflict.push('name');
+                    showTravelerFormError('Duplicate traveler: ' + conflict.join(', '));
+                    return;
+                }
+                // Validate with TravelerService
+                if (!TravelerService.validate(data)) {
+                    showTravelerFormError('Invalid traveler data. Please check your entries.');
+                    return;
+                }
+                try {
+                    TravelerService.add(data);
+                    container.innerHTML = '';
+                    if (fromComboBox && comboFormType) {
+                        if (!Array.isArray(formData[comboFormType].selectedTravelers)) formData[comboFormType].selectedTravelers = [];
+                        if (!formData[comboFormType].selectedTravelers.includes(data.id)) {
+                            formData[comboFormType].selectedTravelers.push(data.id);
+                            storage.saveFormData(formData);
+                        }
+                        refreshAllTravelerSelectors();
+                    } else if (fromManageTravelers) {
+                        showManageTravelersModal();
+                        refreshAllTravelerSelectors();
+                    } else {
+                        refreshAllTravelerSelectors();
+                    }
+                    if (onSave) onSave();
+                } catch (err) {
+                    showTravelerFormError('Failed to add traveler: ' + (err.message || err));
+                }
+            });
         });
     }).catch(() => {
         dropdownContainer.innerHTML = '<div class="text-red-600 text-sm">Failed to load country codes.</div>';
@@ -520,121 +642,19 @@ function showAddTravelerModal() {
         }
     });
     modal.querySelector('#cancelTravelerModal').addEventListener('click', () => {
-        container.innerHTML = '';
+        if (fromManageTravelers) {
+            container.innerHTML = '';
+            showManageTravelersModal();
+        } else {
+            container.innerHTML = '';
+        }
     });
     // Error display helper (hoisted so it's always defined before use)
     function showTravelerFormError(msg) {
         modal.querySelector('#travelerFormError').textContent = msg;
     }
-    // Handle form submission (unchanged)
-    modal.querySelector('#addTravelerForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const form = e.target;
-        const data = Object.fromEntries(new FormData(form).entries());
-        // Use selected country code
-        const countryDropdownEl = dropdownContainer.querySelector('.relative');
-        let country = null;
-        if (countryDropdownEl && countryDropdownEl.input) {
-            country = countryDropdownEl.getSelected();
-        } else if (countryPhoneCodes && countryPhoneCodes.length) {
-            country = countryPhoneCodes[0];
-        }
-        // Validate phone number
-        const phoneInputVal = modal.querySelector('input[name="primaryPhone"]').value;
-        if (!validatePhoneNumber(phoneInputVal, country)) {
-            showTravelerFormError('Invalid phone number for selected country.');
-            return;
-        }
-        data.primaryPhoneCountry = country ? country.dial_code : '';
-        data.primaryPhone = formatPhoneForStorage(phoneInputVal, country);
-        // Convert dateOfBirth to string if present
-        if (data.dateOfBirth instanceof Date) {
-            data.dateOfBirth = data.dateOfBirth.toISOString().split('T')[0];
-        }
-        // Generate a UUID for the new traveler
-        data.id = crypto.randomUUID();
-        // Validate required fields
-        const requiredFields = ['firstName', 'lastName', 'primaryPhone', 'primaryPhoneCountry', 'primaryEmail'];
-        for (const field of requiredFields) {
-            if (!data[field] || !data[field].trim()) {
-                showTravelerFormError('Please fill out all required fields.');
-                return;
-            }
-        }
-        // Uniqueness validation (guard against undefined/null travelers)
-        const travelers = TravelerService.getAll();
-        const duplicate = travelers.find(t =>
-            t && typeof t === 'object' &&
-            typeof t.firstName === 'string' && typeof t.lastName === 'string' &&
-            ((t.firstName.trim().toLowerCase() === data.firstName.trim().toLowerCase() &&
-             t.lastName.trim().toLowerCase() === data.lastName.trim().toLowerCase()) ||
-            (t.primaryEmail && t.primaryEmail.trim().toLowerCase() === data.primaryEmail.trim().toLowerCase()) ||
-            (t.primaryPhone && t.primaryPhone.trim() === data.primaryPhone.trim()))
-        );
-        if (duplicate) {
-            let conflict = [];
-            if (duplicate.primaryEmail === data.primaryEmail) conflict.push('email');
-            if (duplicate.primaryPhone === data.primaryPhone) conflict.push('phone');
-            if (duplicate.firstName === data.firstName && duplicate.lastName === data.lastName) conflict.push('name');
-            showTravelerFormError('Duplicate traveler: ' + conflict.join(', '));
-            return;
-        }
-        // Validate with TravelerService
-        if (!TravelerService.validate(data)) {
-            showTravelerFormError('Invalid traveler data. Please check your entries.');
-            return;
-        }
-        try {
-            TravelerService.add(data);
-            if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
-            if (!formData.selectedTravelers.includes(data.id)) formData.selectedTravelers.push(data.id);
-            storage.saveFormData(formData);
-            container.innerHTML = '';
-            refreshTravelerCombobox();
-            renderTravelerChips();
-        } catch (err) {
-            showTravelerFormError('Failed to add traveler: ' + (err.message || err));
-        }
-    });
-    // Restrict non-US phone input to numeric only as user types
-    modal.addEventListener('input', function(e) {
-        if (e.target && e.target.name === 'primaryPhone') {
-            const countryDropdownEl = dropdownContainer.querySelector('.relative');
-            let country = null;
-            if (countryDropdownEl && countryDropdownEl.input) {
-                country = countryDropdownEl.getSelected();
-            } else if (countryPhoneCodes && countryPhoneCodes.length) {
-                country = countryPhoneCodes[0];
-            }
-            if (country && country.code !== 'US') {
-                // Only allow digits
-                const digits = e.target.value.replace(/\D/g, '');
-                if (e.target.value !== digits) {
-                    e.target.value = digits;
-                }
-            }
-        }
-    });
     modal.tabIndex = 0;
     modal.focus();
-}
-
-function handleTravelerChange(event) {
-    if (hasUnsavedChanges) {
-        const confirmed = window.confirm('You have unsaved changes. Do you want to discard them and switch travelers?');
-        if (!confirmed) {
-            event.preventDefault();
-            travelerCombobox.value = currentTraveler; // Revert selection
-            return;
-        }
-    }
-    
-    // Save current form data before switching travelers
-    saveCurrentFormData();
-    
-    currentTraveler = event.target.value;
-    loadTravelerData();
-    refreshTravelerCombobox();
 }
 
 function loadTravelerData() {
@@ -768,8 +788,13 @@ function init() {
         // Always show debug button for now since we're in development
         addDebugButton();
 
-        // --- FIX: Render traveler chips on page load to show persisted selection ---
-        renderTravelerChips();
+        // Render per-form traveler selectors after DOM is ready and forms are set up
+        renderPerFormTravelerSelectors();
+
+        // Set up Manage Travelers button event listener after DOM is ready
+        if (manageTravelersBtn) {
+            manageTravelersBtn.addEventListener('click', showManageTravelersModal);
+        }
     } catch (error) {
         console.error('Error during initialization:', error);
     }
@@ -787,14 +812,41 @@ function getTravelerDisplayName(traveler) {
     return `${traveler.firstName || ''} ${traveler.lastName || ''}`.trim();
 }
 
+// --- Traveler phone validation and formatting utilities ---
+function validatePhoneNumber(phone, country) {
+    if (!phone || !country) return false;
+    const digits = phone.replace(/\D/g, '');
+    if (country.code === 'US') {
+        return digits.length === 10;
+    } else {
+        return digits.length >= 5;
+    }
+}
+function formatPhoneForStorage(phone, country) {
+    if (!phone || !country) return '';
+    const digits = phone.replace(/\D/g, '');
+    if (country.code === 'US') {
+        return digits;
+    } else {
+        return phone.trim();
+    }
+}
+
 class TravelerCombobox {
     constructor(container, onSelect) {
+        // Add label for accessibility
+        const label = document.createElement('label');
+        label.className = 'form-label block mb-1';
+        label.textContent = 'Select Traveler(s)';
+        label.setAttribute('for', 'traveler-combobox-input');
+        container.appendChild(label);
         this.container = container;
         this.onSelect = onSelect;
         this.input = document.createElement('input');
         this.input.type = 'text';
         this.input.className = 'form-input w-full';
-        this.input.placeholder = 'Select or search traveler...';
+        this.input.placeholder = 'Select or add traveler...';
+        this.input.id = 'traveler-combobox-input';
         // Dropdown
         this.dropdown = document.createElement('div');
         this.dropdown.className = 'absolute z-10 w-full bg-white border border-gray-300 rounded shadow max-h-60 mt-1 hidden';
@@ -816,8 +868,20 @@ class TravelerCombobox {
         this.travelerList = [];
         this.filtered = [];
         this.selectedIndex = -1;
-        this.input.addEventListener('focus', () => this.handleFocus());
-        this.input.addEventListener('input', () => this.handleInput());
+        this.input.addEventListener('focus', () => {
+            this.input.value = '';
+            this.filtered = this.travelerList;
+            this.selectedIndex = -1;
+            this.open();
+            this.render();
+        });
+        this.input.addEventListener('click', () => {
+            this.input.value = '';
+            this.filtered = this.travelerList;
+            this.selectedIndex = -1;
+            this.open();
+            this.render();
+        });
         this.input.addEventListener('keydown', (e) => this.handleKey(e));
         document.addEventListener('click', (e) => {
             if (!this.container.contains(e.target)) this.close();
@@ -949,175 +1013,311 @@ class TravelerCombobox {
     }
 }
 
-// Initialize custom combobox
-const travelerComboboxDiv = document.getElementById('travelerCombobox');
-let travelerComboboxInstance = null;
-if (travelerComboboxDiv) {
-    travelerComboboxInstance = new TravelerCombobox(travelerComboboxDiv, (selectedId) => {
-        if (selectedId === '__add_new__') {
-            showAddTravelerModal();
-        } else {
-            // Only add to chips, do not set currentTraveler or call loadTravelerData (prevents chip replacement)
-            if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
-            if (!formData.selectedTravelers.includes(selectedId)) {
-                formData.selectedTravelers.push(selectedId);
-                storage.saveFormData(formData);
-                renderTravelerChips();
+// Per-form traveler combobox and chips
+const travelerComboboxInstances = {};
+function renderPerFormTravelerSelectors() {
+    Object.keys(travelerSelectors).forEach(formType => {
+        const container = travelerSelectors[formType];
+        if (!container) return;
+        container.innerHTML = '';
+        // Combobox
+        const comboboxDiv = document.createElement('div');
+        comboboxDiv.className = 'relative w-64';
+        const chipsDiv = document.createElement('div');
+        chipsDiv.className = 'flex flex-wrap gap-2 mt-2';
+        container.appendChild(comboboxDiv);
+        container.appendChild(chipsDiv);
+        // Combobox instance
+        travelerComboboxInstances[formType] = new TravelerCombobox(comboboxDiv, (selectedId) => {
+            if (selectedId === '__add_new__') {
+                showAddTravelerModal(() => refreshAllTravelerSelectors(), false, true, formType);
+            } else {
+                if (!Array.isArray(formData[formType].selectedTravelers)) formData[formType].selectedTravelers = [];
+                if (!formData[formType].selectedTravelers.includes(selectedId)) {
+                    formData[formType].selectedTravelers.push(selectedId);
+                    storage.saveFormData(formData);
+                    renderFormTravelerChips(formType);
+                }
             }
-            // Clear combobox input, focus, and open dropdown with full list
-            if (travelerComboboxInstance && travelerComboboxInstance.input) {
-                travelerComboboxInstance.input.value = '';
-                travelerComboboxInstance.filtered = travelerComboboxInstance.travelerList.slice();
-                travelerComboboxInstance.open();
-                travelerComboboxInstance.render();
-                travelerComboboxInstance.input.focus();
-            }
-        }
-    });
-    // Load travelers initially
-    travelerComboboxInstance.setTravelers(TravelerService.getAll());
-    // Always show full list on focus or click if input is empty
-    travelerComboboxInstance.input.addEventListener('focus', () => {
-        if (travelerComboboxInstance.input.value.trim() === '') {
-            travelerComboboxInstance.filtered = travelerComboboxInstance.travelerList.slice();
-            travelerComboboxInstance.open();
-            travelerComboboxInstance.render();
-        }
-    });
-    travelerComboboxInstance.input.addEventListener('click', () => {
-        travelerComboboxInstance.input.value = '';
-        travelerComboboxInstance.filtered = travelerComboboxInstance.travelerList.slice();
-        travelerComboboxInstance.open();
-        travelerComboboxInstance.render();
+        });
+        travelerComboboxInstances[formType].setTravelers(TravelerService.getAll());
+        // Chips
+        renderFormTravelerChips(formType);
     });
 }
-
-// When travelers are added/edited, update combobox
-function refreshTravelerCombobox() {
-    if (travelerComboboxInstance) {
-        travelerComboboxInstance.setTravelers(TravelerService.getAll());
-        travelerComboboxInstance.setValue(currentTraveler);
+function renderFormTravelerChips(formType) {
+    if (!formData[formType].selectedTravelers || !Array.isArray(formData[formType].selectedTravelers)) {
+        formData[formType].selectedTravelers = [];
     }
-}
-
-// E.164 phone validation helper
-function validatePhoneNumber(phone, country) {
-    if (country.code === 'US') {
-        // US: must be in xxx-xxx-xxxx format, 12 chars
-        return /^\d{3}-\d{3}-\d{4}$/.test(phone);
-    } else {
-        // E.164: only digits, 6-15 digits
-        const digits = phone.replace(/\D/g, '');
-        return /^\d{6,15}$/.test(digits);
-    }
-}
-
-// Format phone for storage (E.164)
-function formatPhoneForStorage(phone, country) {
-    if (country.code === 'US') {
-        // US: store as +1XXXXXXXXXX
-        const digits = phone.replace(/\D/g, '');
-        return '+1' + digits;
-    } else {
-        // Non-US: store as +<country code><digits>
-        const digits = phone.replace(/\D/g, '');
-        const code = country.dial_code.replace('+', '');
-        return '+' + code + digits;
-    }
-}
-
-// Simple test function for phone validation and traveler addition
-function testTravelerPhoneValidation() {
-    const us = { code: 'US', dial_code: '+1' };
-    const fr = { code: 'FR', dial_code: '+33' };
-    const validUS = '555-123-4567';
-    const invalidUS = '5551234567';
-    const validFR = '612345678';
-    const invalidFR = '12';
-    console.log('US valid:', validatePhoneNumber(validUS, us)); // true
-    console.log('US invalid:', validatePhoneNumber(invalidUS, us)); // false
-    console.log('FR valid:', validatePhoneNumber(validFR, fr)); // true
-    console.log('FR invalid:', validatePhoneNumber(invalidFR, fr)); // false
-    // Add a test traveler
-    const traveler = {
-        id: crypto.randomUUID(),
-        firstName: 'Test',
-        lastName: 'User',
-        primaryPhone: formatPhoneForStorage(validFR, fr),
-        primaryPhoneCountry: '+33',
-        primaryEmail: 'test@example.com',
-    };
-    TravelerService.add(traveler);
-    const all = TravelerService.getAll();
-    console.log('Traveler added:', all.find(t => t.id === traveler.id));
-}
-window.testTravelerPhoneValidation = testTravelerPhoneValidation;
-
-// --- Traveler Chip/Tag Display Component ---
-
-// Helper: Get selected travelers for the current request
-function getSelectedTravelers() {
-    if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
-    return formData.selectedTravelers.map(id => TravelerService.getAll().find(t => t.id === id)).filter(Boolean);
-}
-
-// Helper: Set selected travelers for the current request
-function setSelectedTravelers(ids) {
-    if (!Array.isArray(ids)) ids = [];
-    formData.selectedTravelers = ids;
-    storage.saveFormData(formData);
-    renderTravelerChips();
-}
-
-// Render traveler chips/tags
-function renderTravelerChips() {
-    if (!travelerChipsDiv) return;
-    if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
-    travelerChipsDiv.innerHTML = '';
-    const travelers = getSelectedTravelers();
+    // Remove duplicates from selectedTravelers
+    formData[formType].selectedTravelers = Array.from(new Set(formData[formType].selectedTravelers));
+    const container = travelerSelectors[formType];
+    if (!container) return;
+    const chipsDiv = container.querySelector('.flex.flex-wrap');
+    if (!chipsDiv) return;
+    chipsDiv.innerHTML = '';
+    const ids = formData[formType].selectedTravelers || [];
+    const travelers = ids.map(id => TravelerService.getAll().find(t => t.id === id)).filter(Boolean);
     travelers.forEach(traveler => {
-        const chip = document.createElement('span');
-        chip.className = 'flex items-center space-x-2 bg-blue-100 border border-blue-300 rounded-full px-3 py-1 text-sm shadow-sm';
-        chip.style.maxWidth = '100%';
-        // The status dot is a visual indicator of traveler status. Green = 'active' (default), gray = 'inactive', yellow = 'other'. If no status is present, 'active' is assumed.
-        const status = traveler.status || 'active';
-        const statusColor = status === 'active' ? 'bg-green-400' : status === 'inactive' ? 'bg-gray-400' : 'bg-yellow-400';
-        const dot = document.createElement('span');
-        dot.className = `inline-block w-2 h-2 rounded-full ${statusColor}`;
-        chip.appendChild(dot);
-        // Traveler name
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'truncate max-w-xs';
-        nameSpan.textContent = getTravelerDisplayName(traveler);
-        chip.appendChild(nameSpan);
+        const chip = document.createElement('div');
+        chip.className = 'inline-flex items-center space-x-2 bg-blue-100 border border-blue-300 rounded-full px-3 py-1 text-sm shadow-sm cursor-pointer';
+        chip.style.maxWidth = '';
+        chip.tabIndex = 0;
+        chip.setAttribute('role', 'button');
+        chip.setAttribute('aria-label', `Traveler: ${getTravelerDisplayName(traveler)}`);
+
+        // Chip body (display name)
+        const chipBody = document.createElement('span');
+        chipBody.className = 'chip-body flex-1 truncate';
+        chipBody.textContent = getTravelerDisplayName(traveler);
+        chipBody.addEventListener('click', () => showTravelerDisplayModal(traveler.id));
+
         // Edit icon
-        const editBtn = document.createElement('button');
-        editBtn.className = 'ml-1 text-blue-600 hover:text-blue-800 focus:outline-none';
-        editBtn.title = 'Edit Traveler';
-        editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6m-2 2h6" /></svg>';
-        editBtn.addEventListener('click', (e) => {
+        const chipEdit = document.createElement('button');
+        chipEdit.className = 'chip-edit ml-1 text-blue-700 hover:text-blue-900 focus:outline-none';
+        chipEdit.setAttribute('aria-label', 'Edit traveler');
+        chipEdit.innerHTML = '✎';
+        chipEdit.tabIndex = 0;
+        chipEdit.addEventListener('click', (e) => {
             e.stopPropagation();
-            showTravelerDisplayModal(traveler.id);
+            showEditTravelerModal(traveler.id, () => refreshAllTravelerSelectors(), false, true, formType);
         });
-        chip.appendChild(editBtn);
+
         // Remove icon
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'ml-1 text-red-500 hover:text-red-700 focus:outline-none';
-        removeBtn.title = 'Remove Traveler';
-        removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
-        removeBtn.addEventListener('click', (e) => {
+        const chipRemove = document.createElement('button');
+        chipRemove.className = 'chip-remove ml-1 text-red-600 hover:text-red-800 focus:outline-none';
+        chipRemove.setAttribute('aria-label', 'Remove traveler');
+        chipRemove.innerHTML = '×';
+        chipRemove.tabIndex = 0;
+        chipRemove.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (!Array.isArray(formData.selectedTravelers)) formData.selectedTravelers = [];
-            const ids = formData.selectedTravelers.filter(id => id !== traveler.id);
-            setSelectedTravelers(ids);
+            if (!Array.isArray(formData[formType].selectedTravelers)) formData[formType].selectedTravelers = [];
+            formData[formType].selectedTravelers = formData[formType].selectedTravelers.filter(id => id !== traveler.id);
+            storage.saveFormData(formData);
+            renderFormTravelerChips(formType);
+            refreshAllTravelerSelectors();
         });
-        chip.appendChild(removeBtn);
-        travelerChipsDiv.appendChild(chip);
+
+        chip.appendChild(chipBody);
+        chip.appendChild(chipEdit);
+        chip.appendChild(chipRemove);
+        chip.addEventListener('click', () => showTravelerDisplayModal(traveler.id));
+        chip.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                showTravelerDisplayModal(traveler.id);
+            }
+        });
+        chipsDiv.appendChild(chip);
     });
+}
+function refreshAllTravelerSelectors() {
+    Object.keys(travelerComboboxInstances).forEach(formType => {
+        if (travelerComboboxInstances[formType]) {
+            travelerComboboxInstances[formType].setTravelers(TravelerService.getAll());
+        }
+        renderFormTravelerChips(formType);
+    });
+}
+
+// Manage Travelers Modal
+function showManageTravelersModal() {
+    const container = document.getElementById('travelerModalContainer');
+    container.innerHTML = '';
+    const travelers = TravelerService.getAll();
+    // If no travelers, open Add New Traveler form directly
+    if (!travelers || travelers.length === 0) {
+        showAddTravelerModal(() => showManageTravelersModal(), true);
+        return;
+    }
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center';
+    overlay.tabIndex = -1;
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('role', 'dialog');
+    const modal = document.createElement('div');
+    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative';
+    modal.innerHTML = `
+      <h2 class="text-2xl font-bold mb-4">Manage Travelers</h2>
+      <div class="flex justify-between items-center mb-4">
+        <button id="addNewTravelerBtn" class="btn-primary">+ Add New Traveler</button>
+      </div>
+      <div id="manageTravelersList" class="divide-y divide-gray-200 max-h-96 overflow-y-auto"></div>
+      <div class="flex justify-end space-x-2 mt-6">
+        <button id="closeManageTravelersModal" class="btn-primary">Close</button>
+      </div>
+    `;
+    overlay.appendChild(modal);
+    container.appendChild(overlay);
+    // Add New Traveler button handler
+    modal.querySelector('#addNewTravelerBtn').addEventListener('click', () => {
+        showAddTravelerModal(() => showManageTravelersModal(), true);
+    });
+    // Render traveler list
+    function renderList() {
+        const listDiv = modal.querySelector('#manageTravelersList');
+        listDiv.innerHTML = '';
+        TravelerService.getAll().forEach(traveler => {
+            const row = document.createElement('div');
+            row.className = 'flex items-center justify-between py-3';
+            row.innerHTML = `
+                <div class="flex flex-col">
+                    <span class="font-semibold">${getTravelerDisplayName(traveler)}</span>
+                    <span class="text-xs text-gray-500">${traveler.primaryEmail || ''} | ${traveler.primaryPhone || ''}</span>
+                    <span class="text-xs text-gray-400">${traveler.notes || ''}</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="btn-secondary" data-action="view" data-id="${traveler.id}">View</button>
+                    <button class="btn-secondary" data-action="edit" data-id="${traveler.id}">Edit</button>
+                    <button class="btn-secondary text-red-600" data-action="delete" data-id="${traveler.id}">Delete</button>
+                </div>
+            `;
+            listDiv.appendChild(row);
+        });
+    }
+    renderList();
+    // Action handlers
+    modal.querySelector('#manageTravelersList').addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        const action = btn.getAttribute('data-action');
+        if (action === 'view') {
+            // Pass fromManageTravelers = true so closing returns to Manage Travelers
+            showTravelerDisplayModal(id, true);
+        } else if (action === 'edit') {
+            showEditTravelerModal(id, () => {
+                renderList();
+                refreshAllTravelerSelectors();
+            }, true, false, null);
+        } else if (action === 'delete') {
+            if (window.confirm('Delete this traveler?')) {
+                TravelerService.delete(id);
+                renderList();
+                refreshAllTravelerSelectors();
+            }
+        }
+    });
+    modal.querySelector('#closeManageTravelersModal').addEventListener('click', () => {
+        container.innerHTML = '';
+    });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            container.innerHTML = '';
+        }
+    });
+    modal.tabIndex = 0;
+    modal.focus();
+}
+
+// Traveler Display Component
+function showTravelerDisplayModal(travelerId, fromManageTravelers) {
+    const traveler = TravelerService.getAll().find(t => t.id === travelerId);
+    if (!traveler) return;
+    const container = document.getElementById('travelerModalContainer');
+    container.innerHTML = '';
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center';
+    overlay.tabIndex = -1;
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('role', 'dialog');
+    const modal = document.createElement('div');
+    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative';
+    modal.innerHTML = `
+      <h2 class="text-2xl font-bold mb-4">Traveler Details</h2>
+      <div class="space-y-4">
+        <div>
+          <span class="font-semibold">Name:</span> ${getTravelerDisplayName(traveler)}
+        </div>
+        <div>
+          <span class="font-semibold">Preferred Name:</span> ${traveler.preferredName || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Primary Phone:</span> ${traveler.primaryPhone || '-'} (${traveler.primaryPhoneCountry || '-'})
+        </div>
+        <div>
+          <span class="font-semibold">Primary Email:</span> ${traveler.primaryEmail || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Secondary Email:</span> ${traveler.secondaryEmail || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Date of Birth:</span> ${traveler.dateOfBirth || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Gender:</span> ${traveler.gender || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Passport Issuing Country:</span> ${traveler.passportIssuingCountry || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Nationality:</span> ${traveler.nationality || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Passport Number:</span> ${traveler.passportNumber || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Notes:</span> ${traveler.notes || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Trip History:</span> <span class="italic text-gray-500">(Not implemented)</span>
+        </div>
+      </div>
+      <div class="flex justify-end space-x-2 mt-6">
+        <button id="printTravelerBtn" class="btn-secondary">Print</button>
+        <button id="exportTravelerBtn" class="btn-secondary">Export JSON</button>
+        <button id="closeTravelerDisplayModal" class="btn-primary">Close</button>
+      </div>
+    `;
+    overlay.appendChild(modal);
+    container.appendChild(overlay);
+    // Print functionality
+    modal.querySelector('#printTravelerBtn').addEventListener('click', () => {
+        const printWindow = window.open('', '', 'width=800,height=600');
+        printWindow.document.write('<html><head><title>Traveler Details</title>');
+        printWindow.document.write('<link href="./dist/output.css" rel="stylesheet">');
+        printWindow.document.write('</head><body class="p-8">');
+        printWindow.document.write(`<h2 class='text-2xl font-bold mb-4'>Traveler Details</h2>`);
+        printWindow.document.write(modal.querySelector('.space-y-4').outerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    });
+    // Export JSON functionality
+    modal.querySelector('#exportTravelerBtn').addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(traveler, null, 2));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute('href', dataStr);
+        dlAnchor.setAttribute('download', `traveler-${traveler.id}.json`);
+        document.body.appendChild(dlAnchor);
+        dlAnchor.click();
+        document.body.removeChild(dlAnchor);
+    });
+    // Close modal
+    modal.querySelector('#closeTravelerDisplayModal').addEventListener('click', () => {
+        if (fromManageTravelers) {
+            container.innerHTML = '';
+            showManageTravelersModal();
+        } else {
+            container.innerHTML = '';
+        }
+    });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            if (fromManageTravelers) {
+                container.innerHTML = '';
+                showManageTravelersModal();
+            } else {
+                container.innerHTML = '';
+            }
+        }
+    });
+    modal.tabIndex = 0;
+    modal.focus();
 }
 
 // Show edit traveler modal (reuse add modal, but prefill and update)
-function showEditTravelerModal(travelerId) {
+function showEditTravelerModal(travelerId, onSave, fromManageTravelers = false, fromComboBox = false, comboFormType = null) {
     const traveler = TravelerService.getAll().find(t => t.id === travelerId);
     if (!traveler) return;
     const container = document.getElementById('travelerModalContainer');
@@ -1222,18 +1422,36 @@ function showEditTravelerModal(travelerId) {
     // Track the current selected country code
     let currentCountryCode = traveler.primaryPhoneCountry || 'US';
     let countryList = [];
-    // After country codes are loaded, render dropdown
-    loadCountryPhoneCodes().then((codes) => {
+    // Always use getSortedCountryCodes for dropdown
+    getSortedCountryCodes().then((codes) => {
         countryList = codes;
         dropdownContainer.innerHTML = '';
-        createCountryCodeDropdown(currentCountryCode).then(countryDropdown => {
+        if (!countryList.find(c => c.code === currentCountryCode)) {
+            console.warn('[EditTraveler] Traveler country code not found in country list:', currentCountryCode, countryList);
+        }
+        let selectedCountry = countryList.find(c => c.code === currentCountryCode);
+        if (!selectedCountry) {
+            console.warn('[EditTraveler] Fallback to US for country code:', currentCountryCode);
+            selectedCountry = countryList.find(c => c.code === 'US');
+        }
+        createCountryCodeDropdown(selectedCountry.code).then(countryDropdown => {
             dropdownContainer.appendChild(countryDropdown.wrapper);
+            // Track the currently selected country
+            let currentCountry = countryList.find(c => c.code === selectedCountry.code) || countryList[0];
+            countryDropdown.input.addEventListener('countrychange', (e) => {
+                currentCountry = e.detail;
+            });
+            // Explicitly set the selected country after dropdown creation
+            if (traveler.primaryPhoneCountry && countryList.find(c => c.code === traveler.primaryPhoneCountry)) {
+                countryDropdown.setSelected(countryList.find(c => c.code === traveler.primaryPhoneCountry));
+                currentCountry = countryList.find(c => c.code === traveler.primaryPhoneCountry);
+                console.log('[EditTraveler] Explicitly set dropdown to:', traveler.primaryPhoneCountry);
+            }
+            // Phone mask logic
             const phoneInput = modal.querySelector('input[name="primaryPhone"]');
-            // Helper to get digits from any phone string
             function getDigits(str) {
                 return (str || '').replace(/\D/g, '');
             }
-            // Set initial phone value in correct format for selected country
             function setPhoneInputValueForCountry(country, phoneRaw) {
                 let digits = getDigits(phoneRaw);
                 if (country.code === 'US') {
@@ -1247,17 +1465,14 @@ function showEditTravelerModal(travelerId) {
                     phoneInput.value = digits;
                 }
             }
-            // Initial set
-            setPhoneInputValueForCountry(countryDropdown.getSelected(), traveler.primaryPhone);
-            // On country change, reformat phone input value, preserving digits, and update currentCountryCode
+            setPhoneInputValueForCountry(currentCountry, traveler.primaryPhone);
             countryDropdown.input.addEventListener('countrychange', (e) => {
                 const digits = getDigits(phoneInput.value);
-                setPhoneInputValueForCountry(countryDropdown.getSelected(), digits);
-                currentCountryCode = countryDropdown.getSelected().code;
+                setPhoneInputValueForCountry(currentCountry, digits);
+                currentCountry = e.detail;
             });
-            // Phone mask logic
             function updatePhoneMask() {
-                const country = countryDropdown.getSelected();
+                const country = currentCountry;
                 if (country.code === 'US') {
                     phoneInput.placeholder = 'xxx-xxx-xxxx';
                     phoneInput.maxLength = 12;
@@ -1284,6 +1499,82 @@ function showEditTravelerModal(travelerId) {
             }
             countryDropdown.input.addEventListener('countrychange', updatePhoneMask);
             updatePhoneMask();
+            // Save handler uses currentCountry
+            modal.querySelector('#editTravelerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const data = Object.fromEntries(new FormData(form).entries());
+                let codeToSave = currentCountry && currentCountry.code ? currentCountry.code : 'US';
+                if (!countryList.find(c => c.code === codeToSave)) {
+                    console.warn('[EditTraveler] Saving fallback US for country code:', codeToSave);
+                    codeToSave = 'US';
+                }
+                // Log the country code being saved
+                console.log('[EditTraveler] Saving country code:', codeToSave);
+                data.primaryPhoneCountry = codeToSave;
+                // Use the loaded countryList to find the country object
+                const country = countryList.find(c => c.code === codeToSave) || { code: 'US', dial_code: '+1' };
+                // Validate phone number
+                const phoneInputVal = modal.querySelector('input[name="primaryPhone"]').value;
+                if (!validatePhoneNumber(phoneInputVal, country)) {
+                    showTravelerFormError('Invalid phone number for selected country.');
+                    return;
+                }
+                data.primaryPhone = formatPhoneForStorage(phoneInputVal, country);
+                // Convert dateOfBirth to string if present
+                if (data.dateOfBirth instanceof Date) {
+                    data.dateOfBirth = data.dateOfBirth.toISOString().split('T')[0];
+                }
+                // Required fields
+                const requiredFields = ['firstName', 'lastName', 'primaryPhone', 'primaryPhoneCountry', 'primaryEmail'];
+                for (const field of requiredFields) {
+                    if (!data[field] || !data[field].trim()) {
+                        showTravelerFormError('Please fill out all required fields.');
+                        return;
+                    }
+                }
+                // Duplicate check (exclude current traveler)
+                const all = TravelerService.getAll();
+                const duplicate = all.find(t =>
+                    t.id !== travelerId &&
+                    t && typeof t === 'object' &&
+                    typeof t.firstName === 'string' && typeof t.lastName === 'string' &&
+                    ((t.firstName.trim().toLowerCase() === data.firstName.trim().toLowerCase() &&
+                      t.lastName.trim().toLowerCase() === data.lastName.trim().toLowerCase()) ||
+                     (t.primaryEmail && t.primaryEmail.trim().toLowerCase() === data.primaryEmail.trim().toLowerCase()) ||
+                     (t.primaryPhone && t.primaryPhone.trim() === data.primaryPhone.trim()))
+                );
+                if (duplicate) {
+                    let conflict = [];
+                    if (duplicate.primaryEmail === data.primaryEmail) conflict.push('email');
+                    if (duplicate.primaryPhone === data.primaryPhone) conflict.push('phone');
+                    if (duplicate.firstName === data.firstName && duplicate.lastName === data.lastName) conflict.push('name');
+                    showTravelerFormError('Duplicate traveler: ' + conflict.join(', '));
+                    return;
+                }
+                // Validate with TravelerService
+                const updatedTraveler = { ...traveler, ...data };
+                if (!TravelerService.validate(updatedTraveler)) {
+                    showTravelerFormError('Invalid traveler data. Please check your entries.');
+                    return;
+                }
+                // Save
+                const idx = all.findIndex(t => t.id === travelerId);
+                if (idx === -1) {
+                    showTravelerFormError('Traveler not found.');
+                    return;
+                }
+                all[idx] = updatedTraveler;
+                TravelerService.saveAll(all);
+                container.innerHTML = '';
+                refreshAllTravelerSelectors();
+                if (onSave) onSave();
+                // After save, return to correct context
+                if (fromManageTravelers) {
+                    showManageTravelersModal();
+                }
+                // If fromComboBox, just close and refreshAllTravelerSelectors (already done)
+            });
         });
     }).catch(() => {
         dropdownContainer.innerHTML = '<div class="text-red-600 text-sm">Failed to load country codes.</div>';
@@ -1291,81 +1582,28 @@ function showEditTravelerModal(travelerId) {
     // Close modal on overlay click or cancel
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
-            container.innerHTML = '';
+            if (fromManageTravelers) {
+                container.innerHTML = '';
+                showManageTravelersModal();
+            } else {
+                container.innerHTML = '';
+                if (fromComboBox && comboFormType) refreshAllTravelerSelectors();
+            }
         }
     });
     modal.querySelector('#cancelEditTravelerModal').addEventListener('click', () => {
-        container.innerHTML = '';
+        if (fromManageTravelers) {
+            container.innerHTML = '';
+            showManageTravelersModal();
+        } else {
+            container.innerHTML = '';
+            if (fromComboBox && comboFormType) refreshAllTravelerSelectors();
+        }
     });
     // Error display helper
     function showTravelerFormError(msg) {
         modal.querySelector('#editTravelerFormError').textContent = msg;
     }
-    // Handle form submission
-    modal.querySelector('#editTravelerForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const form = e.target;
-        const data = Object.fromEntries(new FormData(form).entries());
-        // Use tracked currentCountryCode for country code
-        data.primaryPhoneCountry = currentCountryCode;
-        // Use the loaded countryList to find the country object
-        const country = countryList.find(c => c.code === currentCountryCode) || { code: 'US', dial_code: '+1' };
-        // Validate phone number
-        const phoneInputVal = modal.querySelector('input[name="primaryPhone"]').value;
-        if (!validatePhoneNumber(phoneInputVal, country)) {
-            showTravelerFormError('Invalid phone number for selected country.');
-            return;
-        }
-        data.primaryPhone = formatPhoneForStorage(phoneInputVal, country);
-        // Convert dateOfBirth to string if present
-        if (data.dateOfBirth instanceof Date) {
-            data.dateOfBirth = data.dateOfBirth.toISOString().split('T')[0];
-        }
-        // Required fields
-        const requiredFields = ['firstName', 'lastName', 'primaryPhone', 'primaryPhoneCountry', 'primaryEmail'];
-        for (const field of requiredFields) {
-            if (!data[field] || !data[field].trim()) {
-                showTravelerFormError('Please fill out all required fields.');
-                return;
-            }
-        }
-        // Duplicate check (exclude current traveler)
-        const all = TravelerService.getAll();
-        const duplicate = all.find(t =>
-            t.id !== travelerId &&
-            t && typeof t === 'object' &&
-            typeof t.firstName === 'string' && typeof t.lastName === 'string' &&
-            ((t.firstName.trim().toLowerCase() === data.firstName.trim().toLowerCase() &&
-              t.lastName.trim().toLowerCase() === data.lastName.trim().toLowerCase()) ||
-             (t.primaryEmail && t.primaryEmail.trim().toLowerCase() === data.primaryEmail.trim().toLowerCase()) ||
-             (t.primaryPhone && t.primaryPhone.trim() === data.primaryPhone.trim()))
-        );
-        if (duplicate) {
-            let conflict = [];
-            if (duplicate.primaryEmail === data.primaryEmail) conflict.push('email');
-            if (duplicate.primaryPhone === data.primaryPhone) conflict.push('phone');
-            if (duplicate.firstName === data.firstName && duplicate.lastName === data.lastName) conflict.push('name');
-            showTravelerFormError('Duplicate traveler: ' + conflict.join(', '));
-            return;
-        }
-        // Validate with TravelerService
-        const updatedTraveler = { ...traveler, ...data };
-        if (!TravelerService.validate(updatedTraveler)) {
-            showTravelerFormError('Invalid traveler data. Please check your entries.');
-            return;
-        }
-        // Save
-        const idx = all.findIndex(t => t.id === travelerId);
-        if (idx === -1) {
-            showTravelerFormError('Traveler not found.');
-            return;
-        }
-        all[idx] = updatedTraveler;
-        TravelerService.saveAll(all);
-        container.innerHTML = '';
-        refreshTravelerCombobox();
-        renderTravelerChips();
-    });
     // Restrict non-US phone input to numeric only as user types
     modal.addEventListener('input', function(e) {
         if (e.target && e.target.name === 'primaryPhone') {
@@ -1387,129 +1625,4 @@ function showEditTravelerModal(travelerId) {
     });
     modal.tabIndex = 0;
     modal.focus();
-}
-
-// Traveler Display Component
-function showTravelerDisplayModal(travelerId) {
-    const traveler = TravelerService.getAll().find(t => t.id === travelerId);
-    if (!traveler) return;
-    const container = document.getElementById('travelerModalContainer');
-    container.innerHTML = '';
-    const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center';
-    overlay.tabIndex = -1;
-    overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('role', 'dialog');
-    const modal = document.createElement('div');
-    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative';
-    modal.innerHTML = `
-      <h2 class="text-2xl font-bold mb-4">Traveler Details</h2>
-      <div class="space-y-4">
-        <div>
-          <span class="font-semibold">Name:</span> ${getTravelerDisplayName(traveler)}
-        </div>
-        <div>
-          <span class="font-semibold">Preferred Name:</span> ${traveler.preferredName || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Primary Phone:</span> ${traveler.primaryPhone || '-'} (${traveler.primaryPhoneCountry || '-'})
-        </div>
-        <div>
-          <span class="font-semibold">Primary Email:</span> ${traveler.primaryEmail || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Secondary Email:</span> ${traveler.secondaryEmail || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Date of Birth:</span> ${traveler.dateOfBirth || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Gender:</span> ${traveler.gender || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Passport Issuing Country:</span> ${traveler.passportIssuingCountry || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Nationality:</span> ${traveler.nationality || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Passport Number:</span> ${traveler.passportNumber || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Notes:</span> ${traveler.notes || '-'}
-        </div>
-        <div>
-          <span class="font-semibold">Trip History:</span> <span class="italic text-gray-500">(Not implemented)</span>
-        </div>
-      </div>
-      <div class="flex justify-end space-x-2 mt-6">
-        <button id="printTravelerBtn" class="btn-secondary">Print</button>
-        <button id="exportTravelerBtn" class="btn-secondary">Export JSON</button>
-        <button id="closeTravelerDisplayModal" class="btn-primary">Close</button>
-      </div>
-    `;
-    overlay.appendChild(modal);
-    container.appendChild(overlay);
-    // Print functionality
-    modal.querySelector('#printTravelerBtn').addEventListener('click', () => {
-        const printWindow = window.open('', '', 'width=800,height=600');
-        printWindow.document.write('<html><head><title>Traveler Details</title>');
-        printWindow.document.write('<link href="./dist/output.css" rel="stylesheet">');
-        printWindow.document.write('</head><body class="p-8">');
-        printWindow.document.write(`<h2 class='text-2xl font-bold mb-4'>Traveler Details</h2>`);
-        printWindow.document.write(modal.querySelector('.space-y-4').outerHTML);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-    });
-    // Export JSON functionality
-    modal.querySelector('#exportTravelerBtn').addEventListener('click', () => {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(traveler, null, 2));
-        const dlAnchor = document.createElement('a');
-        dlAnchor.setAttribute('href', dataStr);
-        dlAnchor.setAttribute('download', `traveler-${traveler.id}.json`);
-        document.body.appendChild(dlAnchor);
-        dlAnchor.click();
-        document.body.removeChild(dlAnchor);
-    });
-    // Close modal
-    modal.querySelector('#closeTravelerDisplayModal').addEventListener('click', () => {
-        container.innerHTML = '';
-    });
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            container.innerHTML = '';
-        }
-    });
-    modal.tabIndex = 0;
-    modal.focus();
-}
-
-// Patch: Make traveler chip click show display modal (not edit)
-function patchTravelerChipDisplay() {
-    if (!travelerChipsDiv) return;
-    travelerChipsDiv.addEventListener('click', function(e) {
-        // Only trigger if a chip (not edit/remove button) is clicked
-        let chip = e.target;
-        while (chip && chip !== travelerChipsDiv && !chip.classList.contains('rounded-full')) {
-            chip = chip.parentElement;
-        }
-        if (!chip || chip === travelerChipsDiv) return;
-        // Ignore clicks on edit/remove buttons
-        if (e.target.closest('button')) return;
-        // Find traveler by name in chip
-        const nameSpan = chip.querySelector('span.truncate');
-        if (!nameSpan) return;
-        const name = nameSpan.textContent.trim();
-        const travelers = getSelectedTravelers();
-        const traveler = travelers.find(t => getTravelerDisplayName(t) === name);
-        if (traveler) {
-            showTravelerDisplayModal(traveler.id);
-        }
-    });
-}
-
-// Call patch after chips are rendered
-renderTravelerChips();
-patchTravelerChipDisplay(); 
+} 
