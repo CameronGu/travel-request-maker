@@ -1,0 +1,759 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Project Setup and Basic Structure",
+      "description": "Initialize the project with HTML, Tailwind CSS, and vanilla JavaScript. Set up the basic page layout and structure.",
+      "status": "done",
+      "dependencies": [],
+      "priority": "high",
+      "details": "Create index.html with proper HTML5 structure. Include Tailwind CSS via CDN. Create main.js file. Set up a responsive container with header, main content area, and footer. Add basic styling using Tailwind utility classes. Establish a consistent color scheme and typography using Tailwind's design tokens. Create a simple navigation bar with the app title.",
+      "testStrategy": "Verify the page loads correctly in multiple browsers. Confirm Tailwind CSS is working by testing utility classes. Check responsive behavior at different viewport sizes.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create HTML5 Structure with Tailwind CSS Integration",
+          "description": "Set up the initial HTML file with proper HTML5 structure and integrate Tailwind CSS via CDN.",
+          "dependencies": [],
+          "details": "1. Create index.html file with HTML5 doctype and structure\n2. Add viewport meta tag for responsiveness\n3. Include Tailwind CSS via CDN in the head section\n4. Set up basic SEO meta tags (title, description)\n5. Create empty main.js file and link it in the HTML\n6. Test that Tailwind CSS is properly loaded by adding a simple Tailwind class to a div and verifying the styling",
+          "status": "done",
+          "parentTaskId": 1
+        },
+        {
+          "id": 2,
+          "title": "Implement Page Layout Container and Typography",
+          "description": "Create the responsive container structure and establish consistent typography using Tailwind.",
+          "dependencies": [
+            1
+          ],
+          "details": "1. Add a main container div with appropriate Tailwind classes for max-width and centering\n2. Create a responsive grid/flex layout that works on different screen sizes\n3. Define typography settings using Tailwind's font classes\n4. Set up a consistent color scheme using Tailwind's color classes\n5. Create CSS variables for any custom colors if needed\n6. Test responsiveness by viewing the page at different viewport sizes",
+          "status": "done",
+          "parentTaskId": 1
+        },
+        {
+          "id": 3,
+          "title": "Build Header with Navigation Bar",
+          "description": "Create the header section with navigation bar and app title.",
+          "dependencies": [
+            2
+          ],
+          "details": "1. Create a header element with appropriate Tailwind classes for spacing and styling\n2. Add the app title with proper heading tags and styling\n3. Implement a simple navigation bar with placeholder links if needed\n4. Make the header responsive (collapsible menu for mobile)\n5. Add any necessary hover/focus states for interactive elements\n6. Test the header's appearance and responsiveness across different screen sizes",
+          "status": "done",
+          "parentTaskId": 1
+        },
+        {
+          "id": 4,
+          "title": "Implement Main Content Area Structure",
+          "description": "Set up the main content area with appropriate sections and placeholder content.",
+          "dependencies": [
+            2
+          ],
+          "details": "1. Create a main element with proper Tailwind classes for layout and spacing\n2. Divide the main content area into logical sections based on the app's requirements\n3. Add placeholder content or skeleton loaders where actual content will appear\n4. Ensure proper spacing between sections using Tailwind's margin/padding utilities\n5. Implement any necessary card or container components for content\n6. Test the layout with different amounts of content to ensure it handles variations well",
+          "status": "done",
+          "parentTaskId": 1
+        },
+        {
+          "id": 5,
+          "title": "Create Footer and Initialize JavaScript Functionality",
+          "description": "Implement the footer section and set up basic JavaScript initialization.",
+          "dependencies": [
+            2,
+            4
+          ],
+          "details": "1. Create a footer element with appropriate Tailwind classes\n2. Add copyright information, links, or other standard footer content\n3. In main.js, create an initialization function that runs when the DOM is loaded\n4. Set up event listeners for any interactive elements\n5. Implement basic JavaScript functionality to test the connection between HTML and JS\n6. Test that JavaScript is properly connected by triggering a simple UI change on page load or button click",
+          "status": "done",
+          "parentTaskId": 1
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Implement Tabbed Interface",
+      "description": "Create the tabbed interface for Hotel, Flight, and Rental Car request forms with tab switching functionality.",
+      "status": "done",
+      "dependencies": [
+        1
+      ],
+      "priority": "high",
+      "details": "Create three tabs labeled 'Hotel', 'Flight', and 'Rental Car'. Set 'Hotel' as the default active tab. Implement tab switching logic in JavaScript. Style tabs using Tailwind CSS with active/inactive states. Create empty form containers for each tab type. Implement data preservation when switching tabs by storing form data in memory. Add logic to detect unsaved changes and prompt user when switching tabs.",
+      "testStrategy": "Test tab switching functionality. Verify that the active tab is visually distinct. Confirm that form data persists when switching between tabs. Test the unsaved changes prompt functionality.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create HTML Structure for Tabbed Interface",
+          "description": "Build the basic HTML structure for the tabbed interface including tab buttons and content containers",
+          "dependencies": [],
+          "details": "Implementation details:\n1. Create a container div for the entire tabbed interface\n2. Add a tab navigation bar with three buttons labeled 'Hotel', 'Flight', and 'Rental Car'\n3. Create three empty content containers with appropriate IDs for each tab type\n4. Set the 'Hotel' tab and its content container as active by default using CSS classes\n5. Use semantic HTML where appropriate (nav, section, etc.)\n6. Add necessary data attributes to connect tab buttons with their respective content containers\n\nTesting approach:\n- Verify all HTML elements render correctly\n- Check that the default tab appears active\n- Validate HTML structure with accessibility tools",
+          "status": "done",
+          "parentTaskId": 2
+        },
+        {
+          "id": 2,
+          "title": "Style Tabs with Tailwind CSS",
+          "description": "Apply Tailwind CSS styling to the tabbed interface with clear active/inactive states",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation details:\n1. Style the tab container with appropriate width, padding and borders\n2. Style tab buttons with padding, margins, and hover effects\n3. Create distinct active/inactive states for tabs using Tailwind classes\n   - Active: different background color, bold text, bottom border\n   - Inactive: lighter color, regular text weight\n4. Style content containers with appropriate padding and borders\n5. Implement responsive design for different screen sizes\n6. Ensure only the active tab's content is visible\n\nTesting approach:\n- Test appearance in different browsers\n- Verify responsive behavior at various screen sizes\n- Check that active/inactive states are visually distinct",
+          "status": "done",
+          "parentTaskId": 2
+        },
+        {
+          "id": 3,
+          "title": "Implement Tab Switching Logic",
+          "description": "Create JavaScript functionality to switch between tabs when clicked",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation details:\n1. Add event listeners to all tab buttons\n2. When a tab is clicked:\n   - Remove active class from currently active tab button\n   - Add active class to clicked tab button\n   - Hide all content containers\n   - Show the content container associated with the clicked tab\n3. Use data attributes to connect tab buttons with their content containers\n4. Ensure the tab switching is smooth and doesn't cause page jumps\n5. Add keyboard navigation support (tab and arrow keys)\n\nTesting approach:\n- Test clicking each tab and verify correct content displays\n- Test keyboard navigation between tabs\n- Verify that only one tab is active at a time",
+          "status": "done",
+          "parentTaskId": 2
+        },
+        {
+          "id": 4,
+          "title": "Implement Form Data Preservation",
+          "description": "Create functionality to store form data in memory when switching between tabs",
+          "dependencies": [
+            3
+          ],
+          "details": "Implementation details:\n1. Create a JavaScript object to store form data for each tab type\n2. Before switching tabs, capture all form field values from the current tab and store them in memory\n3. When switching to a tab, populate its form fields with any previously stored values\n4. Implement functions to:\n   - Serialize form data to JavaScript objects\n   - Deserialize stored data back to form fields\n5. Ensure data types are preserved correctly (dates, numbers, etc.)\n\nTesting approach:\n- Fill out form fields, switch tabs, then return to verify data persists\n- Test with different data types (text, numbers, dates, checkboxes)\n- Test edge cases like partially completed forms",
+          "status": "done",
+          "parentTaskId": 2
+        },
+        {
+          "id": 5,
+          "title": "Add Unsaved Changes Detection",
+          "description": "Implement logic to detect unsaved changes and prompt user when switching tabs",
+          "dependencies": [
+            3,
+            4
+          ],
+          "details": "Implementation details:\n1. Track the initial state of each form when first loaded or after submission\n2. Compare current form state with initial state to detect changes\n3. Before allowing tab switch, check if current form has unsaved changes\n4. If unsaved changes exist:\n   - Show a confirmation dialog asking if user wants to discard changes\n   - Allow user to cancel tab switch or proceed (discarding changes)\n5. If user confirms switch, update stored form data before switching\n6. Add a visual indicator (like an asterisk) next to tabs with unsaved changes\n\nTesting approach:\n- Make changes to a form and attempt to switch tabs\n- Verify confirmation dialog appears with correct options\n- Test both confirming and canceling the dialog\n- Verify visual indicators appear correctly for tabs with unsaved changes",
+          "status": "done",
+          "parentTaskId": 2
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Build Traveler Management System",
+      "description": "Implement the traveler selection, addition, and management functionality with localStorage persistence.",
+      "status": "in-progress",
+      "dependencies": [
+        1
+      ],
+      "priority": "high",
+      "details": "Create a traveler data structure with all required fields from the PRD. Implement a custom combobox for traveler selection with search functionality. Build an 'Add New Traveler' modal form with all fields specified in the PRD. Create traveler chip/tag display for selected travelers. Implement editing functionality for traveler details that updates all requests using that traveler. Add uniqueness validation for name, email, and phone. Implement localStorage saving and loading for the global traveler list. Add 'Reset Travelers' button to clear localStorage. Include a privacy notice about local data storage. Prevent duplicate selection of travelers in a request.",
+      "testStrategy": "Test adding new travelers via the modal. Verify traveler search functionality in the combobox. Test editing traveler details and confirm changes propagate to all requests using that traveler. Test removing travelers from requests. Confirm that traveler data persists in localStorage. Verify that the 'Reset Travelers' button clears localStorage. Test uniqueness validation for name, email, and phone. Verify prevention of duplicate traveler selection in a request.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create Traveler Data Structure and Storage Service",
+          "description": "Define the traveler data model and implement a service for localStorage persistence",
+          "dependencies": [],
+          "details": "Create a Traveler interface with all required fields from the PRD (name, age, passport details, etc.). Implement a TravelerService class with methods for CRUD operations (add, get, update, delete) that interact with localStorage. Include methods for saving the entire traveler list, loading travelers on application start, and clearing all travelers. Add proper error handling and data validation.",
+          "status": "done",
+          "testStrategy": "Unit test the TravelerService with mock localStorage. Verify all CRUD operations work correctly and data persistence functions as expected."
+        },
+        {
+          "id": 2,
+          "title": "Implement Traveler Selection Dropdown with Search",
+          "description": "Create a dropdown component for selecting existing travelers with search functionality",
+          "dependencies": [
+            1
+          ],
+          "details": "Build a reusable dropdown component that displays the list of travelers from the TravelerService. Implement search functionality that filters travelers as the user types. Display traveler names and basic identifying information in the dropdown. Include a 'Add New Traveler' option at the bottom of the dropdown. Style according to the design system and ensure keyboard accessibility.",
+          "status": "done",
+          "testStrategy": "Test the dropdown with various search terms. Verify filtering works correctly and that all travelers are displayed initially. Test keyboard navigation and selection behavior."
+        },
+        {
+          "id": 3,
+          "title": "Build 'Add New Traveler' Modal Form",
+          "description": "Create a modal form with all required traveler fields for adding new travelers",
+          "dependencies": [
+            1
+          ],
+          "details": "Implement a modal component with a form containing all traveler fields specified in the PRD. Include proper validation for all fields (required fields, format validation for passport numbers, dates, etc.). Add form submission handling that creates a new traveler via the TravelerService. Ensure the form is accessible and provides clear validation feedback. Include a privacy notice about local data storage at the bottom of the form. Add uniqueness validation for name, email, and phone fields.",
+          "status": "done",
+          "testStrategy": "Test form validation with valid and invalid inputs. Verify new travelers are correctly added to localStorage when the form is submitted. Test modal opening/closing behavior. Verify uniqueness validation for name, email, and phone."
+        },
+        {
+          "id": 4,
+          "title": "Create Traveler Chip/Tag Display Component",
+          "description": "Implement a chip/tag component to display selected travelers with remove and edit functionality",
+          "dependencies": [
+            1
+          ],
+          "details": "Build a traveler chip/tag component that displays traveler name and basic information. Include remove and edit icons on each chip. Implement remove functionality to delete the traveler from the current request only. Connect edit icon to open the traveler modal for editing the master list entry. Ensure changes to a traveler propagate to all requests using that traveler. Style the chips according to the design system with appropriate spacing and typography. Ensure the component is responsive and displays well on different screen sizes.",
+          "status": "done",
+          "testStrategy": "Test the chip rendering with different traveler data. Verify the remove functionality correctly removes travelers from the current request only. Test that editing a traveler updates all requests using that traveler. Test responsive behavior on different screen sizes."
+        },
+        {
+          "id": 5,
+          "title": "Implement Traveler Editing and Management Controls",
+          "description": "Add editing functionality for traveler details and management controls",
+          "dependencies": [
+            1,
+            6,
+            3,
+            4
+          ],
+          "details": "Implement edit functionality that updates the master traveler list and propagates changes to all requests using that traveler. Add a 'Reset Travelers' button in the application settings that clears localStorage after confirmation. Connect all components together: selecting a traveler from the combobox should add them to the selected travelers display, editing should update the master list and all affected requests, and adding a new traveler should add them to the master list and select them for the current request. Implement proper state management to keep the UI in sync with the data layer. Add logic to prevent duplicate selection of travelers in a request.",
+          "status": "pending",
+          "testStrategy": "Perform integration testing of the complete traveler management flow. Test editing a traveler and verify changes propagate to all requests using that traveler. Test the reset functionality and confirm it properly clears localStorage. Verify that duplicate traveler selection is prevented in a request."
+        },
+        {
+          "id": 6,
+          "title": "Implement Custom Traveler Combobox (Searchable Dropdown)",
+          "description": "Replace the native select and search input with a custom combobox: a single input that opens a filtered dropdown list as the user types, supports keyboard/mouse selection, and always shows 'Add New Traveler' at the bottom. Ensure accessibility and smooth UX.",
+          "details": "Use a single input for traveler selection. Show filtered dropdown as user types. Support keyboard navigation and mouse selection. Always show 'Add New Traveler' at the bottom. On selection, update current traveler. Close dropdown on selection, blur, or esc. Style with Tailwind and ensure accessibility.",
+          "status": "done",
+          "dependencies": [],
+          "parentTaskId": 3
+        },
+        {
+          "id": 7,
+          "title": "Implement Traveler Uniqueness Validation",
+          "description": "Add validation to ensure travelers are unique based on name, email, and phone",
+          "dependencies": [
+            1,
+            3
+          ],
+          "details": "Extend the TravelerService to validate uniqueness of travelers based on name, email, and phone number. Implement validation logic in the 'Add New Traveler' form to check against existing travelers. Add appropriate error messages when a user attempts to add a duplicate traveler. Update the edit functionality to maintain uniqueness constraints when modifying traveler details.",
+          "status": "pending",
+          "testStrategy": "Test adding travelers with duplicate name, email, or phone and verify appropriate error messages. Test editing travelers to create potential duplicates and verify validation prevents this. Verify that uniqueness checks are case-insensitive and handle whitespace appropriately."
+        },
+        {
+          "id": 8,
+          "title": "Implement Multi-Traveler Selection for Requests",
+          "description": "Update the traveler selection system to support selecting multiple travelers for a single request",
+          "dependencies": [
+            2,
+            4,
+            6
+          ],
+          "details": "Modify the traveler selection combobox to support multi-select functionality. Update the state management to maintain a list of selected travelers for each request. Implement logic to prevent duplicate selection of travelers in a request. Connect the combobox selection to the traveler chip display component. Ensure the UI clearly indicates which travelers are selected for the current request.",
+          "status": "pending",
+          "testStrategy": "Test selecting multiple travelers for a request. Verify that duplicate selection is prevented. Test removing travelers from the selection. Verify that the UI accurately reflects the current selection state."
+        },
+        {
+          "id": 9,
+          "title": "Define Traveler Data Structure",
+          "description": "Create the data model for travelers with all necessary fields and validation rules",
+          "dependencies": [],
+          "details": "Define a comprehensive data structure for travelers including fields like name, contact information, travel preferences, identification details, and any other relevant information. Establish validation rules for each field and determine how the data will be stored and retrieved.\n<info added on 2025-05-04T17:37:38.557Z>\nDefine a comprehensive data structure for travelers including fields like name, contact information, travel preferences, identification details, and any other relevant information. Establish validation rules for each field and determine how the data will be stored and retrieved.\n\nThe Traveler data structure has been implemented according to the PRD specifications. The implementation includes:\n\n1. Updated Traveler typedef in src/js/travelerService.js with all required fields:\n   - firstName, lastName (required)\n   - preferredName (optional)\n   - primaryPhone and other contact information\n   - Travel preferences and identification details\n\n2. Validation logic has been updated to match the new field requirements, ensuring data integrity when travelers are created or modified.\n\n3. Updated the TravelerCombobox component and all traveler display logic in src/js/main.js to properly render the new fields and display traveler names according to specifications.\n\n4. Verified compatibility of all traveler selection and display logic with the new data structure to ensure seamless integration.\n\nNote: The modal UI for adding new travelers has not been implemented yet and will be addressed in a subsequent task.\n</info added on 2025-05-04T17:37:38.557Z>",
+          "status": "done"
+        },
+        {
+          "id": 10,
+          "title": "Implement Traveler Selection UI",
+          "description": "Create the interface for viewing and selecting travelers from a list",
+          "dependencies": [
+            9
+          ],
+          "details": "Design and implement a UI component that displays all travelers in a list or grid format with search, filter, and sort capabilities. Include visual indicators for traveler status and implement the selection mechanism that will be used when adding travelers to trips.\n<info added on 2025-05-04T22:16:09.295Z>\nDesign and implement a UI component that displays all travelers in a list or grid format with search, filter, and sort capabilities. Include visual indicators for traveler status and implement the selection mechanism that will be used when adding travelers to trips.\n\nThe implementation will focus on enhancing the existing TravelerCombobox class in src/js/main.js to provide a searchable dropdown with additional filter and sort capabilities. The current codebase already includes the TravelerCombobox class for searchable dropdown selection, renderTravelerChips function for displaying selected travelers, and TravelerService in src/js/travelerService.js for data management and localStorage persistence.\n\nImplementation steps include:\n1. Enhance TravelerCombobox with filter options (by nationality, status) and sorting capabilities (by last name)\n2. Add visual indicators for traveler status in both the dropdown and chip display\n3. Improve UI/UX with keyboard accessibility and responsive design using Tailwind\n4. Ensure the selection mechanism properly updates formData.selectedTravelers and prevents duplicates\n5. Test thoroughly with multiple travelers, search/filter functionality, and selection/removal operations\n\nThe implementation will primarily modify src/js/main.js for UI components and may require updates to src/js/travelerService.js if new traveler status fields or filters are needed. Special attention will be given to accessibility, responsive design, and efficient handling of large traveler lists.\n</info added on 2025-05-04T22:16:09.295Z>",
+          "status": "done"
+        },
+        {
+          "id": 11,
+          "title": "Build Traveler Form Component",
+          "description": "Develop the form for adding and editing traveler information",
+          "dependencies": [
+            9
+          ],
+          "details": "Create a comprehensive form component with all fields from the traveler data structure. Implement client-side validation, error handling, and appropriate input types for each field. Ensure the form can be used for both creating new travelers and editing existing ones.",
+          "status": "done"
+        },
+        {
+          "id": 12,
+          "title": "Create Traveler Display Component",
+          "description": "Build a component to show detailed traveler information",
+          "dependencies": [
+            9
+          ],
+          "details": "Develop a component that displays all traveler information in a readable format. Include sections for personal details, travel documents, preferences, and trip history. Add functionality to print or export traveler details when needed.",
+          "status": "done"
+        },
+        {
+          "id": 13,
+          "title": "Implement Traveler Editing Functionality",
+          "description": "Add the ability to edit, update, and manage traveler records",
+          "dependencies": [
+            9,
+            11,
+            12
+          ],
+          "details": "Connect the form component to the data layer to enable creating, updating, and deleting traveler records. Implement proper state management to handle changes and ensure data consistency. Add confirmation dialogs for destructive actions and success/error notifications.",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Implement Hotel Request Form",
+      "description": "Create the Hotel request form with all required fields and basic validation.",
+      "status": "pending",
+      "dependencies": [
+        2
+      ],
+      "priority": "medium",
+      "details": "Build form with fields: Check-In Date (required), Check-Out Date (required), Hotel Location Type dropdown (required), Target Address, Radius from Address, and Traveler Notes. Implement date pickers for Check-In and Check-Out dates. Add validation to ensure Check-Out date is after Check-In date. Create appropriate input types for each field according to the PRD. Add tooltips for fields as specified in the PRD. Implement basic field validation with error messages. Include traveler selection combobox that allows selecting multiple travelers from the master list, with search functionality and 'Add New Traveler' option. Display selected travelers as chips/tags with remove and edit options.",
+      "testStrategy": "Test form submission with valid and invalid data. Verify date validation works correctly. Check that required fields are properly enforced. Test tooltips functionality. Test traveler selection, including search, adding new travelers, and removing selected travelers. Verify that editing a traveler updates all requests using that traveler.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create basic form structure and fields",
+          "description": "Implement the core structure of the Hotel Request Form with all required fields and layout",
+          "dependencies": [],
+          "details": "Create the form container and add all required fields including: guest information fields, check-in/check-out date fields (without validation yet), room preference options, special requests textarea, and submit button. Implement basic styling and responsive layout. Add tooltips for fields that need additional explanation. Set up the form state management to capture user inputs.",
+          "status": "pending"
+        },
+        {
+          "id": 2,
+          "title": "Implement date picker with validation logic",
+          "description": "Add date picker components with proper validation for check-in and check-out dates",
+          "dependencies": [
+            1
+          ],
+          "details": "Integrate date picker components for check-in and check-out fields. Implement logic to ensure check-out date is after check-in date. Add minimum date validation to prevent selecting dates in the past. Calculate and display the total nights based on selected dates. Implement conditional logic to show/hide extended stay options when stay exceeds 7 days. Ensure proper date formatting and user-friendly interaction.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "Implement field validation and error handling",
+          "description": "Add comprehensive validation for all form fields with appropriate error messages",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implement validation for all required fields (name, email, phone, dates). Add email format validation. Implement phone number format validation. Create error message display system that shows validation errors inline with the respective fields. Add form submission validation to prevent submission with invalid data. Implement success message or redirect after successful form submission. Test all validation scenarios thoroughly.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Integrate traveler selection component",
+          "description": "Add traveler selection functionality to the hotel request form",
+          "dependencies": [
+            1,
+            3
+          ],
+          "details": "Integrate the traveler selection combobox component into the hotel request form. Configure it to allow multiple traveler selection from the master list. Implement search functionality within the combobox. Ensure the 'Add New Traveler' option is always available at the bottom of the dropdown. Connect the selection to display selected travelers as chips/tags below the combobox. Implement remove functionality on the chips to remove travelers from the current request only. Link edit functionality to open the traveler edit modal. Add logic to prevent duplicate traveler selection in the request.",
+          "status": "pending",
+          "testStrategy": "Test selecting multiple travelers from the combobox. Verify search functionality works correctly. Test adding new travelers and confirm they're added to both the master list and current request. Test removing travelers from the request. Verify that duplicate selection is prevented. Test that editing a traveler updates all requests using that traveler."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Implement Flight Request Form",
+      "description": "Create the Flight request form with all required fields and conditional logic.",
+      "status": "pending",
+      "dependencies": [
+        2
+      ],
+      "priority": "medium",
+      "details": "Build form with fields: Trip Type dropdown (required), Departure Date (required), Return Date (conditional), Departure Airport (required), Arrival Airport (required), Preferred Travel Time, Additional Flight Notes, and Rental Car Needed radio buttons (required). Implement date pickers for Departure and Return dates. Add validation to ensure Return date is after Departure date for Round-Trip selection. Show/hide Return Date based on Trip Type selection. Add conditional logic to show Rental Car form section if 'Yes' is selected for 'Rental Car Needed'. Implement basic field validation with error messages. Include traveler selection combobox that allows selecting multiple travelers from the master list, with search functionality and 'Add New Traveler' option. Display selected travelers as chips/tags with remove and edit options.",
+      "testStrategy": "Test form with different Trip Type selections. Verify conditional display of Return Date field. Test date validation. Confirm that required fields are enforced. Test the conditional display of Rental Car section. Test traveler selection, including search, adding new travelers, and removing selected travelers. Verify that editing a traveler updates all requests using that traveler.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create basic flight request form structure",
+          "description": "Implement the core form structure with all required fields for flight requests",
+          "dependencies": [],
+          "details": "Create a form component with fields for: traveler information (name, employee ID), destination, purpose of travel, trip type (one-way/round-trip), departure date, and submit button. Include basic styling and layout for the form. Set up form state management using React hooks.",
+          "status": "pending"
+        },
+        {
+          "id": 2,
+          "title": "Implement trip type conditional logic",
+          "description": "Add logic to show/hide return date field based on selected trip type",
+          "dependencies": [
+            1
+          ],
+          "details": "Create radio buttons for trip type selection (one-way/round-trip). Implement conditional rendering to display the return date field only when 'round-trip' is selected. Ensure form validation accounts for both scenarios and required fields update accordingly.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "Implement date picker with validation",
+          "description": "Add date picker components with appropriate validation rules",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Integrate date picker components for departure and return dates. Implement validation to ensure: departure date is not in the past, return date is after departure date (for round trips), and both dates are valid. Add error messages for invalid date selections. Ensure mobile-friendly date selection.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Implement rental car section with conditional display",
+          "description": "Add rental car section that can be toggled on/off by the user",
+          "dependencies": [
+            1
+          ],
+          "details": "Create a checkbox to indicate whether a rental car is needed. When checked, display additional fields for: car size preference, pickup date, return date, and any special requirements. Implement validation for these fields and ensure they're only required when the rental car option is selected.",
+          "status": "pending"
+        },
+        {
+          "id": 5,
+          "title": "Integrate traveler selection component",
+          "description": "Add traveler selection functionality to the flight request form",
+          "dependencies": [
+            1
+          ],
+          "details": "Integrate the traveler selection combobox component into the flight request form. Configure it to allow multiple traveler selection from the master list. Implement search functionality within the combobox. Ensure the 'Add New Traveler' option is always available at the bottom of the dropdown. Connect the selection to display selected travelers as chips/tags below the combobox. Implement remove functionality on the chips to remove travelers from the current request only. Link edit functionality to open the traveler edit modal. Add logic to prevent duplicate traveler selection in the request.",
+          "status": "pending",
+          "testStrategy": "Test selecting multiple travelers from the combobox. Verify search functionality works correctly. Test adding new travelers and confirm they're added to both the master list and current request. Test removing travelers from the request. Verify that duplicate selection is prevented. Test that editing a traveler updates all requests using that traveler."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Implement Rental Car Request Form",
+      "description": "Create the Rental Car request form with all required fields and validation.",
+      "status": "pending",
+      "dependencies": [
+        2
+      ],
+      "priority": "medium",
+      "details": "Build form with fields: Pickup Location (required), Drop-Off Location (required), Pickup Date (required), Drop-Off Date (required), Pickup Time (required), Drop-Off Time (required), and Traveler Notes. Implement date pickers for Pickup and Drop-Off dates. Add time input fields with proper formatting (HH:MM AM/PM). Add validation to ensure Drop-Off date/time is after Pickup date/time. Implement basic field validation with error messages. Include traveler selection combobox that allows selecting multiple travelers from the master list, with search functionality and 'Add New Traveler' option. Display selected travelers as chips/tags with remove and edit options.",
+      "testStrategy": "Test form submission with valid and invalid data. Verify date and time validation works correctly. Check that required fields are properly enforced. Test with various date and time combinations. Test traveler selection, including search, adding new travelers, and removing selected travelers. Verify that editing a traveler updates all requests using that traveler.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create basic rental car form structure and fields",
+          "description": "Implement the core form structure with all required input fields for the rental car request",
+          "dependencies": [],
+          "details": "Create a form with the following fields: customer information (name, contact details), car preferences (type, model, etc.), pickup location, dropoff location, additional options (insurance, GPS, etc.), and placeholder sections for date/time inputs. Include submit and reset buttons. Style the form with appropriate CSS for layout and responsiveness.",
+          "status": "pending"
+        },
+        {
+          "id": 2,
+          "title": "Implement date and time picker components",
+          "description": "Add date and time picker functionality for pickup and dropoff scheduling",
+          "dependencies": [
+            1
+          ],
+          "details": "Replace the date/time placeholders with proper date and time picker components. Ensure they have appropriate min/max values, default selections, and user-friendly interfaces. Implement both pickup date/time and dropoff date/time pickers with consistent styling and behavior across browsers. Consider accessibility requirements for the date/time inputs.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "Develop date/time validation logic and error handling",
+          "description": "Create validation to ensure dropoff date/time is after pickup date/time with appropriate error messages",
+          "dependencies": [
+            2
+          ],
+          "details": "Implement JavaScript validation to check that the dropoff date/time is chronologically after the pickup date/time. Add real-time validation feedback as users select dates. Create clear, user-friendly error messages that appear when validation fails. Prevent form submission when date/time validation errors exist. Include handling for edge cases like same-day rentals with minimum rental duration requirements.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Integrate traveler selection component",
+          "description": "Add traveler selection functionality to the rental car request form",
+          "dependencies": [
+            1
+          ],
+          "details": "Integrate the traveler selection combobox component into the rental car request form. Configure it to allow multiple traveler selection from the master list. Implement search functionality within the combobox. Ensure the 'Add New Traveler' option is always available at the bottom of the dropdown. Connect the selection to display selected travelers as chips/tags below the combobox. Implement remove functionality on the chips to remove travelers from the current request only. Link edit functionality to open the traveler edit modal. Add logic to prevent duplicate traveler selection in the request.",
+          "status": "pending",
+          "testStrategy": "Test selecting multiple travelers from the combobox. Verify search functionality works correctly. Test adding new travelers and confirm they're added to both the master list and current request. Test removing travelers from the request. Verify that duplicate selection is prevented. Test that editing a traveler updates all requests using that traveler."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Implement Form Reset and Data Management",
+      "description": "Add functionality to clear forms and manage form data across the application.",
+      "status": "pending",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "priority": "medium",
+      "details": "Create a 'Clear Form' button that resets all inputs in the current tab. Add confirmation dialog before clearing to prevent accidental data loss. Implement data structure to store form data for each tab type. Create functions to populate forms from stored data when switching tabs. Ensure form data is preserved in memory during tab switches. Implement functions to validate form data before submission or summary generation. Update data management to handle the separation between master traveler list and selected travelers for each request.",
+      "testStrategy": "Test 'Clear Form' button functionality. Verify confirmation dialog appears. Check that form data is preserved when switching tabs. Test form validation with various input combinations. Verify that the master traveler list remains intact when clearing a form. Test that selected travelers for each request are properly managed.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement Clear Form Functionality with Confirmation Dialog",
+          "description": "Create a mechanism to reset form fields with a confirmation dialog to prevent accidental data loss",
+          "dependencies": [],
+          "details": "Develop a reusable clear form function that can be applied to all forms in the application. Implement a confirmation dialog that appears when the user attempts to clear the form, asking for confirmation before proceeding. The dialog should clearly communicate what data will be lost and provide options to confirm or cancel the action. Ensure the function properly resets all form fields to their default state.",
+          "status": "pending"
+        },
+        {
+          "id": 2,
+          "title": "Implement Form Data Persistence During Tab Switching",
+          "description": "Create a system to preserve form data when users navigate between tabs without submitting",
+          "dependencies": [
+            1
+          ],
+          "details": "Design and implement a state management solution that temporarily stores form data when a user switches between tabs. This should prevent data loss during navigation. Consider using local storage, session storage, or state management libraries depending on the application architecture. Ensure the solution handles all form field types including text inputs, checkboxes, radio buttons, and file uploads. Test thoroughly with various navigation patterns.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "Develop Form Validation Service",
+          "description": "Create a centralized validation service to handle form validation across the application",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Design and implement a reusable validation service that can be used across all forms. The service should support common validation rules (required fields, email format, numeric values, etc.) as well as custom validation logic. Implement real-time validation feedback for users. Ensure the validation service integrates with both the clear form functionality and the data persistence system. Document the validation API for other developers to use.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Update data management for traveler selection",
+          "description": "Modify data management to handle the separation between master traveler list and selected travelers",
+          "dependencies": [
+            2
+          ],
+          "details": "Update the data management system to maintain a clear separation between the master traveler list and the travelers selected for each request. Implement data structures to track selected travelers per request. Ensure that clearing a form removes travelers from the current request selection but not from the master list. Update the form data persistence to properly save and restore selected travelers when switching tabs.",
+          "status": "pending",
+          "testStrategy": "Test that clearing a form removes travelers from the current request selection but not from the master list. Verify that selected travelers are properly saved and restored when switching tabs. Test with multiple requests having different traveler selections."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Create Summary Output Generation",
+      "description": "Implement functionality to generate human-readable summaries of request data.",
+      "status": "pending",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "priority": "high",
+      "details": "Create a 'Generate Summary' button. Implement logic to collect data from all form fields and selected travelers. Format data into a human-readable, email-friendly format with clear section headers. Add a 'Copy to Clipboard' button using the Clipboard API. Create a collapsible section to display raw JSON (optional). Generate Base64-encoded data block and include it in the summary as a fallback. Style the summary output to be visually distinct and easy to read. Sanitize all dynamic content to prevent XSS vulnerabilities. Update summary generation to properly handle multiple selected travelers per request.",
+      "testStrategy": "Test summary generation with various form data combinations. Verify 'Copy to Clipboard' functionality works. Check that the Base64 encoding is correct and can be decoded. Test with special characters and edge cases to ensure proper sanitization. Test with multiple selected travelers to ensure they're properly included in the summary.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Data Collection and Formatting Service",
+          "description": "Create a service to collect data from multiple sources and format it into a structured summary",
+          "dependencies": [],
+          "details": "Implement a service that gathers data from various application components, validates the data, and formats it into a consistent structure for summary display. Include error handling for missing or invalid data. The service should support different summary formats based on context.",
+          "status": "pending"
+        },
+        {
+          "id": 2,
+          "title": "Summary Display Component with Styling",
+          "description": "Develop a UI component to display the formatted summary with appropriate styling",
+          "dependencies": [
+            1
+          ],
+          "details": "Create a reusable component that renders the formatted summary data with proper styling. Implement responsive design to ensure the summary displays correctly on different screen sizes. Include options for different visual themes and layout configurations.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "Clipboard Functionality Implementation",
+          "description": "Add functionality to copy the summary to clipboard with proper user feedback",
+          "dependencies": [
+            2
+          ],
+          "details": "Implement a copy-to-clipboard feature that works across different browsers. Include visual feedback when the copy action succeeds or fails. Consider accessibility requirements and ensure keyboard shortcuts are available. Test on multiple platforms to ensure compatibility.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Base64 Encoding and Security Measures",
+          "description": "Implement Base64 encoding for data and add security measures against XSS attacks",
+          "dependencies": [
+            1,
+            3
+          ],
+          "details": "Add Base64 encoding functionality for sensitive data in the summary. Implement security measures to prevent XSS attacks, including input sanitization and output encoding. Document the security approach and conduct security testing to verify protection against common vulnerabilities.",
+          "status": "pending"
+        },
+        {
+          "id": 5,
+          "title": "Update summary generation for multiple travelers",
+          "description": "Modify summary generation to properly handle multiple selected travelers per request",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Update the summary generation logic to properly format and display multiple selected travelers for each request. Ensure travelers are clearly identified and their information is properly organized in the summary. Handle edge cases such as no travelers selected or a large number of travelers. Update the Base64 encoding to include all traveler data.",
+          "status": "pending",
+          "testStrategy": "Test summary generation with different numbers of selected travelers. Verify that all traveler information is properly included in the summary. Test edge cases such as no travelers selected or a large number of travelers."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Implement URL-Based Data Sharing",
+      "description": "Create functionality to share request data via encoded URLs and implement the view page.",
+      "status": "pending",
+      "dependencies": [
+        8
+      ],
+      "priority": "medium",
+      "details": "Implement Base64 encoding of JSON request data. Create URL encoding function to append data to query string. Add a 'Share Link' button that generates and copies a shareable URL. Create a view.html page to handle the /view endpoint. Implement query parameter parsing to extract the 'data' parameter. Add decoding logic (URL decode, Base64 decode, JSON parse). Create a simple HTML template to display the decoded request data. Implement error handling for missing or invalid data. Add sanitization to prevent XSS attacks. Update sharing functionality to properly include all selected travelers for the request.",
+      "testStrategy": "Test encoding and decoding with various data structures. Verify the generated URLs work correctly when opened. Test error handling with invalid or missing data. Check XSS protection by attempting to include script tags in the data. Test with multiple selected travelers to ensure they're properly included in the shared data.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement Data Encoding and URL Generation Service",
+          "description": "Create a service that encodes data into URL-safe format and generates shareable URLs",
+          "dependencies": [],
+          "details": "Develop a utility service that can serialize JSON data, compress it if needed, encode it to be URL-safe (base64url or similar), and generate complete URLs with the encoded data as parameters. Include size limitations and validation to prevent excessively large URLs.",
+          "status": "pending"
+        },
+        {
+          "id": 2,
+          "title": "Develop Share Link Button Functionality",
+          "description": "Create UI components and handlers for generating and sharing links",
+          "dependencies": [
+            1
+          ],
+          "details": "Implement a button component that triggers the URL generation service, provides copy-to-clipboard functionality, and optionally integrates with native share APIs. Include visual feedback for successful link generation and copying.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "Create View Page for Data Display",
+          "description": "Implement a dedicated page that can parse URL parameters and display the shared data",
+          "dependencies": [
+            1
+          ],
+          "details": "Develop a view page that extracts encoded data from URL parameters, decodes it, and renders the information in a user-friendly format. Include loading states and appropriate UI components based on the type of data being shared.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Implement Error Handling and Security Measures",
+          "description": "Add robust error handling for invalid data and implement security safeguards",
+          "dependencies": [
+            1,
+            3
+          ],
+          "details": "Add validation to prevent XSS attacks from shared data, implement graceful error handling for malformed URLs or corrupted data, set up content security policies, and add rate limiting for URL generation to prevent abuse. Include user-friendly error messages and fallback displays.",
+          "status": "pending"
+        },
+        {
+          "id": 5,
+          "title": "Update sharing for multiple travelers",
+          "description": "Modify URL sharing to properly include all selected travelers for a request",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Update the data encoding and URL generation service to properly include all selected travelers for a request. Ensure the view page can properly decode and display multiple travelers. Handle edge cases such as no travelers selected or a large number of travelers that might exceed URL length limitations. Consider implementing compression for large data sets.",
+          "status": "pending",
+          "testStrategy": "Test URL sharing with different numbers of selected travelers. Verify that all traveler information is properly included in the shared data. Test edge cases such as no travelers selected or a large number of travelers that might approach URL length limitations."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Final Integration and Testing",
+      "description": "Integrate all components, perform comprehensive testing, and optimize for performance.",
+      "status": "pending",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "priority": "high",
+      "details": "Connect all components to ensure they work together seamlessly. Test the complete user flow from traveler selection to form filling to summary generation. Optimize JavaScript for performance. Ensure responsive design works on all device sizes. Add final polish to the UI using Tailwind CSS. Implement any missing validation or error handling. Test localStorage persistence across browser sessions. Create a simple help/instructions section. Perform cross-browser testing. Add appropriate comments and documentation in the code. Verify that the traveler management system properly handles the separation between master traveler list and selected travelers for each request.",
+      "testStrategy": "Conduct end-to-end testing of the complete application. Test on multiple browsers (Chrome, Firefox, Safari, Edge). Verify responsive behavior on mobile, tablet, and desktop. Test with real user scenarios to ensure usability. Validate HTML and check for accessibility issues. Test the complete traveler management flow, including adding, editing, and selecting travelers across multiple requests.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Component Integration and Flow Testing",
+          "description": "Integrate all components and test the complete user flow from start to finish",
+          "dependencies": [],
+          "details": "Connect all previously developed components and ensure they work together seamlessly. Test all user flows including authentication, navigation, data submission, and error handling. Verify that data passes correctly between components and state management works as expected.",
+          "status": "pending"
+        },
+        {
+          "id": 2,
+          "title": "Performance Optimization",
+          "description": "Identify and resolve performance bottlenecks in the application",
+          "dependencies": [
+            1
+          ],
+          "details": "Run performance audits using tools like Lighthouse. Optimize bundle size, implement code splitting, lazy loading, and memoization where appropriate. Reduce unnecessary re-renders and optimize API calls. Measure and improve key metrics like First Contentful Paint and Time to Interactive.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "Responsive Design Verification",
+          "description": "Test application across different screen sizes and ensure proper responsive behavior",
+          "dependencies": [
+            1
+          ],
+          "details": "Test the application on various device sizes (mobile, tablet, desktop). Verify that layouts adjust appropriately, touch targets are adequately sized, and content remains accessible. Check for any overflow issues, text readability problems, or navigation difficulties on smaller screens.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Cross-browser Compatibility Testing",
+          "description": "Ensure application functions correctly across all major browsers",
+          "dependencies": [
+            1,
+            2,
+            3
+          ],
+          "details": "Test the application in Chrome, Firefox, Safari, and Edge. Verify that all features work consistently across browsers. Document and fix any browser-specific issues. Test on both desktop and mobile browsers to ensure full compatibility.",
+          "status": "pending"
+        },
+        {
+          "id": 5,
+          "title": "Documentation and Code Cleanup",
+          "description": "Finalize documentation and clean up codebase for maintainability",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "details": "Update all documentation including README, API docs, and component documentation. Remove console logs, commented-out code, and unused dependencies. Ensure consistent code formatting and naming conventions. Add appropriate comments for complex logic and create a final pull request with a comprehensive description of all changes.",
+          "status": "pending"
+        },
+        {
+          "id": 6,
+          "title": "Test traveler management integration",
+          "description": "Verify that the traveler management system properly integrates with all request forms",
+          "dependencies": [
+            1
+          ],
+          "details": "Test the complete traveler management flow across all request forms. Verify that adding, editing, and removing travelers works correctly. Test that changes to the master traveler list propagate to all requests using those travelers. Verify that clearing a form removes travelers from the current request selection but not from the master list. Test with multiple requests having different traveler selections.",
+          "status": "pending",
+          "testStrategy": "Test adding new travelers from different request forms. Verify editing a traveler updates all requests using that traveler. Test removing travelers from requests. Verify that the master traveler list remains intact when clearing forms. Test with multiple requests having different traveler selections."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Remove Global TravelerService Exposure for Production Release",
+      "description": "Remove the global window.TravelerService object exposure from the codebase before production deployment to enhance security and follow JavaScript best practices.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "high",
+      "details": "The developer should:\n1. Identify all instances where window.TravelerService is exposed globally in the codebase\n2. Refactor the code to use proper module patterns (ES modules, CommonJS, or AMD) instead of global exposure\n3. Update any code that currently references the global TravelerService object to use the proper import/require mechanisms\n4. Implement a configuration-based approach where debug/development features are only enabled in non-production environments\n5. Consider using environment variables or build flags to control whether debugging tools are included\n6. Document the proper way to access TravelerService functionality for other developers\n7. Ensure backward compatibility or provide clear migration instructions if this change affects other components\n8. Review the entire codebase for similar global exposures that should be removed before production\n\nThis task is critical for security as globally exposed services can potentially be manipulated by malicious scripts or browser extensions. It also improves code maintainability by following modern JavaScript best practices for module encapsulation.",
+      "testStrategy": "Testing should include:\n1. Static code analysis to verify all instances of window.TravelerService have been removed\n2. Unit tests to confirm TravelerService functionality still works correctly after refactoring\n3. Integration tests to ensure components that previously used the global object still function properly\n4. Environment-specific tests to verify the service is accessible in development but not exposed in production builds\n5. Browser console checks to confirm the global object is not accessible in production mode\n6. Security scanning tools to detect any remaining global object exposures\n7. Code review by another team member to ensure the refactoring follows best practices\n8. Performance testing to verify the refactoring doesn't negatively impact application speed\n9. Create automated tests that specifically check for the absence of window.TravelerService in production builds\n10. Document the testing process for future reference when similar security-related refactoring is needed",
+      "subtasks": []
+    }
+  ],
+  "metadata": {
+    "projectName": "Travel Request Form Generator",
+    "totalTasks": 10,
+    "sourceFile": "/home/cameron/Projects/travel-request-maker/scripts/prd.txt",
+    "generatedAt": "2023-11-16"
+  }
+}

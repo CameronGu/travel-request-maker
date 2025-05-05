@@ -1097,7 +1097,7 @@ function renderTravelerChips() {
         editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6m-2 2h6" /></svg>';
         editBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            showEditTravelerModal(traveler.id);
+            showTravelerDisplayModal(traveler.id);
         });
         chip.appendChild(editBtn);
         // Remove icon
@@ -1389,5 +1389,127 @@ function showEditTravelerModal(travelerId) {
     modal.focus();
 }
 
-// Initial render of traveler chips
-renderTravelerChips(); 
+// Traveler Display Component
+function showTravelerDisplayModal(travelerId) {
+    const traveler = TravelerService.getAll().find(t => t.id === travelerId);
+    if (!traveler) return;
+    const container = document.getElementById('travelerModalContainer');
+    container.innerHTML = '';
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center';
+    overlay.tabIndex = -1;
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('role', 'dialog');
+    const modal = document.createElement('div');
+    modal.className = 'bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative';
+    modal.innerHTML = `
+      <h2 class="text-2xl font-bold mb-4">Traveler Details</h2>
+      <div class="space-y-4">
+        <div>
+          <span class="font-semibold">Name:</span> ${getTravelerDisplayName(traveler)}
+        </div>
+        <div>
+          <span class="font-semibold">Preferred Name:</span> ${traveler.preferredName || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Primary Phone:</span> ${traveler.primaryPhone || '-'} (${traveler.primaryPhoneCountry || '-'})
+        </div>
+        <div>
+          <span class="font-semibold">Primary Email:</span> ${traveler.primaryEmail || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Secondary Email:</span> ${traveler.secondaryEmail || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Date of Birth:</span> ${traveler.dateOfBirth || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Gender:</span> ${traveler.gender || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Passport Issuing Country:</span> ${traveler.passportIssuingCountry || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Nationality:</span> ${traveler.nationality || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Passport Number:</span> ${traveler.passportNumber || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Notes:</span> ${traveler.notes || '-'}
+        </div>
+        <div>
+          <span class="font-semibold">Trip History:</span> <span class="italic text-gray-500">(Not implemented)</span>
+        </div>
+      </div>
+      <div class="flex justify-end space-x-2 mt-6">
+        <button id="printTravelerBtn" class="btn-secondary">Print</button>
+        <button id="exportTravelerBtn" class="btn-secondary">Export JSON</button>
+        <button id="closeTravelerDisplayModal" class="btn-primary">Close</button>
+      </div>
+    `;
+    overlay.appendChild(modal);
+    container.appendChild(overlay);
+    // Print functionality
+    modal.querySelector('#printTravelerBtn').addEventListener('click', () => {
+        const printWindow = window.open('', '', 'width=800,height=600');
+        printWindow.document.write('<html><head><title>Traveler Details</title>');
+        printWindow.document.write('<link href="./dist/output.css" rel="stylesheet">');
+        printWindow.document.write('</head><body class="p-8">');
+        printWindow.document.write(`<h2 class='text-2xl font-bold mb-4'>Traveler Details</h2>`);
+        printWindow.document.write(modal.querySelector('.space-y-4').outerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    });
+    // Export JSON functionality
+    modal.querySelector('#exportTravelerBtn').addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(traveler, null, 2));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute('href', dataStr);
+        dlAnchor.setAttribute('download', `traveler-${traveler.id}.json`);
+        document.body.appendChild(dlAnchor);
+        dlAnchor.click();
+        document.body.removeChild(dlAnchor);
+    });
+    // Close modal
+    modal.querySelector('#closeTravelerDisplayModal').addEventListener('click', () => {
+        container.innerHTML = '';
+    });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            container.innerHTML = '';
+        }
+    });
+    modal.tabIndex = 0;
+    modal.focus();
+}
+
+// Patch: Make traveler chip click show display modal (not edit)
+function patchTravelerChipDisplay() {
+    if (!travelerChipsDiv) return;
+    travelerChipsDiv.addEventListener('click', function(e) {
+        // Only trigger if a chip (not edit/remove button) is clicked
+        let chip = e.target;
+        while (chip && chip !== travelerChipsDiv && !chip.classList.contains('rounded-full')) {
+            chip = chip.parentElement;
+        }
+        if (!chip || chip === travelerChipsDiv) return;
+        // Ignore clicks on edit/remove buttons
+        if (e.target.closest('button')) return;
+        // Find traveler by name in chip
+        const nameSpan = chip.querySelector('span.truncate');
+        if (!nameSpan) return;
+        const name = nameSpan.textContent.trim();
+        const travelers = getSelectedTravelers();
+        const traveler = travelers.find(t => getTravelerDisplayName(t) === name);
+        if (traveler) {
+            showTravelerDisplayModal(traveler.id);
+        }
+    });
+}
+
+// Call patch after chips are rendered
+renderTravelerChips();
+patchTravelerChipDisplay(); 
