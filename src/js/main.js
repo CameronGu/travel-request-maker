@@ -1625,4 +1625,6 @@ function showEditTravelerModal(travelerId, onSave, fromManageTravelers = false, 
     });
     modal.tabIndex = 0;
     modal.focus();
-} 
+}
+
+module.exports = { serializeForm, deserializeForm, validatePhoneNumber, formatPhoneForStorage, generateSummary }; 
