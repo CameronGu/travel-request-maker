@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  testMatch: ['**/__tests__/**/*.js?(x)', '**/?(*.)+(spec|test).js?(x)'],
+  testMatch: ['**/__tests__/**/*.js?(x)', '**/?(*.)+(test).js?(x)'],
   testPathIgnorePatterns: ['/tests/.*\\.spec\\.js$', '/tests-examples/.*\\.spec\\.js$'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
