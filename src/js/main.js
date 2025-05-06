@@ -101,8 +101,10 @@ function deserializeForm(tabType, data) {
     
     formElements.forEach(element => {
         if (element.name in data) {
-            if (element.type === 'checkbox' || element.type === 'radio') {
+            if (element.type === 'checkbox') {
                 element.checked = data[element.name];
+            } else if (element.type === 'radio') {
+                element.checked = (element.value === data[element.name]);
             } else {
                 element.value = data[element.name];
             }
@@ -253,6 +255,13 @@ async function getSortedCountryCodes() {
         .sort((a, b) => a.name.localeCompare(b.name));
     return [...top, ...rest];
 }
+
+// Centralized traveler requirements by request type
+const REQUIREMENTS_BY_TYPE = {
+    hotel: [], // No required traveler fields for hotel, but structure is ready for future
+    flight: ['dateOfBirth'], // Example for flight
+    car: []
+};
 
 // --- Country Dropdown: Keyboard Navigation and Retain Selection ---
 async function createCountryCodeDropdown(selectedCode = 'US') {
@@ -769,6 +778,11 @@ function init() {
             }
         });
 
+        // Set default values for hotel form if not present
+        if (!formData.hotel.locationBehavior) formData.hotel.locationBehavior = 'general';
+        if (!formData.hotel.radius) formData.hotel.radius = '10';
+        if (!initialFormData.hotel.locationBehavior) initialFormData.hotel.locationBehavior = 'general';
+        if (!initialFormData.hotel.radius) initialFormData.hotel.radius = '10';
         // Load the current tab's form data
         deserializeForm(currentTab, formData[currentTab]);
 
@@ -794,6 +808,89 @@ function init() {
         // Set up Manage Travelers button event listener after DOM is ready
         if (manageTravelersBtn) {
             manageTravelersBtn.addEventListener('click', showManageTravelersModal);
+        }
+
+        // Hotel form field validation and error handling
+        const hotelForm = document.querySelector('#hotelForm form');
+        const travelerSelectorErrorId = 'hotelTravelerSelectorError';
+        let travelerSelectorError = document.getElementById(travelerSelectorErrorId);
+        if (!travelerSelectorError) {
+            const selectorDiv = document.getElementById('hotelTravelerSelector');
+            travelerSelectorError = document.createElement('div');
+            travelerSelectorError.id = travelerSelectorErrorId;
+            travelerSelectorError.className = 'text-red-600 text-sm mt-1';
+            travelerSelectorError.setAttribute('aria-live', 'polite');
+            travelerSelectorError.style.display = 'none';
+            selectorDiv && selectorDiv.parentNode.insertBefore(travelerSelectorError, selectorDiv.nextSibling);
+        }
+
+        function showError(el, msg) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+        function clearError(el) {
+            el.textContent = '';
+            el.style.display = 'none';
+        }
+        function clearAllErrors() {
+            [travelerSelectorError].forEach(clearError);
+        }
+        function clearSuccess() {
+            hotelFormSuccess.textContent = '';
+            hotelFormSuccess.style.display = 'none';
+        }
+        function validateHotelForm() {
+            let valid = true;
+            clearAllErrors();
+            clearSuccess();
+            // Dates
+            if (!validateDates()) valid = false;
+            // Location behavior required
+            const selectedBehavior = Array.from(locationBehaviorRadios).find(r => r.checked)?.value;
+            if (!selectedBehavior) valid = false;
+            if (selectedBehavior === 'property') {
+                if (!propertyFields.querySelector('#propertyName').value.trim()) valid = false;
+                if (!propertyFields.querySelector('#propertyAddress').value.trim()) valid = false;
+            } else if (selectedBehavior === 'general') {
+                if (!generalFields.querySelector('#generalAddress').value.trim()) valid = false;
+                // radius is always set
+            }
+            // Traveler selection presence check
+            const selectedTravelers = formData.hotel && Array.isArray(formData.hotel.selectedTravelers) ? formData.hotel.selectedTravelers : [];
+            if (!selectedTravelers.length) {
+                showError(travelerSelectorError, 'Please select at least one traveler for this request.');
+                valid = false;
+            }
+            // Traveler required fields validation (using REQUIREMENTS_BY_TYPE['hotel'])
+            const travelers = selectedTravelers.map(id => TravelerService.getAll().find(t => t.id === id)).filter(Boolean);
+            let anyMissing = false;
+            travelers.forEach(traveler => {
+                const requiredFields = REQUIREMENTS_BY_TYPE['hotel'] || [];
+                const missingFields = requiredFields.filter(field => !traveler[field] || !traveler[field].toString().trim());
+                if (missingFields.length > 0) {
+                    anyMissing = true;
+                }
+            });
+            if (anyMissing) {
+                showError(travelerSelectorError, 'Some travelers are missing required information. See warnings on chips.');
+                valid = false;
+            }
+            return valid;
+        }
+        if (hotelForm) {
+            hotelForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateHotelForm()) {
+                    hotelFormSuccess.textContent = 'Hotel request submitted successfully!';
+                    hotelFormSuccess.style.display = 'block';
+                    hotelForm.reset();
+                    totalNightsDisplay.textContent = '';
+                    extendedStayOptions.style.display = 'none';
+                } else {
+                    hotelFormSuccess.textContent = '';
+                    hotelFormSuccess.style.display = 'none';
+                }
+            });
         }
     } catch (error) {
         console.error('Error during initialization:', error);
@@ -1019,6 +1116,9 @@ function renderPerFormTravelerSelectors() {
     Object.keys(travelerSelectors).forEach(formType => {
         const container = travelerSelectors[formType];
         if (!container) return;
+        // Preserve error container if it exists
+        const errorId = `${formType}TravelerSelectorError`;
+        const existingError = document.getElementById(errorId);
         container.innerHTML = '';
         // Combobox
         const comboboxDiv = document.createElement('div');
@@ -1027,6 +1127,10 @@ function renderPerFormTravelerSelectors() {
         chipsDiv.className = 'flex flex-wrap gap-2 mt-2';
         container.appendChild(comboboxDiv);
         container.appendChild(chipsDiv);
+        // Re-attach error container if it existed
+        if (existingError) {
+            container.appendChild(existingError);
+        }
         // Combobox instance
         travelerComboboxInstances[formType] = new TravelerCombobox(comboboxDiv, (selectedId) => {
             if (selectedId === '__add_new__') {
@@ -1059,19 +1163,52 @@ function renderFormTravelerChips(formType) {
     const ids = formData[formType].selectedTravelers || [];
     const travelers = ids.map(id => TravelerService.getAll().find(t => t.id === id)).filter(Boolean);
     travelers.forEach(traveler => {
+        // Validation: collect missing required fields for this traveler
+        const requiredFields = REQUIREMENTS_BY_TYPE[formType] || [];
+        const missingFields = requiredFields.filter(field => !traveler[field] || !traveler[field].toString().trim());
+        // Chip element
         const chip = document.createElement('div');
         chip.className = 'inline-flex items-center space-x-2 bg-blue-100 border border-blue-300 rounded-full px-3 py-1 text-sm shadow-sm cursor-pointer';
         chip.style.maxWidth = '';
         chip.tabIndex = 0;
         chip.setAttribute('role', 'button');
         chip.setAttribute('aria-label', `Traveler: ${getTravelerDisplayName(traveler)}`);
-
+        // Subtle invalid indicator
+        if (missingFields.length > 0) {
+            chip.classList.add('border-red-400');
+            chip.classList.add('ring-1', 'ring-red-300');
+        }
         // Chip body (display name)
         const chipBody = document.createElement('span');
         chipBody.className = 'chip-body flex-1 truncate';
         chipBody.textContent = getTravelerDisplayName(traveler);
         chipBody.addEventListener('click', () => showTravelerDisplayModal(traveler.id));
-
+        // Inline warnings (up to 2)
+        let warningArea = null;
+        if (missingFields.length > 0) {
+            warningArea = document.createElement('span');
+            warningArea.className = 'ml-2 text-xs text-red-600 flex items-center cursor-pointer';
+            const warningsToShow = missingFields.slice(0, 2);
+            warningArea.innerHTML = warningsToShow.map(f => `<span class='mr-1'>Missing: ${f}</span>`).join('');
+            if (missingFields.length > 2) {
+                const moreBadge = document.createElement('span');
+                moreBadge.className = 'ml-1 bg-red-100 text-red-700 rounded px-1 py-0.5 text-xs font-semibold cursor-pointer';
+                moreBadge.textContent = `+${missingFields.length - 2} more`;
+                warningArea.appendChild(moreBadge);
+                // Expandable drawer/accordion for all issues
+                let expanded = false;
+                const drawer = document.createElement('div');
+                drawer.className = 'absolute z-20 bg-white border border-red-200 rounded shadow p-2 mt-1 text-xs text-red-700 hidden';
+                drawer.innerHTML = missingFields.map(f => `<div>Missing: ${f}</div>`).join('');
+                chip.appendChild(drawer);
+                warningArea.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    expanded = !expanded;
+                    drawer.style.display = expanded ? 'block' : 'none';
+                });
+            }
+            chip.appendChild(warningArea);
+        }
         // Edit icon
         const chipEdit = document.createElement('button');
         chipEdit.className = 'chip-edit ml-1 text-blue-700 hover:text-blue-900 focus:outline-none';
@@ -1082,7 +1219,6 @@ function renderFormTravelerChips(formType) {
             e.stopPropagation();
             showEditTravelerModal(traveler.id, () => refreshAllTravelerSelectors(), false, true, formType);
         });
-
         // Remove icon
         const chipRemove = document.createElement('button');
         chipRemove.className = 'chip-remove ml-1 text-red-600 hover:text-red-800 focus:outline-none';
@@ -1097,8 +1233,8 @@ function renderFormTravelerChips(formType) {
             renderFormTravelerChips(formType);
             refreshAllTravelerSelectors();
         });
-
         chip.appendChild(chipBody);
+        if (warningArea) chip.appendChild(warningArea);
         chip.appendChild(chipEdit);
         chip.appendChild(chipRemove);
         chip.addEventListener('click', () => showTravelerDisplayModal(traveler.id));
@@ -1627,4 +1763,74 @@ function showEditTravelerModal(travelerId, onSave, fromManageTravelers = false, 
     modal.focus();
 }
 
-module.exports = { serializeForm, deserializeForm, validatePhoneNumber, formatPhoneForStorage, generateSummary }; 
+// --- Hotel Location Behavior/Target Location dynamic fields logic ---
+function updateLocationBehaviorFields() {
+    const radios = document.getElementsByName('locationBehavior');
+    const selected = Array.from(radios).find(r => r.checked)?.value;
+    const propertyFields = document.getElementById('propertyFields');
+    const generalFields = document.getElementById('generalFields');
+    if (selected === 'property') {
+        if (propertyFields) propertyFields.style.display = '';
+        if (generalFields) generalFields.style.display = 'none';
+    } else {
+        if (propertyFields) propertyFields.style.display = 'none';
+        if (generalFields) generalFields.style.display = '';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Attach change listeners to Target Location radios
+    const radios = document.getElementsByName('locationBehavior');
+    radios.forEach(radio => {
+        radio.addEventListener('change', updateLocationBehaviorFields);
+    });
+    // Set initial state
+    updateLocationBehaviorFields();
+
+    // --- Date picker immediate open logic ---
+    function setupImmediateDatePicker(id) {
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.addEventListener('focus', function(e) {
+            if (typeof input.showPicker === 'function') {
+                input.showPicker();
+            } else {
+                // Fallback: focus again to trigger native picker
+                input.blur();
+                setTimeout(() => input.focus(), 0);
+            }
+        });
+        // Also open on click
+        input.addEventListener('click', function(e) {
+            if (typeof input.showPicker === 'function') {
+                input.showPicker();
+            } else {
+                input.blur();
+                setTimeout(() => input.focus(), 0);
+            }
+        });
+    }
+    setupImmediateDatePicker('checkInDate');
+    setupImmediateDatePicker('checkOutDate');
+
+    // --- Slider live label update logic ---
+    const radiusSlider = document.getElementById('radiusSlider');
+    const radiusValue = document.getElementById('radiusValue');
+    function updateRadiusLabel() {
+        if (radiusSlider && radiusValue) {
+            radiusValue.textContent = `${radiusSlider.value} miles`;
+        }
+    }
+    if (radiusSlider && radiusValue) {
+        radiusSlider.addEventListener('input', updateRadiusLabel);
+        updateRadiusLabel();
+    }
+    // Also update label when switching to general location
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (radio.value === 'general' && radio.checked) {
+                setTimeout(updateRadiusLabel, 0);
+            }
+        });
+    });
+}); 

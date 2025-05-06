@@ -293,21 +293,21 @@
       "id": 4,
       "title": "Implement Hotel Request Form",
       "description": "Create the Hotel request form with all required fields and basic validation.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         2
       ],
       "priority": "medium",
-      "details": "Build form with fields: Check-In Date (required), Check-Out Date (required), Hotel Location Type dropdown (required), Target Address, Radius from Address, and Traveler Notes. Implement date pickers for Check-In and Check-Out dates. Add validation to ensure Check-Out date is after Check-In date. Create appropriate input types for each field according to the PRD. Add tooltips for fields as specified in the PRD. Implement basic field validation with error messages. Include traveler selection combobox that allows selecting multiple travelers from the master list, with search functionality and 'Add New Traveler' option. Display selected travelers as chips/tags with remove and edit options.",
-      "testStrategy": "Test form submission with valid and invalid data. Verify date validation works correctly. Check that required fields are properly enforced. Test tooltips functionality. Test traveler selection, including search, adding new travelers, and removing selected travelers. Verify that editing a traveler updates all requests using that traveler.",
+      "details": "Build form with fields: Check-In Date (required), Check-Out Date (required), Hotel Location Type dropdown (required), Target Address, Radius from Address, and Traveler Notes. Implement date pickers for Check-In and Check-Out dates. Add validation to ensure Check-Out date is after Check-In date. Create appropriate input types for each field according to the PRD. Add tooltips for fields as specified in the PRD. Implement basic field validation with error messages. Integrate the existing Traveler combo box for selecting travelers, storing only traveler IDs and referencing full traveler data from the shared in-memory traveler store. Display selected travelers as chips/tags with the standard traveler chip behavior, showing inline warnings for missing required fields based on the centralized REQUIREMENTS_BY_TYPE map.",
+      "testStrategy": "Test form submission with valid and invalid data. Verify date validation works correctly. Check that required fields are properly enforced. Test tooltips functionality. Test traveler selection, including search, adding new travelers, and removing selected travelers. Verify that the traveler chip system correctly displays warnings for missing required fields. Test that the form adapts to different screen widths with proper chip wrapping. Verify that submission validation correctly identifies and reports missing required fields. Implement unit tests for all validation logic and component rendering. Create integration tests to verify form submission flow and error handling.",
       "subtasks": [
         {
           "id": 1,
           "title": "Create basic form structure and fields",
           "description": "Implement the core structure of the Hotel Request Form with all required fields and layout",
           "dependencies": [],
-          "details": "Create the form container and add all required fields including: guest information fields, check-in/check-out date fields (without validation yet), room preference options, special requests textarea, and submit button. Implement basic styling and responsive layout. Add tooltips for fields that need additional explanation. Set up the form state management to capture user inputs.",
-          "status": "pending"
+          "details": "Create the form container and add all required fields including: guest information fields, check-in/check-out date fields (without validation yet), room preference options, special requests textarea, and submit button. Implement basic styling and responsive layout. Add tooltips for fields that need additional explanation. Set up the form state management to capture user inputs.\n<info added on 2025-05-05T18:35:47.923Z>\nCreate the form container and add all required fields including: guest information fields, check-in/check-out date fields (without validation yet), room preference options, special requests textarea, and submit button. Implement basic styling and responsive layout. Add tooltips for fields that need additional explanation. Set up the form state management to capture user inputs.\n\nImplementation Plan:\n- Create a new React component `HotelRequestForm` in `src/js/components/HotelRequestForm.js`\n- Implement the following form fields:\n  * Guest information fields (name, email, phone)\n  * Check-In Date (input field, validation will be added in subtask 4.2)\n  * Check-Out Date (input field, validation will be added in subtask 4.2)\n  * Hotel Location Type dropdown (City Center, Airport, Suburb, etc.)\n  * Target Address text input\n  * Radius from Address number input\n  * Traveler Notes textarea\n  * Room preference options (radio/select for Single, Double, Suite)\n  * Special requests textarea\n  * Traveler selection combobox (placeholder for now, will be implemented in subtask 4.4)\n  * Submit button\n- Use Tailwind CSS for responsive layout and styling\n- Add tooltips to fields requiring additional explanation\n- Implement React useState hooks for form state management\n- Ensure mobile-friendly design with appropriate breakpoints\n- Files to modify/create:\n  * src/js/components/HotelRequestForm.js (primary component)\n  * src/styles/hotel-request-form.css or src/styles/forms.css (if custom styles needed)\n- Reference src/js/components/TravelerCombobox.js for future combobox integration\n</info added on 2025-05-05T18:35:47.923Z>",
+          "status": "done"
         },
         {
           "id": 2,
@@ -316,8 +316,8 @@
           "dependencies": [
             1
           ],
-          "details": "Integrate date picker components for check-in and check-out fields. Implement logic to ensure check-out date is after check-in date. Add minimum date validation to prevent selecting dates in the past. Calculate and display the total nights based on selected dates. Implement conditional logic to show/hide extended stay options when stay exceeds 7 days. Ensure proper date formatting and user-friendly interaction.",
-          "status": "pending"
+          "details": "Integrate date picker components for check-in and check-out fields. Implement logic to ensure check-out date is after check-in date. Add minimum date validation to prevent selecting dates in the past. Calculate and display the total nights based on selected dates. Implement conditional logic to show/hide extended stay options when stay exceeds 7 days. Ensure proper date formatting and user-friendly interaction.\n<info added on 2025-05-05T18:37:42.728Z>\nIntegrate date picker components for check-in and check-out fields. Implement logic to ensure check-out date is after check-in date. Add minimum date validation to prevent selecting dates in the past. Calculate and display the total nights based on selected dates. Implement conditional logic to show/hide extended stay options when stay exceeds 7 days. Ensure proper date formatting and user-friendly interaction.\n\nImplementation plan:\n\n1. Files to modify:\n   - index.html: Add validation attributes (min, required) to date input fields and create containers for error messages and total nights display\n   - src/js/main.js: Implement all validation logic and dynamic UI updates\n\n2. HTML Changes:\n   - Add min attribute to both date inputs to prevent past date selection\n   - Create error message containers with appropriate ARIA attributes\n   - Add a container to display calculated total nights\n   - Create a hidden section for extended stay options\n\n3. JavaScript Implementation:\n   - Add event listeners to both date inputs\n   - Implement validation function to ensure check-out date is after check-in date\n   - Create function to calculate and display total nights between selected dates\n   - Add logic to show/hide extended stay options when stay exceeds 7 days\n   - Implement clear error handling with descriptive messages\n   - Ensure proper date formatting for display and calculations\n\n4. Edge Cases to Handle:\n   - Same-day check-in/check-out selection\n   - User attempts to select check-out date before check-in date\n   - Date format compatibility across browsers\n   - Accessibility considerations for error messages\n\n5. Testing Strategy:\n   - Test with various date combinations\n   - Verify error messages appear correctly\n   - Confirm extended stay options appear only when appropriate\n   - Test across multiple browsers and screen sizes\n</info added on 2025-05-05T18:37:42.728Z>",
+          "status": "done"
         },
         {
           "id": 3,
@@ -327,8 +327,8 @@
             1,
             2
           ],
-          "details": "Implement validation for all required fields (name, email, phone, dates). Add email format validation. Implement phone number format validation. Create error message display system that shows validation errors inline with the respective fields. Add form submission validation to prevent submission with invalid data. Implement success message or redirect after successful form submission. Test all validation scenarios thoroughly.",
-          "status": "pending"
+          "details": "Implement validation for all required fields (name, email, phone, dates). Add email format validation. Implement phone number format validation. Create error message display system that shows validation errors inline with the respective fields. Add form submission validation to prevent submission with invalid data. Implement success message or redirect after successful form submission. Test all validation scenarios thoroughly.\n<info added on 2025-05-05T18:40:41.251Z>\nImplement validation for all required fields (name, email, phone, dates). Add email format validation. Implement phone number format validation. Create error message display system that shows validation errors inline with the respective fields. Add form submission validation to prevent submission with invalid data. Implement success message or redirect after successful form submission. Test all validation scenarios thoroughly.\n\nImplementation Plan:\n1. Modify index.html:\n   - Add error message containers with appropriate aria attributes for all required fields if not present\n   - Ensure each field has proper labeling and accessibility attributes\n   - Add containers for form-level success messages\n\n2. Modify src/js/main.js:\n   - Implement validation functions for:\n     * Guest name validation (required, non-empty)\n     * Email validation (required, valid format using regex)\n     * Phone validation (required, valid format supporting international formats)\n     * Date validation (ensure check-in before check-out, valid dates)\n     * Hotel Location Type validation (required selection)\n   - Create event listeners for real-time validation on blur/change events\n   - Implement form submission handler that:\n     * Validates all fields before submission\n     * Prevents submission if validation fails\n     * Displays appropriate inline error messages\n     * Shows success message and resets form on successful validation\n   - Ensure error messages are accessible (aria-live regions)\n   - Implement error clearing when fields are corrected\n\n3. Testing strategy:\n   - Test all validation rules with valid and invalid inputs\n   - Test form submission with various combinations of valid/invalid data\n   - Test accessibility of error messages with screen readers\n   - Test across multiple browsers to ensure consistent validation behavior\n\n4. Potential challenges to address:\n   - Implement robust email/phone validation that works across browsers\n   - Prevent duplicate error messages\n   - Handle race conditions in validation\n   - Ensure proper focus management for accessibility\n</info added on 2025-05-05T18:40:41.251Z>",
+          "status": "done"
         },
         {
           "id": 4,
@@ -338,9 +338,45 @@
             1,
             3
           ],
-          "details": "Integrate the traveler selection combobox component into the hotel request form. Configure it to allow multiple traveler selection from the master list. Implement search functionality within the combobox. Ensure the 'Add New Traveler' option is always available at the bottom of the dropdown. Connect the selection to display selected travelers as chips/tags below the combobox. Implement remove functionality on the chips to remove travelers from the current request only. Link edit functionality to open the traveler edit modal. Add logic to prevent duplicate traveler selection in the request.",
-          "status": "pending",
-          "testStrategy": "Test selecting multiple travelers from the combobox. Verify search functionality works correctly. Test adding new travelers and confirm they're added to both the master list and current request. Test removing travelers from the request. Verify that duplicate selection is prevented. Test that editing a traveler updates all requests using that traveler."
+          "details": "Integrate the traveler selection combobox component into the hotel request form. Configure it to allow multiple traveler selection from the master list. Implement search functionality within the combobox. Ensure the 'Add New Traveler' option is always available at the bottom of the dropdown. Connect the selection to display selected travelers as chips/tags below the combobox. Implement remove functionality on the chips to remove travelers from the current request only. Link edit functionality to open the traveler edit modal. Add logic to prevent duplicate traveler selection in the request. Validate only that at least one traveler is selected for the request, without duplicating traveler detail validation that is handled in the traveler management system.\n<info added on 2025-05-05T19:23:47.938Z>\nIntegrate the traveler selection combobox component into the hotel request form. Configure it to allow multiple traveler selection from the master list. Implement search functionality within the combobox. Ensure the 'Add New Traveler' option is always available at the bottom of the dropdown. Connect the selection to display selected travelers as chips/tags below the combobox. Implement remove functionality on the chips to remove travelers from the current request only. Link edit functionality to open the traveler edit modal. Add logic to prevent duplicate traveler selection in the request. Validate only that at least one traveler is selected for the request, without duplicating traveler detail validation that is handled in the traveler management system.\n\nImplementation plan:\n1. Modify src/js/main.js and index.html files\n2. Replace the existing traveler selection placeholder in the hotel form with the actual traveler combobox component\n3. Configure the combobox to:\n   - Allow multiple traveler selection from the master list\n   - Include search functionality\n   - Always display 'Add New Traveler' option at the bottom\n4. Connect the selected travelers to the hotel request form's state using formData.hotel.selectedTravelers\n5. Implement the display of selected travelers as chips/tags below the combobox\n6. Add remove functionality to the chips that only removes travelers from the current request\n7. Link the edit button on chips to open the existing traveler edit modal\n8. Implement logic to prevent duplicate traveler selection in the request\n9. Ensure validation only checks for the presence of at least one traveler\n10. Test the implementation by:\n    - Selecting multiple travelers and verifying they appear as chips\n    - Testing search functionality within the combobox\n    - Adding new travelers and confirming they appear in both master list and current request\n    - Removing travelers from the request and verifying they're only removed from current request\n    - Editing travelers and confirming changes propagate correctly\n    - Verifying duplicate selection prevention works\n</info added on 2025-05-05T19:23:47.938Z>",
+          "status": "done",
+          "testStrategy": "Test selecting multiple travelers from the combobox. Verify search functionality works correctly. Test adding new travelers and confirm they're added to both the master list and current request. Test removing travelers from the request. Verify that duplicate selection is prevented. Test that editing a traveler updates all requests using that traveler. Verify that the form validates the presence of at least one traveler without duplicating traveler detail validation. Implement unit tests for the traveler selection component, including search functionality and duplicate prevention. Create integration tests to verify the interaction between the traveler selection component and the hotel request form."
+        },
+        {
+          "id": 5,
+          "title": "Implement hotel-specific field validation",
+          "description": "Add validation for hotel-specific fields while respecting the separation of concerns",
+          "dependencies": [
+            1,
+            3,
+            4
+          ],
+          "details": "Implement validation for hotel-specific fields only: Check-In Date, Check-Out Date, Hotel Location Type, Target Address, Radius from Address. Ensure validation logic respects the separation of concerns by not duplicating traveler detail validation. Validate only that required hotel-specific fields are filled and properly formatted. For traveler-related requirements, only check that selected travelers have the necessary information for a hotel booking, without implementing duplicate validation logic for traveler details.",
+          "status": "done",
+          "testStrategy": "Test validation of hotel-specific fields with valid and invalid inputs. Verify that the form correctly identifies missing required fields. Test that the form properly validates the presence of required traveler information without duplicating traveler detail validation. Confirm that error messages are clear and specific to hotel request requirements. Implement unit tests for each validation rule to ensure they work correctly in isolation. Create integration tests to verify the complete validation flow works as expected when submitting the form."
+        },
+        {
+          "id": 6,
+          "title": "Implement standard traveler chip behavior",
+          "description": "Update the traveler selection to use the standard traveler chip behavior",
+          "dependencies": [
+            4
+          ],
+          "details": "Update the traveler selection implementation to follow the new standard traveler chip behavior. Store only traveler IDs in the form data and reference full traveler data from the shared in-memory traveler store. Configure the chips to show inline warnings for missing required fields based on the centralized REQUIREMENTS_BY_TYPE map for hotel requests. Implement the display of up to two inline warnings per chip with a '+X more' badge for additional issues. Add functionality to expand a drawer/accordion when clicking on the badge to show all issues. Ensure invalid chips show a subtle indicator without blocking interaction until submission. Implement flex-wrap layout for chips to adapt to screen width. On form submission, check for missing required fields and show a clear error summary if submission is blocked. Remove any redundant traveler fields from the hotel form.",
+          "status": "done",
+          "testStrategy": "Test that traveler chips correctly display warnings for missing required fields. Verify that the '+X more' badge appears when there are more than two issues and that clicking it expands a drawer to show all issues. Test that the chip layout adapts to different screen widths using flex-wrap. Verify that submission validation correctly identifies and reports missing required fields. Test that invalid chips show a subtle indicator without blocking interaction until submission. Implement unit tests for the traveler chip rendering and validation logic. Create integration tests to verify the complete validation flow works as expected when submitting the form with various traveler data scenarios."
+        },
+        {
+          "id": 7,
+          "title": "Integrate with centralized REQUIREMENTS_BY_TYPE map",
+          "description": "Connect the hotel form to the centralized validation requirements system",
+          "dependencies": [
+            5,
+            6
+          ],
+          "details": "Integrate the hotel request form with the centralized REQUIREMENTS_BY_TYPE map for validation requirements. Configure the form to use the 'hotel' type in the map to determine required traveler fields. Ensure the validation logic uses this map to determine which warnings to display on traveler chips. Update the form submission validation to check for missing required fields based on the requirements map. Implement the error summary display that shows all validation issues when submission is blocked due to missing required fields.",
+          "status": "done",
+          "testStrategy": "Test that the form correctly uses the 'hotel' type in the REQUIREMENTS_BY_TYPE map to determine required traveler fields. Verify that traveler chips correctly display warnings based on the requirements map. Test that form submission validation correctly identifies missing required fields based on the requirements map. Verify that the error summary correctly displays all validation issues when submission is blocked. Implement unit tests for the integration with the requirements map. Create integration tests to verify the complete validation flow works as expected with different requirement configurations."
         }
       ]
     },
@@ -353,16 +389,17 @@
         2
       ],
       "priority": "medium",
-      "details": "Build form with fields: Trip Type dropdown (required), Departure Date (required), Return Date (conditional), Departure Airport (required), Arrival Airport (required), Preferred Travel Time, Additional Flight Notes, and Rental Car Needed radio buttons (required). Implement date pickers for Departure and Return dates. Add validation to ensure Return date is after Departure date for Round-Trip selection. Show/hide Return Date based on Trip Type selection. Add conditional logic to show Rental Car form section if 'Yes' is selected for 'Rental Car Needed'. Implement basic field validation with error messages. Include traveler selection combobox that allows selecting multiple travelers from the master list, with search functionality and 'Add New Traveler' option. Display selected travelers as chips/tags with remove and edit options.",
-      "testStrategy": "Test form with different Trip Type selections. Verify conditional display of Return Date field. Test date validation. Confirm that required fields are enforced. Test the conditional display of Rental Car section. Test traveler selection, including search, adding new travelers, and removing selected travelers. Verify that editing a traveler updates all requests using that traveler.",
+      "details": "Build form with fields: Trip Type dropdown (required), Departure Date (required), Return Date (conditional), Departure Airport (required), Arrival Airport (required), Preferred Travel Time, Additional Flight Notes, and Rental Car Needed radio buttons (required). Implement date pickers for Departure and Return dates. Add validation to ensure Return date is after Departure date for Round-Trip selection. Show/hide Return Date based on Trip Type selection. Add conditional logic to show Rental Car form section if 'Yes' is selected for 'Rental Car Needed'. Implement basic field validation with error messages. Use the existing Traveler combo box at the top of the form for selecting travelers, storing only traveler IDs and referencing full traveler data from the shared in-memory traveler store. Display selected travelers as chips/tags with the standard traveler chip behavior, including inline warnings for missing required fields based on the centralized REQUIREMENTS_BY_TYPE map.",
+      "testStrategy": "Test form with different Trip Type selections. Verify conditional display of Return Date field. Test date validation. Confirm that required fields are enforced. Test the conditional display of Rental Car section. Test traveler selection using the existing combo box, including search and adding new travelers. Verify that traveler chips display correctly with appropriate warnings for missing required fields. Test international flight validation requiring passport_country when departure country ≠ arrival country. Verify chip layout adapts to screen width. Test submission validation and error summary display. Implement unit tests for all validation logic, conditional rendering, and component functionality. Create integration tests to verify the complete form submission flow works correctly with different combinations of inputs.",
       "subtasks": [
         {
           "id": 1,
           "title": "Create basic flight request form structure",
           "description": "Implement the core form structure with all required fields for flight requests",
           "dependencies": [],
-          "details": "Create a form component with fields for: traveler information (name, employee ID), destination, purpose of travel, trip type (one-way/round-trip), departure date, and submit button. Include basic styling and layout for the form. Set up form state management using React hooks.",
-          "status": "pending"
+          "details": "Create a form component with fields for: trip type (one-way/round-trip), departure date, return date (conditional), departure airport, arrival airport, preferred travel time, additional flight notes, rental car needed radio buttons, and submit button. Include basic styling and layout for the form. Set up form state management using React hooks.",
+          "status": "pending",
+          "testStrategy": "Implement unit tests to verify all form fields render correctly. Test that the form state properly captures user inputs. Create snapshot tests to ensure consistent rendering. Test accessibility of the form structure using automated tools."
         },
         {
           "id": 2,
@@ -372,7 +409,8 @@
             1
           ],
           "details": "Create radio buttons for trip type selection (one-way/round-trip). Implement conditional rendering to display the return date field only when 'round-trip' is selected. Ensure form validation accounts for both scenarios and required fields update accordingly.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Test conditional rendering by toggling between one-way and round-trip options. Verify return date field appears and disappears appropriately. Test validation rules update correctly based on trip type. Implement unit tests for the conditional logic and integration tests for the complete trip type selection flow."
         },
         {
           "id": 3,
@@ -383,7 +421,8 @@
             2
           ],
           "details": "Integrate date picker components for departure and return dates. Implement validation to ensure: departure date is not in the past, return date is after departure date (for round trips), and both dates are valid. Add error messages for invalid date selections. Ensure mobile-friendly date selection.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Test date selection with various valid and invalid combinations. Verify error messages appear correctly for invalid selections. Test mobile interaction with the date pickers. Implement unit tests for all date validation rules and integration tests for the date picker components within the form context."
         },
         {
           "id": 4,
@@ -392,8 +431,9 @@
           "dependencies": [
             1
           ],
-          "details": "Create a checkbox to indicate whether a rental car is needed. When checked, display additional fields for: car size preference, pickup date, return date, and any special requirements. Implement validation for these fields and ensure they're only required when the rental car option is selected.",
-          "status": "pending"
+          "details": "Create a checkbox or radio buttons to indicate whether a rental car is needed. When selected, display additional fields for: car size preference, pickup date, return date, and any special requirements. Implement validation for these fields and ensure they're only required when the rental car option is selected.",
+          "status": "pending",
+          "testStrategy": "Test toggling the rental car option on and off. Verify additional fields appear and disappear appropriately. Test validation rules change based on the rental car selection. Implement unit tests for the conditional display logic and validation rules. Create integration tests to verify the complete rental car section works correctly within the form."
         },
         {
           "id": 5,
@@ -402,9 +442,40 @@
           "dependencies": [
             1
           ],
-          "details": "Integrate the traveler selection combobox component into the flight request form. Configure it to allow multiple traveler selection from the master list. Implement search functionality within the combobox. Ensure the 'Add New Traveler' option is always available at the bottom of the dropdown. Connect the selection to display selected travelers as chips/tags below the combobox. Implement remove functionality on the chips to remove travelers from the current request only. Link edit functionality to open the traveler edit modal. Add logic to prevent duplicate traveler selection in the request.",
+          "details": "Integrate the existing Traveler combo box component at the top of the flight request form. Configure it to allow multiple traveler selection from the master list. Store only traveler IDs in the form state, referencing full traveler data from the shared in-memory traveler store. Display selected travelers as chips/tags below the combobox following the standard traveler chip behavior. Ensure chips show inline warnings for missing required fields based on the REQUIREMENTS_BY_TYPE map for flights (e.g., 'dob'). Implement logic to dynamically require passport_country for international flights (when departure country ≠ arrival country). Configure chips to show up to two inline warnings with a '+X more' badge for additional issues, with click functionality to expand a drawer showing all issues. Style invalid chips with subtle indicators without blocking interaction until submission. Ensure chip layout uses flex-wrap and adapts to screen width.",
           "status": "pending",
-          "testStrategy": "Test selecting multiple travelers from the combobox. Verify search functionality works correctly. Test adding new travelers and confirm they're added to both the master list and current request. Test removing travelers from the request. Verify that duplicate selection is prevented. Test that editing a traveler updates all requests using that traveler."
+          "testStrategy": "Test selecting multiple travelers from the existing combo box. Verify that only traveler IDs are stored in form state. Test that chips render correctly with appropriate warnings for missing required fields. Test the international flight validation requiring passport_country when departure country ≠ arrival country. Verify that chips show up to two inline warnings with '+X more' badge functionality. Test that clicking on the badge expands a drawer showing all issues. Verify that chip layout adapts to screen width using flex-wrap. Test that invalid chips show subtle indicators without blocking interaction until submission. Implement unit tests for the traveler selection component integration and validation rules."
+        },
+        {
+          "id": 6,
+          "title": "Implement flight-specific field validation",
+          "description": "Add validation for flight-specific fields while respecting the separation of concerns",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "details": "Implement validation for flight-specific fields only: Trip Type, Departure Date, Return Date (if applicable), Departure Airport, Arrival Airport, and Rental Car options. Use the centralized REQUIREMENTS_BY_TYPE map to determine required traveler fields for flights (e.g., 'dob'). Implement the international flight validation rule to require passport_country when departure country ≠ arrival country. On form submission, check for missing required fields and show a clear error summary if submission is blocked. Ensure validation logic respects the separation of concerns by relying on the existing chip system for traveler validation.",
+          "status": "pending",
+          "testStrategy": "Test validation of flight-specific fields with valid and invalid inputs. Verify that the form correctly identifies missing required fields. Test the international flight validation requiring passport_country when departure country ≠ arrival country. Test form submission with both valid and invalid data, verifying that a clear error summary is shown when submission is blocked. Confirm that error messages are clear and specific to flight request requirements. Implement unit tests for each validation rule and integration tests for the complete validation flow."
+        },
+        {
+          "id": 7,
+          "title": "Implement submission validation and error summary",
+          "description": "Add comprehensive validation on form submission with clear error summary",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "details": "Implement comprehensive validation on form submission that checks all required fields, including traveler requirements based on the REQUIREMENTS_BY_TYPE map. Create a clear error summary that appears at the top of the form when submission is blocked, listing all validation issues. Ensure the summary is accessible and provides clear guidance on how to fix each issue. Add functionality to scroll or navigate to the relevant field when an error in the summary is clicked.",
+          "status": "pending",
+          "testStrategy": "Test form submission with various combinations of valid and invalid data. Verify that the error summary appears correctly when submission is blocked. Test that clicking on errors in the summary navigates to the relevant field. Verify that all validation rules are correctly applied on submission. Test accessibility of the error summary. Implement unit tests for the submission validation logic and integration tests for the complete submission flow."
         }
       ]
     },
@@ -417,16 +488,17 @@
         2
       ],
       "priority": "medium",
-      "details": "Build form with fields: Pickup Location (required), Drop-Off Location (required), Pickup Date (required), Drop-Off Date (required), Pickup Time (required), Drop-Off Time (required), and Traveler Notes. Implement date pickers for Pickup and Drop-Off dates. Add time input fields with proper formatting (HH:MM AM/PM). Add validation to ensure Drop-Off date/time is after Pickup date/time. Implement basic field validation with error messages. Include traveler selection combobox that allows selecting multiple travelers from the master list, with search functionality and 'Add New Traveler' option. Display selected travelers as chips/tags with remove and edit options.",
-      "testStrategy": "Test form submission with valid and invalid data. Verify date and time validation works correctly. Check that required fields are properly enforced. Test with various date and time combinations. Test traveler selection, including search, adding new travelers, and removing selected travelers. Verify that editing a traveler updates all requests using that traveler.",
+      "details": "Build form with fields: Pickup Location (required), Drop-Off Location (required), Pickup Date (required), Drop-Off Date (required), Pickup Time (required), Drop-Off Time (required), and Traveler Notes. Implement date pickers for Pickup and Drop-Off dates. Add time input fields with proper formatting (HH:MM AM/PM). Add validation to ensure Drop-Off date/time is after Pickup date/time. Implement basic field validation with error messages. Use the standard traveler selection combobox at the top of the form, displaying selected travelers as chips/tags with the standard chip behavior. Store only traveler IDs in the form data, referencing the shared in-memory traveler store for full data. Validation will use the centralized REQUIREMENTS_BY_TYPE map to determine required traveler fields for rental car requests.",
+      "testStrategy": "Test form submission with valid and invalid data. Verify date and time validation works correctly. Check that required fields are properly enforced. Test with various date and time combinations. Test traveler selection using the standard combobox, including search functionality. Verify that traveler chips display correctly with appropriate warnings for missing required fields. Test the chip layout responsiveness across different screen widths. Verify that submission validation correctly identifies and reports missing required fields. Implement unit tests for all validation logic and component rendering. Create integration tests to verify the complete form submission flow with different combinations of inputs.",
       "subtasks": [
         {
           "id": 1,
           "title": "Create basic rental car form structure and fields",
           "description": "Implement the core form structure with all required input fields for the rental car request",
           "dependencies": [],
-          "details": "Create a form with the following fields: customer information (name, contact details), car preferences (type, model, etc.), pickup location, dropoff location, additional options (insurance, GPS, etc.), and placeholder sections for date/time inputs. Include submit and reset buttons. Style the form with appropriate CSS for layout and responsiveness.",
-          "status": "pending"
+          "details": "Create a form with the following fields: pickup location, dropoff location, pickup date, dropoff date, pickup time, dropoff time, traveler notes, and the standard traveler selection combobox at the top. Include submit and reset buttons. Style the form with appropriate CSS for layout and responsiveness. Remove any redundant traveler fields from the form as traveler data will be handled by the standard combobox and chip system.",
+          "status": "pending",
+          "testStrategy": "Implement unit tests to verify all form fields render correctly. Test that the form captures user inputs properly. Create snapshot tests to ensure consistent rendering. Test accessibility of the form structure using automated tools."
         },
         {
           "id": 2,
@@ -436,7 +508,8 @@
             1
           ],
           "details": "Replace the date/time placeholders with proper date and time picker components. Ensure they have appropriate min/max values, default selections, and user-friendly interfaces. Implement both pickup date/time and dropoff date/time pickers with consistent styling and behavior across browsers. Consider accessibility requirements for the date/time inputs.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Test date and time selection with various inputs. Verify the pickers work correctly across different browsers. Test mobile interaction with the pickers. Implement unit tests for the date and time picker components and integration tests for their interaction with the form."
         },
         {
           "id": 3,
@@ -446,18 +519,44 @@
             2
           ],
           "details": "Implement JavaScript validation to check that the dropoff date/time is chronologically after the pickup date/time. Add real-time validation feedback as users select dates. Create clear, user-friendly error messages that appear when validation fails. Prevent form submission when date/time validation errors exist. Include handling for edge cases like same-day rentals with minimum rental duration requirements.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Test validation with various date/time combinations, including edge cases. Verify error messages appear correctly and are accessible. Test form submission with valid and invalid inputs. Implement unit tests for all validation rules and integration tests for the complete validation flow."
         },
         {
           "id": 4,
-          "title": "Integrate traveler selection component",
-          "description": "Add traveler selection functionality to the rental car request form",
+          "title": "Integrate standard traveler selection component",
+          "description": "Integrate the standard traveler selection combobox and chip system into the rental car form",
           "dependencies": [
             1
           ],
-          "details": "Integrate the traveler selection combobox component into the rental car request form. Configure it to allow multiple traveler selection from the master list. Implement search functionality within the combobox. Ensure the 'Add New Traveler' option is always available at the bottom of the dropdown. Connect the selection to display selected travelers as chips/tags below the combobox. Implement remove functionality on the chips to remove travelers from the current request only. Link edit functionality to open the traveler edit modal. Add logic to prevent duplicate traveler selection in the request.",
+          "details": "Integrate the standard traveler selection combobox at the top of the form. Configure the form to store only traveler IDs, referencing the shared in-memory traveler store for full data. Implement the standard chip display for selected travelers with flex-wrap layout that adapts to screen width. Ensure chips show inline warnings for missing required fields (up to two inline with a '+X more' badge for additional issues). Implement the expandable drawer/accordion for showing all validation issues when a chip is clicked. Use the centralized REQUIREMENTS_BY_TYPE map to determine which traveler fields are required for rental car requests. Ensure the chip system shows subtle indicators for invalid data without blocking interaction until submission.",
           "status": "pending",
-          "testStrategy": "Test selecting multiple travelers from the combobox. Verify search functionality works correctly. Test adding new travelers and confirm they're added to both the master list and current request. Test removing travelers from the request. Verify that duplicate selection is prevented. Test that editing a traveler updates all requests using that traveler."
+          "testStrategy": "Test the integration of the standard traveler selection combobox. Verify that selected travelers appear as chips with proper styling and layout. Test the responsive behavior of the chip layout across different screen widths. Verify that inline warnings appear correctly for missing required fields. Test the expandable drawer/accordion functionality for showing all validation issues. Confirm that the form correctly uses the REQUIREMENTS_BY_TYPE map for validation. Test submission with valid and invalid traveler data to verify proper error handling and reporting."
+        },
+        {
+          "id": 5,
+          "title": "Implement rental car-specific field validation",
+          "description": "Add validation for rental car-specific fields while respecting the separation of concerns",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "details": "Implement validation for rental car-specific fields only: Pickup Location, Drop-Off Location, Pickup Date/Time, Drop-Off Date/Time. Ensure validation logic respects the separation of concerns by not duplicating traveler detail validation. For traveler-related requirements, use the centralized REQUIREMENTS_BY_TYPE map to determine which traveler fields are required for rental car requests. On form submission, implement a clear error summary that shows all validation issues if submission is blocked.",
+          "status": "pending",
+          "testStrategy": "Test validation of rental car-specific fields with valid and invalid inputs. Verify that the form correctly identifies missing required fields. Test that the form properly validates traveler requirements based on the REQUIREMENTS_BY_TYPE map. Confirm that error messages are clear and specific to rental car request requirements. Test the error summary display on submission with various validation scenarios. Implement unit tests for each validation rule and integration tests for the complete validation flow."
+        },
+        {
+          "id": 6,
+          "title": "Ensure consistent traveler chip behavior",
+          "description": "Verify that the rental car form follows the standard traveler chip behavior",
+          "dependencies": [
+            4
+          ],
+          "details": "Review the implementation to ensure it strictly follows the standard traveler chip behavior: only storing traveler IDs, referencing the shared in-memory traveler store, showing appropriate inline warnings for missing fields, implementing the expandable drawer for all issues, and using flex-wrap for responsive layout. Remove any custom traveler handling logic that duplicates the standard behavior. Verify that the form does not implement its own Edit/View logic for travelers but relies on the existing chip system.",
+          "status": "pending",
+          "testStrategy": "Conduct a comprehensive review of the traveler handling implementation. Test that the form correctly stores only traveler IDs and references the shared store. Verify that the chip display and validation behavior matches the standard implementation. Test the responsive layout of chips across different screen sizes. Confirm that clicking on chips correctly expands the drawer/accordion to show all validation issues. Verify that the form does not duplicate any traveler Edit/View functionality."
         }
       ]
     },
@@ -474,15 +573,16 @@
       ],
       "priority": "medium",
       "details": "Create a 'Clear Form' button that resets all inputs in the current tab. Add confirmation dialog before clearing to prevent accidental data loss. Implement data structure to store form data for each tab type. Create functions to populate forms from stored data when switching tabs. Ensure form data is preserved in memory during tab switches. Implement functions to validate form data before submission or summary generation. Update data management to handle the separation between master traveler list and selected travelers for each request.",
-      "testStrategy": "Test 'Clear Form' button functionality. Verify confirmation dialog appears. Check that form data is preserved when switching tabs. Test form validation with various input combinations. Verify that the master traveler list remains intact when clearing a form. Test that selected travelers for each request are properly managed.",
+      "testStrategy": "Test 'Clear Form' button functionality. Verify confirmation dialog appears. Check that form data is preserved when switching tabs. Test form validation with various input combinations. Verify that the master traveler list remains intact when clearing a form. Test that selected travelers for each request are properly managed. Implement unit tests for all data management functions and confirmation dialog behavior. Create integration tests to verify data persistence across tab switches and form resets.",
       "subtasks": [
         {
           "id": 1,
           "title": "Implement Clear Form Functionality with Confirmation Dialog",
           "description": "Create a mechanism to reset form fields with a confirmation dialog to prevent accidental data loss",
           "dependencies": [],
-          "details": "Develop a reusable clear form function that can be applied to all forms in the application. Implement a confirmation dialog that appears when the user attempts to clear the form, asking for confirmation before proceeding. The dialog should clearly communicate what data will be lost and provide options to confirm or cancel the action. Ensure the function properly resets all form fields to their default state.",
-          "status": "pending"
+          "details": "Develop a reusable clear form function that can be applied to all forms in the application. Implement a confirmation dialog that appears when the user attempts to clear the form, asking for confirmation before proceeding. The dialog should clearly communicate what data will be lost and provide options to confirm or cancel the action. Ensure the function properly resets all form fields to their default state while preserving the master traveler list.",
+          "status": "pending",
+          "testStrategy": "Test the clear form functionality with various form states. Verify the confirmation dialog appears and correctly communicates what will be lost. Test canceling and confirming the action. Verify that the master traveler list remains intact after clearing. Implement unit tests for the clear form function and dialog component. Create integration tests to verify the complete clear form flow."
         },
         {
           "id": 2,
@@ -491,8 +591,9 @@
           "dependencies": [
             1
           ],
-          "details": "Design and implement a state management solution that temporarily stores form data when a user switches between tabs. This should prevent data loss during navigation. Consider using local storage, session storage, or state management libraries depending on the application architecture. Ensure the solution handles all form field types including text inputs, checkboxes, radio buttons, and file uploads. Test thoroughly with various navigation patterns.",
-          "status": "pending"
+          "details": "Design and implement a state management solution that temporarily stores form data when a user switches between tabs. This should prevent data loss during navigation. Consider using local storage, session storage, or state management libraries depending on the application architecture. Ensure the solution handles all form field types including text inputs, checkboxes, radio buttons, and file uploads. Maintain clear separation between the master traveler list and selected travelers for each request form. Test thoroughly with various navigation patterns.",
+          "status": "pending",
+          "testStrategy": "Test data persistence by filling forms and switching between tabs. Verify all form data is preserved correctly. Test with various form field types and complex data structures. Implement unit tests for the state management functions. Create integration tests to verify data persistence across different navigation patterns."
         },
         {
           "id": 3,
@@ -502,8 +603,9 @@
             1,
             2
           ],
-          "details": "Design and implement a reusable validation service that can be used across all forms. The service should support common validation rules (required fields, email format, numeric values, etc.) as well as custom validation logic. Implement real-time validation feedback for users. Ensure the validation service integrates with both the clear form functionality and the data persistence system. Document the validation API for other developers to use.",
-          "status": "pending"
+          "details": "Design and implement a reusable validation service that can be used across all request forms. The service should support common validation rules for request-specific fields (required fields, date ranges, etc.) while respecting the separation of concerns with traveler management. Implement real-time validation feedback for users. Ensure the validation service integrates with both the clear form functionality and the data persistence system. Document the validation API for other developers to use, clearly indicating which validations should be handled by the traveler management system versus the request forms.",
+          "status": "pending",
+          "testStrategy": "Test the validation service with various validation rules and input types. Verify error messages are clear and accessible. Test integration with the clear form functionality and data persistence. Implement comprehensive unit tests for all validation rules. Create integration tests to verify the validation service works correctly across different forms."
         },
         {
           "id": 4,
@@ -512,9 +614,9 @@
           "dependencies": [
             2
           ],
-          "details": "Update the data management system to maintain a clear separation between the master traveler list and the travelers selected for each request. Implement data structures to track selected travelers per request. Ensure that clearing a form removes travelers from the current request selection but not from the master list. Update the form data persistence to properly save and restore selected travelers when switching tabs.",
+          "details": "Update the data management system to maintain a clear separation between the master traveler list and the travelers selected for each request. Implement data structures to track selected travelers per request. Ensure that clearing a form removes travelers from the current request selection but not from the master list. Update the form data persistence to properly save and restore selected travelers when switching tabs. Implement a mechanism to check if selected travelers have the required information for specific request types without duplicating validation logic.",
           "status": "pending",
-          "testStrategy": "Test that clearing a form removes travelers from the current request selection but not from the master list. Verify that selected travelers are properly saved and restored when switching tabs. Test with multiple requests having different traveler selections."
+          "testStrategy": "Test that clearing a form removes travelers from the current request selection but not from the master list. Verify that selected travelers are properly saved and restored when switching tabs. Test with multiple requests having different traveler selections. Verify that the system correctly identifies when selected travelers are missing required information for specific request types. Implement unit tests for all traveler selection management functions. Create integration tests to verify the complete traveler selection flow across different forms."
         }
       ]
     },
@@ -532,15 +634,16 @@
       ],
       "priority": "high",
       "details": "Create a 'Generate Summary' button. Implement logic to collect data from all form fields and selected travelers. Format data into a human-readable, email-friendly format with clear section headers. Add a 'Copy to Clipboard' button using the Clipboard API. Create a collapsible section to display raw JSON (optional). Generate Base64-encoded data block and include it in the summary as a fallback. Style the summary output to be visually distinct and easy to read. Sanitize all dynamic content to prevent XSS vulnerabilities. Update summary generation to properly handle multiple selected travelers per request.",
-      "testStrategy": "Test summary generation with various form data combinations. Verify 'Copy to Clipboard' functionality works. Check that the Base64 encoding is correct and can be decoded. Test with special characters and edge cases to ensure proper sanitization. Test with multiple selected travelers to ensure they're properly included in the summary.",
+      "testStrategy": "Test summary generation with various form data combinations. Verify 'Copy to Clipboard' functionality works. Check that the Base64 encoding is correct and can be decoded. Test with special characters and edge cases to ensure proper sanitization. Test with multiple selected travelers to ensure they're properly included in the summary. Implement unit tests for all summary generation functions, including data collection, formatting, and encoding. Create integration tests to verify the complete summary generation flow with different form data combinations.",
       "subtasks": [
         {
           "id": 1,
           "title": "Data Collection and Formatting Service",
           "description": "Create a service to collect data from multiple sources and format it into a structured summary",
           "dependencies": [],
-          "details": "Implement a service that gathers data from various application components, validates the data, and formats it into a consistent structure for summary display. Include error handling for missing or invalid data. The service should support different summary formats based on context.",
-          "status": "pending"
+          "details": "Implement a service that gathers data from various application components, validates the data, and formats it into a consistent structure for summary display. Include error handling for missing or invalid data. The service should support different summary formats based on context. Ensure the service respects the separation of concerns between traveler management and request forms by collecting only necessary traveler information for the summary without duplicating validation logic.",
+          "status": "pending",
+          "testStrategy": "Test data collection with various form states and data structures. Verify the formatting is consistent and human-readable. Test error handling with missing or invalid data. Implement unit tests for all data collection and formatting functions. Create integration tests to verify the service works correctly with real application components."
         },
         {
           "id": 2,
@@ -549,8 +652,9 @@
           "dependencies": [
             1
           ],
-          "details": "Create a reusable component that renders the formatted summary data with proper styling. Implement responsive design to ensure the summary displays correctly on different screen sizes. Include options for different visual themes and layout configurations.",
-          "status": "pending"
+          "details": "Create a reusable component that renders the formatted summary data with proper styling. Implement responsive design to ensure the summary displays correctly on different screen sizes. Include options for different visual themes and layout configurations. Organize the summary to clearly separate traveler information from request-specific details.",
+          "status": "pending",
+          "testStrategy": "Test the display component with various data structures and content lengths. Verify responsive behavior on different screen sizes. Test accessibility of the summary display. Implement unit tests for the summary component rendering. Create snapshot tests to ensure consistent styling."
         },
         {
           "id": 3,
@@ -560,7 +664,8 @@
             2
           ],
           "details": "Implement a copy-to-clipboard feature that works across different browsers. Include visual feedback when the copy action succeeds or fails. Consider accessibility requirements and ensure keyboard shortcuts are available. Test on multiple platforms to ensure compatibility.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Test clipboard functionality across different browsers and platforms. Verify visual feedback is clear and accessible. Test keyboard shortcuts for copying. Implement unit tests for the clipboard functions. Create integration tests to verify the complete copy flow."
         },
         {
           "id": 4,
@@ -571,7 +676,8 @@
             3
           ],
           "details": "Add Base64 encoding functionality for sensitive data in the summary. Implement security measures to prevent XSS attacks, including input sanitization and output encoding. Document the security approach and conduct security testing to verify protection against common vulnerabilities.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Test Base64 encoding with various data types and structures. Verify encoding and decoding work correctly. Test security measures with potentially malicious input. Implement unit tests for encoding functions and security measures. Create security-focused tests to verify protection against XSS attacks."
         },
         {
           "id": 5,
@@ -581,9 +687,9 @@
             1,
             2
           ],
-          "details": "Update the summary generation logic to properly format and display multiple selected travelers for each request. Ensure travelers are clearly identified and their information is properly organized in the summary. Handle edge cases such as no travelers selected or a large number of travelers. Update the Base64 encoding to include all traveler data.",
+          "details": "Update the summary generation logic to properly format and display multiple selected travelers for each request. Ensure travelers are clearly identified and their information is properly organized in the summary. Handle edge cases such as no travelers selected or a large number of travelers. Update the Base64 encoding to include all traveler data. Respect the separation of concerns by including only necessary traveler information in the summary without duplicating validation logic.",
           "status": "pending",
-          "testStrategy": "Test summary generation with different numbers of selected travelers. Verify that all traveler information is properly included in the summary. Test edge cases such as no travelers selected or a large number of travelers."
+          "testStrategy": "Test summary generation with different numbers of selected travelers. Verify that all traveler information is properly included in the summary. Test edge cases such as no travelers selected or a large number of travelers. Verify that the summary includes only necessary traveler information without duplicating validation logic. Implement unit tests for the updated summary generation functions. Create integration tests to verify the complete summary flow with multiple travelers."
         }
       ]
     },
@@ -597,15 +703,16 @@
       ],
       "priority": "medium",
       "details": "Implement Base64 encoding of JSON request data. Create URL encoding function to append data to query string. Add a 'Share Link' button that generates and copies a shareable URL. Create a view.html page to handle the /view endpoint. Implement query parameter parsing to extract the 'data' parameter. Add decoding logic (URL decode, Base64 decode, JSON parse). Create a simple HTML template to display the decoded request data. Implement error handling for missing or invalid data. Add sanitization to prevent XSS attacks. Update sharing functionality to properly include all selected travelers for the request.",
-      "testStrategy": "Test encoding and decoding with various data structures. Verify the generated URLs work correctly when opened. Test error handling with invalid or missing data. Check XSS protection by attempting to include script tags in the data. Test with multiple selected travelers to ensure they're properly included in the shared data.",
+      "testStrategy": "Test encoding and decoding with various data structures. Verify the generated URLs work correctly when opened. Test error handling with invalid or missing data. Check XSS protection by attempting to include script tags in the data. Test with multiple selected travelers to ensure they're properly included in the shared data. Implement unit tests for all encoding, decoding, and URL generation functions. Create integration tests to verify the complete sharing flow and view page functionality.",
       "subtasks": [
         {
           "id": 1,
           "title": "Implement Data Encoding and URL Generation Service",
           "description": "Create a service that encodes data into URL-safe format and generates shareable URLs",
           "dependencies": [],
-          "details": "Develop a utility service that can serialize JSON data, compress it if needed, encode it to be URL-safe (base64url or similar), and generate complete URLs with the encoded data as parameters. Include size limitations and validation to prevent excessively large URLs.",
-          "status": "pending"
+          "details": "Develop a utility service that can serialize JSON data, compress it if needed, encode it to be URL-safe (base64url or similar), and generate complete URLs with the encoded data as parameters. Include size limitations and validation to prevent excessively large URLs. Ensure the service handles the separation between traveler data and request-specific data appropriately.",
+          "status": "pending",
+          "testStrategy": "Test encoding with various data structures and sizes. Verify URL generation works correctly with different base URLs. Test size limitations and compression. Implement unit tests for all encoding and URL generation functions. Create tests for edge cases like empty data or very large objects."
         },
         {
           "id": 2,
@@ -615,7 +722,8 @@
             1
           ],
           "details": "Implement a button component that triggers the URL generation service, provides copy-to-clipboard functionality, and optionally integrates with native share APIs. Include visual feedback for successful link generation and copying.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Test the share button functionality across different browsers. Verify visual feedback is clear and accessible. Test integration with native share APIs where available. Implement unit tests for the button component and its handlers. Create integration tests to verify the complete sharing flow."
         },
         {
           "id": 3,
@@ -624,8 +732,9 @@
           "dependencies": [
             1
           ],
-          "details": "Develop a view page that extracts encoded data from URL parameters, decodes it, and renders the information in a user-friendly format. Include loading states and appropriate UI components based on the type of data being shared.",
-          "status": "pending"
+          "details": "Develop a view page that extracts encoded data from URL parameters, decodes it, and renders the information in a user-friendly format. Include loading states and appropriate UI components based on the type of data being shared. Organize the display to clearly separate traveler information from request-specific details.",
+          "status": "pending",
+          "testStrategy": "Test the view page with various encoded data structures. Verify decoding works correctly. Test loading states and error handling. Implement unit tests for the decoding and rendering functions. Create integration tests to verify the complete view page functionality with different data types."
         },
         {
           "id": 4,
@@ -636,7 +745,8 @@
             3
           ],
           "details": "Add validation to prevent XSS attacks from shared data, implement graceful error handling for malformed URLs or corrupted data, set up content security policies, and add rate limiting for URL generation to prevent abuse. Include user-friendly error messages and fallback displays.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Test error handling with various invalid inputs. Verify security measures prevent XSS attacks. Test with malformed URLs and corrupted data. Implement security-focused tests to verify protection against common vulnerabilities. Create integration tests to verify the complete error handling flow."
         },
         {
           "id": 5,
@@ -646,9 +756,9 @@
             1,
             2
           ],
-          "details": "Update the data encoding and URL generation service to properly include all selected travelers for a request. Ensure the view page can properly decode and display multiple travelers. Handle edge cases such as no travelers selected or a large number of travelers that might exceed URL length limitations. Consider implementing compression for large data sets.",
+          "details": "Update the data encoding and URL generation service to properly include all selected travelers for a request. Ensure the view page can properly decode and display multiple travelers. Handle edge cases such as no travelers selected or a large number of travelers that might exceed URL length limitations. Consider implementing compression for large data sets. Respect the separation of concerns by including only necessary traveler information in the shared data without duplicating validation logic.",
           "status": "pending",
-          "testStrategy": "Test URL sharing with different numbers of selected travelers. Verify that all traveler information is properly included in the shared data. Test edge cases such as no travelers selected or a large number of travelers that might approach URL length limitations."
+          "testStrategy": "Test URL sharing with different numbers of selected travelers. Verify that all traveler information is properly included in the shared data. Test edge cases such as no travelers selected or a large number of travelers that might approach URL length limitations. Verify that the shared data includes only necessary traveler information without duplicating validation logic. Implement unit tests for the updated encoding functions. Create integration tests to verify the complete sharing flow with multiple travelers."
         }
       ]
     },
@@ -670,15 +780,16 @@
       ],
       "priority": "high",
       "details": "Connect all components to ensure they work together seamlessly. Test the complete user flow from traveler selection to form filling to summary generation. Optimize JavaScript for performance. Ensure responsive design works on all device sizes. Add final polish to the UI using Tailwind CSS. Implement any missing validation or error handling. Test localStorage persistence across browser sessions. Create a simple help/instructions section. Perform cross-browser testing. Add appropriate comments and documentation in the code. Verify that the traveler management system properly handles the separation between master traveler list and selected travelers for each request.",
-      "testStrategy": "Conduct end-to-end testing of the complete application. Test on multiple browsers (Chrome, Firefox, Safari, Edge). Verify responsive behavior on mobile, tablet, and desktop. Test with real user scenarios to ensure usability. Validate HTML and check for accessibility issues. Test the complete traveler management flow, including adding, editing, and selecting travelers across multiple requests.",
+      "testStrategy": "Conduct end-to-end testing of the complete application. Test on multiple browsers (Chrome, Firefox, Safari, Edge). Verify responsive behavior on mobile, tablet, and desktop. Test with real user scenarios to ensure usability. Validate HTML and check for accessibility issues. Test the complete traveler management flow, including adding, editing, and selecting travelers across multiple requests. Implement comprehensive test suites covering unit, integration, and end-to-end testing. Create automated test scripts for critical user flows. Document all testing procedures and results.",
       "subtasks": [
         {
           "id": 1,
           "title": "Component Integration and Flow Testing",
           "description": "Integrate all components and test the complete user flow from start to finish",
           "dependencies": [],
-          "details": "Connect all previously developed components and ensure they work together seamlessly. Test all user flows including authentication, navigation, data submission, and error handling. Verify that data passes correctly between components and state management works as expected.",
-          "status": "pending"
+          "details": "Connect all previously developed components and ensure they work together seamlessly. Test all user flows including authentication, navigation, data submission, and error handling. Verify that data passes correctly between components and state management works as expected. Ensure the separation of concerns between traveler management and request forms is maintained throughout the integration.",
+          "status": "pending",
+          "testStrategy": "Implement end-to-end tests for all major user flows. Create integration tests for component interactions. Test data flow between components. Verify state management works correctly across the application. Document all test cases and results."
         },
         {
           "id": 2,
@@ -688,7 +799,8 @@
             1
           ],
           "details": "Run performance audits using tools like Lighthouse. Optimize bundle size, implement code splitting, lazy loading, and memoization where appropriate. Reduce unnecessary re-renders and optimize API calls. Measure and improve key metrics like First Contentful Paint and Time to Interactive.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Implement performance benchmarks to measure improvements. Create tests to verify bundle size and loading times. Test performance on various devices and network conditions. Document performance metrics before and after optimization."
         },
         {
           "id": 3,
@@ -698,7 +810,8 @@
             1
           ],
           "details": "Test the application on various device sizes (mobile, tablet, desktop). Verify that layouts adjust appropriately, touch targets are adequately sized, and content remains accessible. Check for any overflow issues, text readability problems, or navigation difficulties on smaller screens.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Create visual regression tests for different screen sizes. Implement tests for responsive breakpoints. Test touch interactions on mobile devices. Verify accessibility across different screen sizes. Document all responsive design test cases and results."
         },
         {
           "id": 4,
@@ -710,7 +823,8 @@
             3
           ],
           "details": "Test the application in Chrome, Firefox, Safari, and Edge. Verify that all features work consistently across browsers. Document and fix any browser-specific issues. Test on both desktop and mobile browsers to ensure full compatibility.",
-          "status": "pending"
+          "status": "pending",
+          "testStrategy": "Implement cross-browser test suites using tools like BrowserStack or Sauce Labs. Create tests for browser-specific features and workarounds. Document browser compatibility issues and solutions. Verify critical functionality works across all target browsers."
         },
         {
           "id": 5,
@@ -722,8 +836,9 @@
             3,
             4
           ],
-          "details": "Update all documentation including README, API docs, and component documentation. Remove console logs, commented-out code, and unused dependencies. Ensure consistent code formatting and naming conventions. Add appropriate comments for complex logic and create a final pull request with a comprehensive description of all changes.",
-          "status": "pending"
+          "details": "Update all documentation including README, API docs, and component documentation. Remove console logs, commented-out code, and unused dependencies. Ensure consistent code formatting and naming conventions. Add appropriate comments for complex logic and create a final pull request with a comprehensive description of all changes. Document the separation of concerns between traveler management and request forms to guide future development.",
+          "status": "pending",
+          "testStrategy": "Implement documentation tests to verify examples work correctly. Create linting rules to enforce code style and prevent common issues. Test that documentation is up-to-date with the current implementation. Verify all public APIs are properly documented."
         },
         {
           "id": 6,
@@ -732,9 +847,21 @@
           "dependencies": [
             1
           ],
-          "details": "Test the complete traveler management flow across all request forms. Verify that adding, editing, and removing travelers works correctly. Test that changes to the master traveler list propagate to all requests using those travelers. Verify that clearing a form removes travelers from the current request selection but not from the master list. Test with multiple requests having different traveler selections.",
+          "details": "Test the complete traveler management flow across all request forms. Verify that adding, editing, and removing travelers works correctly. Test that changes to the master traveler list propagate to all requests using those travelers. Verify that clearing a form removes travelers from the current request selection but not from the master list. Test with multiple requests having different traveler selections. Confirm that the separation of concerns is maintained, with traveler details validated only in the traveler management system and request forms only validating the presence of required traveler information.",
           "status": "pending",
-          "testStrategy": "Test adding new travelers from different request forms. Verify editing a traveler updates all requests using that traveler. Test removing travelers from requests. Verify that the master traveler list remains intact when clearing forms. Test with multiple requests having different traveler selections."
+          "testStrategy": "Test adding new travelers from different request forms. Verify editing a traveler updates all requests using that traveler. Test removing travelers from requests. Verify that the master traveler list remains intact when clearing forms. Test with multiple requests having different traveler selections. Confirm that traveler detail validation occurs only in the traveler management system, while request forms only validate the presence of required traveler information. Implement integration tests for the traveler management system across all forms. Create end-to-end tests for the complete traveler management flow."
+        },
+        {
+          "id": 7,
+          "title": "Validate separation of concerns implementation",
+          "description": "Ensure the separation between traveler management and request forms is properly implemented",
+          "dependencies": [
+            1,
+            6
+          ],
+          "details": "Review the entire codebase to verify that the separation of concerns between traveler management and request forms is consistently implemented. Ensure traveler details (name, email, phone, DOB, etc.) are validated only in the traveler management system. Confirm that request forms only validate the presence of required traveler information for the specific request type. Document any areas where the separation could be improved for future development.",
+          "status": "pending",
+          "testStrategy": "Conduct a code review focused specifically on validation logic. Test each form to verify it only validates request-specific fields and the presence of required traveler information. Confirm that editing traveler details is only possible through the traveler management system. Verify that changes to traveler details properly propagate to all requests using those travelers. Implement tests to verify the separation of concerns is maintained throughout the application. Create documentation tests to ensure the separation is clearly explained for future developers."
         }
       ]
     },
@@ -746,7 +873,7 @@
       "dependencies": [],
       "priority": "high",
       "details": "The developer should:\n1. Identify all instances where window.TravelerService is exposed globally in the codebase\n2. Refactor the code to use proper module patterns (ES modules, CommonJS, or AMD) instead of global exposure\n3. Update any code that currently references the global TravelerService object to use the proper import/require mechanisms\n4. Implement a configuration-based approach where debug/development features are only enabled in non-production environments\n5. Consider using environment variables or build flags to control whether debugging tools are included\n6. Document the proper way to access TravelerService functionality for other developers\n7. Ensure backward compatibility or provide clear migration instructions if this change affects other components\n8. Review the entire codebase for similar global exposures that should be removed before production\n\nThis task is critical for security as globally exposed services can potentially be manipulated by malicious scripts or browser extensions. It also improves code maintainability by following modern JavaScript best practices for module encapsulation.",
-      "testStrategy": "Testing should include:\n1. Static code analysis to verify all instances of window.TravelerService have been removed\n2. Unit tests to confirm TravelerService functionality still works correctly after refactoring\n3. Integration tests to ensure components that previously used the global object still function properly\n4. Environment-specific tests to verify the service is accessible in development but not exposed in production builds\n5. Browser console checks to confirm the global object is not accessible in production mode\n6. Security scanning tools to detect any remaining global object exposures\n7. Code review by another team member to ensure the refactoring follows best practices\n8. Performance testing to verify the refactoring doesn't negatively impact application speed\n9. Create automated tests that specifically check for the absence of window.TravelerService in production builds\n10. Document the testing process for future reference when similar security-related refactoring is needed",
+      "testStrategy": "Testing should include:\n1. Static code analysis to verify all instances of window.TravelerService have been removed\n2. Unit tests to confirm TravelerService functionality still works correctly after refactoring\n3. Integration tests to ensure components that previously used the global object still function properly\n4. Environment-specific tests to verify the service is accessible in development but not exposed in production builds\n5. Browser console checks to confirm the global object is not accessible in production mode\n6. Security scanning tools to detect any remaining global object exposures\n7. Code review by another team member to ensure the refactoring follows best practices\n8. Performance testing to verify the refactoring doesn't negatively impact application speed\n9. Create automated tests that specifically check for the absence of window.TravelerService in production builds\n10. Document the testing process for future reference when similar security-related refactoring is needed\n11. Implement tests that verify proper module imports are working in all components that use TravelerService\n12. Create regression tests to ensure all TravelerService functionality works identically after the refactoring",
       "subtasks": []
     },
     {

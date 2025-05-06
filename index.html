@@ -28,24 +28,99 @@
 
             <!-- Tab Content -->
             <div class="mt-6">
-                <!-- Hotel Form -->
-                <div id="hotelForm" class="tab-content">
-                    <div class="card space-y-6">
-                        <div id="hotelTravelerSelector"></div>
-                        <div>
-                            <label for="hotelName" class="form-label">Hotel Name</label>
-                            <input type="text" id="hotelName" name="hotelName" class="form-input" placeholder="Enter hotel name">
+                <!-- Hotel Request Form Section -->
+                <section id="hotelForm" class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow mt-8">
+                    <h2 class="text-2xl font-bold mb-4">Hotel Request Form</h2>
+                    <form>
+                        <!-- Traveler Selection Combobox (moved to top) -->
+                        <div class="mb-4">
+                            <label class="block font-semibold mb-1" for="travelerSelect">Travelers
+                                <span class="ml-1 text-gray-400" title="Select one or more travelers for this request">?</span>
+                            </label>
+                            <div id="hotelTravelerSelector" class="w-full"></div>
                         </div>
-                        <div>
-                            <label for="hotelDates" class="form-label">Stay Dates</label>
-                            <input type="text" id="hotelDates" name="hotelDates" class="form-input" placeholder="MM/DD/YYYY - MM/DD/YYYY">
+                        <!-- Dates -->
+                        <div class="mb-4 flex flex-col md:flex-row md:space-x-4">
+                            <div class="flex-1 mb-4 md:mb-0">
+                                <label class="block font-semibold mb-1" for="checkInDate">Check-In Date <span class="text-red-500">*</span></label>
+                                <input id="checkInDate" name="checkInDate" type="date" required class="w-full border rounded px-3 py-2" min="" autocomplete="off" />
+                                <div id="checkInDateError" class="text-red-600 text-sm mt-1" aria-live="polite" style="display:none;"></div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block font-semibold mb-1" for="checkOutDate">Check-Out Date <span class="text-red-500">*</span></label>
+                                <input id="checkOutDate" name="checkOutDate" type="date" required class="w-full border rounded px-3 py-2" min="" autocomplete="off" />
+                                <div id="checkOutDateError" class="text-red-600 text-sm mt-1" aria-live="polite" style="display:none;"></div>
+                            </div>
                         </div>
-                        <div>
-                            <label for="hotelNotes" class="form-label">Special Requests</label>
-                            <textarea id="hotelNotes" name="hotelNotes" rows="3" class="form-input" placeholder="Any special requests or notes"></textarea>
+                        <div class="mb-2">
+                            <span id="totalNightsDisplay" class="text-gray-700 text-sm"></span>
                         </div>
-                    </div>
-                </div>
+                        <div id="extendedStayOptions" class="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded" style="display:none;">
+                            <strong>Extended Stay:</strong> Your stay exceeds 7 nights. Please specify any additional requirements in the notes or special requests fields.
+                        </div>
+                        <!-- Target Location -->
+                        <div class="mb-4">
+                            <label class="block font-semibold mb-1">Target Location <span class="text-red-500">*</span></label>
+                            <div class="flex space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="locationBehavior" value="general" class="form-radio" checked />
+                                    <span class="ml-2">General location</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="locationBehavior" value="property" class="form-radio" />
+                                    <span class="ml-2">Specific property</span>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Location Behavior Conditional Fields -->
+                        <div id="propertyFields" class="mb-4">
+                            <label class="block font-semibold mb-1" for="propertyName">Property Name <span class="text-red-500">*</span></label>
+                            <input id="propertyName" name="propertyName" type="text" class="w-full border rounded px-3 py-2" placeholder="Enter property name" />
+                            <label class="block font-semibold mb-1 mt-2" for="propertyAddress">Property Address <span class="text-red-500">*</span></label>
+                            <input id="propertyAddress" name="propertyAddress" type="text" class="w-full border rounded px-3 py-2" placeholder="Enter property address" />
+                        </div>
+                        <div id="generalFields" class="mb-4" style="display:none;">
+                            <label class="block font-semibold mb-1" for="generalAddress">Address to Search Around <span class="text-red-500">*</span></label>
+                            <input id="generalAddress" name="generalAddress" type="text" class="w-full border rounded px-3 py-2" placeholder="Enter address" />
+                            <label class="block font-semibold mb-1 mt-2" for="radiusSlider">Search Radius</label>
+                            <div class="flex items-center space-x-2">
+                                <input id="radiusSlider" name="radius" type="range" min="0" max="50" value="10" step="1" class="w-full" />
+                                <span id="radiusValue" class="text-sm text-gray-700">10 miles</span>
+                            </div>
+                        </div>
+                        <!-- Traveler Notes -->
+                        <div class="mb-4">
+                            <label class="block font-semibold mb-1" for="travelerNotes">Traveler Notes
+                                <span class="ml-1 text-gray-400" title="Add any notes or preferences for the traveler">?</span>
+                            </label>
+                            <textarea id="travelerNotes" name="travelerNotes" rows="2" class="w-full border rounded px-3 py-2" placeholder="Enter notes (optional)"></textarea>
+                        </div>
+                        <!-- Room Preference -->
+                        <div class="mb-4">
+                            <label class="block font-semibold mb-1" for="roomPreference">Room Preference
+                                <span class="ml-1 text-gray-400" title="Select preferred room type">?</span>
+                            </label>
+                            <select id="roomPreference" name="roomPreference" class="w-full border rounded px-3 py-2">
+                                <option value="">Select room type</option>
+                                <option value="single">Single</option>
+                                <option value="double">Double</option>
+                                <option value="suite">Suite</option>
+                            </select>
+                        </div>
+                        <!-- Special Requests -->
+                        <div class="mb-4">
+                            <label class="block font-semibold mb-1" for="specialRequests">Special Requests
+                                <span class="ml-1 text-gray-400" title="Add any special requests for the hotel stay">?</span>
+                            </label>
+                            <textarea id="specialRequests" name="specialRequests" rows="2" class="w-full border rounded px-3 py-2" placeholder="Enter special requests (optional)"></textarea>
+                        </div>
+                        <!-- Submit Button -->
+                        <div class="mt-6">
+                            <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition">Submit Request</button>
+                            <div id="hotelFormSuccess" class="text-green-600 text-center text-sm mt-3" aria-live="polite" style="display:none;"></div>
+                        </div>
+                    </form>
+                </section>
 
                 <!-- Flight Form -->
                 <div id="flightForm" class="tab-content hidden opacity-0">
@@ -112,3 +187,4 @@
     <script src="./src/js/main.js" type="module"></script>
 </body>
 </html>
+
