@@ -1,1 +1,61 @@
-[]
+[
+  {
+    "name": "travelers",
+    "type": "travelerSelect",
+    "label": "Travelers",
+    "required": true
+  },
+  {
+    "name": "checkInDate",
+    "type": "date",
+    "label": "Check-In Date",
+    "required": true
+  },
+  {
+    "name": "checkOutDate",
+    "type": "date",
+    "label": "Check-Out Date",
+    "required": true
+  },
+  {
+    "name": "locationType",
+    "type": "radio",
+    "label": "Target Location",
+    "required": true,
+    "options": ["general", "property"]
+  },
+  {
+    "name": "propertyName",
+    "type": "text",
+    "label": "Property Name",
+    "requiredIf": { "locationType": "property" }
+  },
+  {
+    "name": "propertyAddress",
+    "type": "text",
+    "label": "Property Address",
+    "requiredIf": { "locationType": "property" }
+  },
+  {
+    "name": "generalAddress",
+    "type": "text",
+    "label": "Address to Search Around",
+    "requiredIf": { "locationType": "general" }
+  },
+  {
+    "name": "searchRadius",
+    "type": "slider",
+    "label": "Search Radius (miles)",
+    "default": 10,
+    "min": 0,
+    "max": 50,
+    "step": 1,
+    "showIf": { "locationType": "general" }
+  },
+  {
+    "name": "notes",
+    "type": "textarea",
+    "label": "Special Notes",
+    "required": false
+  }
+]

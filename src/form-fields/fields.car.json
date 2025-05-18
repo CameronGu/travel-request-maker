@@ -1,1 +1,70 @@
-[]
+[
+  {
+    "name": "travelers",
+    "type": "travelerSelect",
+    "label": "Travelers",
+    "required": true
+  },
+  {
+    "name": "pickupLocationType",
+    "type": "radio",
+    "label": "Pickup Location Type",
+    "required": true,
+    "options": ["airport", "specific", "general"]
+  },
+  {
+    "name": "pickupLocation",
+    "type": "locationInput",
+    "label": "Pickup Location",
+    "required": true
+  },
+  {
+    "name": "pickupDate",
+    "type": "date",
+    "label": "Pickup Date",
+    "required": true
+  },
+  {
+    "name": "pickupTime",
+    "type": "time",
+    "label": "Pickup Time",
+    "required": true
+  },
+  {
+    "name": "dropoffSame",
+    "type": "checkbox",
+    "label": "Drop-Off Same as Pickup?",
+    "required": true
+  },
+  {
+    "name": "dropoffLocationType",
+    "type": "radio",
+    "label": "Drop-Off Location Type",
+    "requiredIf": { "dropoffSame": false },
+    "options": ["airport", "specific", "general"]
+  },
+  {
+    "name": "dropoffLocation",
+    "type": "locationInput",
+    "label": "Drop-Off Location",
+    "requiredIf": { "dropoffSame": false }
+  },
+  {
+    "name": "dropoffDate",
+    "type": "date",
+    "label": "Drop-Off Date",
+    "required": true
+  },
+  {
+    "name": "dropoffTime",
+    "type": "time",
+    "label": "Drop-Off Time",
+    "required": true
+  },
+  {
+    "name": "notes",
+    "type": "textarea",
+    "label": "Special Notes",
+    "required": false
+  }
+]

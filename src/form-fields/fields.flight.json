@@ -1,1 +1,69 @@
-[]
+[
+  {
+    "name": "travelers",
+    "type": "travelerSelect",
+    "label": "Travelers",
+    "required": true
+  },
+  {
+    "name": "tripType",
+    "type": "radio",
+    "label": "Trip Type",
+    "required": true,
+    "options": ["one-way", "round-trip"]
+  },
+  {
+    "name": "departureAirport",
+    "type": "airportSelect",
+    "label": "Departure Airport",
+    "required": true
+  },
+  {
+    "name": "arrivalAirport",
+    "type": "airportSelect",
+    "label": "Arrival Airport",
+    "required": true
+  },
+  {
+    "name": "departureDate",
+    "type": "date",
+    "label": "Departure Date",
+    "required": true
+  },
+  {
+    "name": "returnDate",
+    "type": "date",
+    "label": "Return Date",
+    "requiredIf": { "tripType": "round-trip" }
+  },
+  {
+    "name": "timePreference",
+    "type": "radio",
+    "label": "Flight Time Preference",
+    "required": true,
+    "options": ["best", "morning", "afternoon", "evening", "custom", "specific"]
+  },
+  {
+    "name": "customTime",
+    "type": "timeRange",
+    "label": "Custom Time Range",
+    "showIf": { "timePreference": "custom" },
+    "fields": {
+      "timeType": ["departure", "arrival"],
+      "start": "HH:mm",
+      "end": "HH:mm"
+    }
+  },
+  {
+    "name": "specificFlight",
+    "type": "textarea",
+    "label": "Specific Flight Details",
+    "showIf": { "timePreference": "specific" }
+  },
+  {
+    "name": "notes",
+    "type": "textarea",
+    "label": "Special Notes",
+    "required": false
+  }
+]
