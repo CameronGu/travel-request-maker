@@ -14,7 +14,7 @@
  * • Build inputs dynamically.
  * • Integrate React Hook Form + zod validation.
  */
-export default function DynamicForm(): JSX.Element {
+export default function DynamicForm() {
   // TODO: hook into RHF using JSON field config
   return null;
 }
