@@ -1,3 +1,6 @@
+// Base interface for storage drivers in the system (LocalDriver, SupabaseDriver, etc.)
+// Used by consumers via `activeDriver` to persist/retrieve data in a consistent way.
+
 export interface StorageDriver {
   /**
    * Retrieve a value by key.
