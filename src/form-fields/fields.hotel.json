@@ -1,61 +1,32 @@
 [
-  {
-    "name": "travelers",
-    "type": "travelerSelect",
-    "label": "Travelers",
-    "required": true
-  },
-  {
-    "name": "checkInDate",
-    "type": "date",
-    "label": "Check-In Date",
-    "required": true
-  },
-  {
-    "name": "checkOutDate",
-    "type": "date",
-    "label": "Check-Out Date",
-    "required": true
-  },
-  {
-    "name": "locationType",
-    "type": "radio",
-    "label": "Target Location",
-    "required": true,
-    "options": ["general", "property"]
-  },
-  {
-    "name": "propertyName",
-    "type": "text",
-    "label": "Property Name",
-    "requiredIf": { "locationType": "property" }
-  },
-  {
-    "name": "propertyAddress",
-    "type": "text",
-    "label": "Property Address",
-    "requiredIf": { "locationType": "property" }
-  },
-  {
-    "name": "generalAddress",
-    "type": "text",
-    "label": "Address to Search Around",
-    "requiredIf": { "locationType": "general" }
-  },
-  {
-    "name": "searchRadius",
-    "type": "slider",
-    "label": "Search Radius (miles)",
-    "default": 10,
-    "min": 0,
-    "max": 50,
-    "step": 1,
-    "showIf": { "locationType": "general" }
-  },
-  {
-    "name": "notes",
-    "type": "textarea",
-    "label": "Special Notes",
-    "required": false
-  }
+  // ── Shared Metadata (hidden) ───────────────────────────────────────────
+  { "id": "client",          "type": "hidden", "defaultFrom": "client" },
+  { "id": "project",         "type": "hidden", "defaultFrom": "project" },
+  { "id": "clientReference", "label": "Client Reference", "type": "text", "readOnlyIfLocked": true, "defaultFrom": "clientReference" },
+
+  // ── Travelers ──────────────────────────────────────────────────────────
+  { "id": "travelerIds", "label": "Travelers", "type": "travelerMultiSelect", "required": true },
+
+  // ── Location & Behaviour ───────────────────────────────────────────────
+  { "id": "targetLocationType", "label": "Target Location Type", "type": "radio", "required": true,
+    "options": [ {"value":"specific","label":"Specific Property"}, {"value":"general","label":"General Area"} ] },
+  { "id": "location.text",  "label": "Location",       "type": "mapAutocomplete", "required": true },
+  { "id": "location.lat",   "type": "hidden",          "required": true },
+  { "id": "location.lng",   "type": "hidden",          "required": true },
+  { "id": "location.radius", "label": "Search Radius (mi)", "type": "slider", "min":1, "max":50, "default":10, "showWhen": { "targetLocationType": "general" } },
+
+  // ── Dates ──────────────────────────────────────────────────────────────
+  { "id": "checkInDate",  "label": "Check-In Date",  "type": "date", "required": true, "min": "today" },
+  { "id": "checkOutDate", "label": "Check-Out Date", "type": "date", "required": true, "validate": { "after": "checkInDate" } },
+
+  // ── Rooms (repeatable group) ───────────────────────────────────────────
+  { "id": "room.group", "type": "array", "label": "Rooms", "itemFields": [
+      { "id": "roomType",     "label": "Room Type",     "type": "select", "options": ["King", "Double", "Suite"] },
+      { "id": "travelerIds", "label": "Room Assignment", "type": "travelerMultiSelect" }
+    ] },
+
+  // ── Misc ───────────────────────────────────────────────────────────────
+  { "id": "notes",           "label": "Notes",            "type": "textarea" },
+  { "id": "budgetGuidance", "label": "Budget Guidance", "type": "select",
+    "options": ["Optimize", "Mid-range", "Premium"], "defaultFrom": "budgetGuidance.hotel" }
 ]

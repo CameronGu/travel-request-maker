@@ -1,69 +1,48 @@
 [
-  {
-    "name": "travelers",
-    "type": "travelerSelect",
-    "label": "Travelers",
-    "required": true
-  },
-  {
-    "name": "tripType",
-    "type": "radio",
-    "label": "Trip Type",
-    "required": true,
-    "options": ["one-way", "round-trip"]
-  },
-  {
-    "name": "departureAirport",
-    "type": "airportSelect",
-    "label": "Departure Airport",
-    "required": true
-  },
-  {
-    "name": "arrivalAirport",
-    "type": "airportSelect",
-    "label": "Arrival Airport",
-    "required": true
-  },
-  {
-    "name": "departureDate",
-    "type": "date",
-    "label": "Departure Date",
-    "required": true
-  },
-  {
-    "name": "returnDate",
-    "type": "date",
-    "label": "Return Date",
-    "requiredIf": { "tripType": "round-trip" }
-  },
-  {
-    "name": "timePreference",
-    "type": "radio",
-    "label": "Flight Time Preference",
-    "required": true,
-    "options": ["best", "morning", "afternoon", "evening", "custom", "specific"]
-  },
-  {
-    "name": "customTime",
-    "type": "timeRange",
-    "label": "Custom Time Range",
-    "showIf": { "timePreference": "custom" },
-    "fields": {
-      "timeType": ["departure", "arrival"],
-      "start": "HH:mm",
-      "end": "HH:mm"
-    }
-  },
-  {
-    "name": "specificFlight",
-    "type": "textarea",
-    "label": "Specific Flight Details",
-    "showIf": { "timePreference": "specific" }
-  },
-  {
-    "name": "notes",
-    "type": "textarea",
-    "label": "Special Notes",
-    "required": false
-  }
+  // ── Shared Metadata (hidden) ───────────────────────────────────────────
+  { "id": "client",          "type": "hidden", "defaultFrom": "client" },
+  { "id": "project",         "type": "hidden", "defaultFrom": "project" },
+  { "id": "clientReference", "label": "Client Reference", "type": "text", "readOnlyIfLocked": true, "defaultFrom": "clientReference" },
+
+  // ── Travelers ──────────────────────────────────────────────────────────
+  { "id": "travelerIds", "label": "Travelers", "type": "travelerMultiSelect", "required": true },
+
+  // ── Core ───────────────────────────────────────────────────────────────
+  { "id": "departureAirport", "label": "Departure Airport", "type": "airportPicker", "required": true },
+  { "id": "arrivalAirport",   "label": "Arrival Airport",   "type": "airportPicker", "required": true },
+  { "id": "tripType", "label": "Trip Type", "type": "select", "required": true,
+    "options": [ { "value":"oneWay","label":"One-Way" }, { "value":"roundTrip","label":"Round-Trip" } ] },
+  { "id": "flightDate",  "label": "Departure Date", "type": "date", "required": true },
+  { "id": "returnDate",  "label": "Return Date",    "type": "date", "required": true, "showWhen": { "tripType": "roundTrip" } },
+
+  // ── Time Preferences ───────────────────────────────────────────────────
+  { "id": "flightTimePrefDepart", "label": "Time Preference – Departure", "type": "select",
+    "options": ["Optimize", "Morning", "Afternoon", "Evening", "Specific", "Custom"], "default": "Optimize" },
+  { "id": "flightTimePrefReturn", "label": "Time Preference – Return",   "type": "select",
+    "options": ["Optimize", "Morning", "Afternoon", "Evening", "Specific", "Custom"], "showWhen": { "tripType": "roundTrip" } },
+
+  // ── Custom Depart Range ────────────────────────────────────────────────
+  { "id": "flightTimeDepart.range.start", "label": "Depart Time Start", "type": "time",
+    "showWhen": { "flightTimePrefDepart": "Custom" } },
+  { "id": "flightTimeDepart.range.end",   "label": "Depart Time End",   "type": "time",
+    "showWhen": { "flightTimePrefDepart": "Custom" } },
+  { "id": "flightTimeDepart.type",        "label": "Depart Range Type",  "type": "select",
+    "options": ["Departure", "Arrival"], "showWhen": { "flightTimePrefDepart": "Custom" } },
+
+  // ── Custom Return Range ────────────────────────────────────────────────
+  { "id": "flightTimeReturn.range.start", "label": "Return Time Start", "type": "time",
+    "showWhen": { "flightTimePrefReturn": "Custom" } },
+  { "id": "flightTimeReturn.range.end",   "label": "Return Time End",   "type": "time",
+    "showWhen": { "flightTimePrefReturn": "Custom" } },
+  { "id": "flightTimeReturn.type",        "label": "Return Range Type",  "type": "select",
+    "options": ["Departure", "Arrival"], "showWhen": { "flightTimePrefReturn": "Custom" } },
+
+  // ── Specific Info & Notes ──────────────────────────────────────────────
+  { "id": "specificFlightInfo", "label": "Specific Flight Info", "type": "textarea",
+    "showWhenAny": [ { "flightTimePrefDepart": "Specific" }, { "flightTimePrefReturn": "Specific" } ] },
+  { "id": "notes",              "label": "Notes",                "type": "textarea" },
+
+  // ── Budget ─────────────────────────────────────────────────────────────
+  { "id": "budgetGuidance", "label": "Budget Guidance", "type": "select",
+    "options": ["Lowest Logical Fare", "Flexible", "Premium"], "defaultFrom": "budgetGuidance.flight" }
 ]
