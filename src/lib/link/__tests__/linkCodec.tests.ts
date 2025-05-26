@@ -2,8 +2,10 @@
 // Vitest – round‑trip sanity check (skipped until crypto works)
 // ------------------------------------------------------------
 // eslint-disable-next-line vitest/expect-expect
-import { JWEClaimSet } from '@/types/jwe';
 import { describe, it, expect } from 'vitest';
+
+import { JWEClaimSet } from '@/types/jwe';
+
 import { decodeBookingLink, encodeBookingLink } from '../linkCodec';
 
 describe.skip('linkCodec round‑trip', () => {

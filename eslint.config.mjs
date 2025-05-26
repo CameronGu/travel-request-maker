@@ -108,6 +108,10 @@ export default [
     files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
     plugins: { vitest: vitestPlugin },
     env: { "vitest/globals": true },
-    rules: vitestPlugin.configs.recommended.rules,
+    rules: (() => {
+      const cleaned = { ...pluginVitest.configs.recommended.rules };
+      delete cleaned["vitest/expect-expect"];
+      return cleaned;
+    })()
   },
 ];

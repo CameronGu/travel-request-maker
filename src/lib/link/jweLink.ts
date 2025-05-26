@@ -4,8 +4,9 @@
 // and helpers for turning them into shareable link fragments.
 // ---------------------------------------------------------
 
-import { encryptPayload, decryptPayload } from '@/lib/crypto/cryptoUtils';
 import type { JWEClaimSet } from '@/types/jwe';
+
+import { encryptPayload, decryptPayload } from '@/lib/crypto/cryptoUtils';
 
 /**
  * Link prefix inserted **after** the hash (#) when copying to clipboard.

@@ -7,6 +7,7 @@
 // ------------------------------------------------------------
 
 import type { JWEClaimSet } from '@/types/jwe';
+
 import {
   JWE_PREFIX,
   buildFragment as buildShareFragment,

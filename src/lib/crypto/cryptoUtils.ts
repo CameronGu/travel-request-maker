@@ -8,12 +8,12 @@
 // but they compile and allow round‑trip tests in Vitest.
 // ----------------------------------------
 
-/* eslint-disable @typescript-eslint/ban-types */
+// eslint-disable @typescript-eslint/ban-types
 
 import pako from 'pako';
 
 // --- Constants -------------------------------------------------------------
-const AES_ALGO: AesGcmParams = { name: 'AES-GCM', iv: new Uint8Array(12) };
+// const AES_ALGO: AesGcmParams = { name: 'AES-GCM', iv: new Uint8Array(12) };
 const TAG_LENGTH_BITS = 128;
 const JWE_HEADER = { alg: 'dir', enc: 'A256GCM', zip: 'DEF', v: 1 } as const;
 
