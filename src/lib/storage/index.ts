@@ -8,7 +8,7 @@ import { SupabaseDriver } from "./SupabaseDriver";
 
 // Determine the active storage implementation based on feature flags.
 const local = new LocalDriver();
-const supabase = new SupabaseDriver();
+const supabase = SupabaseDriver;
 
 // Export the active driver instance based on config.
 // TODO: Provide a driver factory/singleton once requirements are clear.

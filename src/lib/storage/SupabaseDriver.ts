@@ -1,7 +1,4 @@
-import { StorageDriver } from "./StorageDriver";
-
 // TODO: Replace with actual Supabase client once configured.
-// import { createClient } from "@supabase/supabase-js";
 
 /**
  * SupabaseDriver (stub)
@@ -11,15 +8,21 @@ import { StorageDriver } from "./StorageDriver";
  * fallback values so that callers can safely depend on the driver without
  * runtime errors.
  */
-export class SupabaseDriver implements StorageDriver {
-  // private readonly supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async get<T = unknown>(_key: string): Promise<T | null> {
-    // TODO: Query Supabase KV/storage table once schema is defined.
-    return null;
-  }
+import { StorageDriver } from './StorageDriver'
 
-  async set<T = unknown>(_key: string, _value: T): Promise<void> {
-    // TODO: Persist data to Supabase once schema is defined.
-  }
+import { createClient as createBrowserClient } from '@/lib/supabase/client'
+
+const supabase = createBrowserClient()
+
+export const SupabaseDriver: StorageDriver = {
+  async get<T>(key: string) {
+    const { data, error } = await supabase.from(key).select('*')
+    if (error) throw error
+    return data as T
+  },
+  async set<T>(key: string, value: T) {
+    const { error } = await supabase.from(key).upsert(value)
+    if (error) throw error
+  },
 }
