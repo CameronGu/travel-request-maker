@@ -44,3 +44,6 @@ package-lock.json
 
 # old documentation
 /docs/old_versions/
+
+# tailwind build artifacts
+/output.css
