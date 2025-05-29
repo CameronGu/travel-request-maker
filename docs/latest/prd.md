@@ -38,7 +38,7 @@ docs/latest
   ├─ jwe-link-spec.md
   ├─ legacy-mapping.m
   └─ roles-permissions.md
-
+```
 ---
 
 ## 2  Core Features (MVP)
@@ -139,15 +139,15 @@ Policy snippets live in docs/latest/roles-permissions.md.
 
 ## 9  Implementation Milestones & Exit Criteria
 
-|| ID     | Milestone                        | Exit Criteria                                                                           |
+| ID     | Milestone                        | Exit Criteria                                                                           |
 | ------ | -------------------------------- | --------------------------------------------------------------------------------------- |
-| **M1** | **Supabase Core**                | Schema + RLS compile; `features.supabase` true; tests prove role isolation.             |
-| **M2** | **DynamicForm Engine**           | Hotel/Flight/Car forms render; invalid submits blocked; unit tests snapshot validated.  |
-| **M3** | **Link Codec v4**                | Encode/Decode `link_id` tokens; DB lookup passes; link copy UI.                         |
-| **M4** | **Admin UI & Links Tab**         | ATT admin can create client/project + link; Client admin dashboard; Request Queue stub. |
-| **M5** | **Request Queue & Batch Submit** | Draft save, multi‑select, submit; Summary card output.                                  |
-| **M6** | **QA & Accessibility**           | Vitest ≥ 70 %; axe tests zero violations; CI green.                                     |
-| **M7** | **Legacy cleanup & bundle**      | No `/legacy` imports; JS bundle < 250 kB.                                               |                                             |
+| **M1** | **Supabase Core**                | Schema + RLS compile; `features.supabase` true; tests prove role isolation.             |
+| **M2** | **DynamicForm Engine**           | Hotel/Flight/Car forms render; invalid submits blocked; unit tests snapshot validated.  |
+| **M3** | **Link Codec v4**                | Encode/Decode link\_id tokens; DB lookup passes; link copy UI.                          |
+| **M4** | **Admin UI & Links Tab**         | ATT admin can create client/project + link; Client admin dashboard; Request Queue stub. |
+| **M5** | **Request Queue & Batch Submit** | Draft save, multi‑select, submit; Summary card output.                                  |
+| **M6** | **QA & Accessibility**           | Vitest ≥ 70 %; axe tests zero violations; CI green.                                     |
+| **M7** | **Legacy cleanup & bundle**      | No `/legacy` imports; JS bundle < 250 kB.                                               |
 
 ---
 
