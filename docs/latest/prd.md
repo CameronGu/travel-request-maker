@@ -30,7 +30,7 @@ v3.1.2
 > **TaskMaster must treat any file marked ***stub*** or ***TODO*** as work.**
 
 Reference docs tree:
-
+All living spec documents reside under docs/latest.  Always import from this path when generating tasks or code.
 ```
 docs/latest
   ├─ admin-ui-wireframes.md
@@ -44,12 +44,12 @@ docs/latest
 ## 2  Core Features (MVP)
 
 1. **Project‑based Request Flow** – each Request row references a Project row (budget defaults, client context).
-2. **Link‑Object Share Links** – token = `link_id`; server‑side `links` row stores snapshot traveller IDs, role, expiry, and flag `allow_add_travelers` (default *false*).  No live editing in MVP.
-3. **DynamicForm (Declarative) Engine** – renders forms from JSON specs with RHF + Zod.
+2. **Link‑Object Share Links** – token = `link_id`; server‑side `links` row stores snapshot traveller IDs, role, expiry, and flag `allow_add_travelers` (default *false*).  No live editing in MVP. ↗︎ Full spec: docs/latest/jwe-link-spec.md.
+3. **DynamicForm (Declarative) Engine** – renders forms from JSON specs with RHF + Zod. ↗︎ Field definitions: docs/latest/form-spec.md.
 4. **Traveler Management** – per‑client CRUD with placeholder toggle; required `phone`, `primaryEmail`; duplicate hash `sha256(E164(phone)+lower(email))`.
 5. **Request Queue & Batch Submission** – save drafts, multi‑select, single payload submission to ATT.
 6. **Summary Generation** – human‑readable export plus link to Supabase row for audit/export; no separate JSON payload required in MVP since data is stored and retrievable live.
-7. **Admin Dashboards** – ATT & Client Admin UIs; admins can *also* create requests and push them into queue.
+7. **Admin Dashboards** – ATT & Client Admin UIs; admins can *also* create requests and push them into queue. ↗︎ Wireframes: docs/latest/admin-ui-wireframes.md.
 8. **Real‑time Sync** – subscription events via Supabase channel (Phase 2 switch).
 9. Claymorphism Theme – shadcn/ui + claymorphism token file.
 10. **Accessibility First** – WCAG 2.1 AA; CI axe tests.
@@ -75,11 +75,11 @@ docs/latest
 
 | Table         | Columns                                                                                                                                                                              | Notes                    |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ |
-| `clients`     | `id uuid` PK, `name`                                                                                                                                                                 | Seed via ATT UI.         |
-| `projects`    | `id uuid`, `client_id` FK, `name`, `budget_guidance` jsonb, `clientReferenceLock` bool                                                                                               |                          |
-| `travelers`   | `id uuid`, `client_id` FK, `firstName`, `lastName`, `phone`, `primaryEmail`, `isPlaceholder` bool, `traveler_hash` text, timestamps                                                  | RLS isolates by client.  |
-| `requests`    | `id uuid`, `project_id` FK, `type` enum, `blob` jsonb, `created_via_link_id` uuid                                                                                                    | Stores request JSON.     |
-| `links`       | `id uuid` PK, `client_id` FK, `project_id` FK, `role` text, `allow_add_travelers` bool default false, `traveler_ids uuid[]`, `expires_at` timestamptz, `created_by` uuid, timestamps | Snapshot traveller list. |
+| `clients`     | `id uuid` PK, `name`                                                                                                                                                                 | Seed via ATT UI.         |
+| `projects`    | `id uuid`, `client_id` FK, `name`, `budget_guidance` jsonb, `clientReferenceLock` bool                                                                                               |                          |
+| `travelers`   | `id uuid`, `client_id` FK, `firstName`, `lastName`, `phone`, `primaryEmail`, `isPlaceholder` bool, `traveler_hash` text, timestamps                                                  | RLS isolates by client.  |
+| `requests`    | `id uuid`, `project_id` FK, `type` enum, `blob` jsonb, `created_via_link_id` uuid                                                                                                    | Stores request JSON.     |
+| `links`       | `id uuid` PK, `client_id` FK, `project_id` FK, `role` text, `allow_add_travelers` bool default false, `traveler_ids uuid[]`, `expires_at` timestamptz, `created_by` uuid, timestamps | Snapshot traveller list. |
 | `access_logs` | `id`, `link_id`, `traveler_id`, `ts`                                                                                                                                                 | **Phase 2** optional.    |
 
 ---
@@ -92,7 +92,7 @@ docs/latest
 | `clientAdmin` | client           | CRUD travelers & projects inside client; create links & requests.                         |
 | `requester`   | project via link | Read own travelers list (snapshot); create drafts/requests; cannot edit travelers in MVP. |
 
-Policy snippets are inline in `docs/roles-permissions-v2.md` (unchanged).
+Policy snippets live in docs/latest/roles-permissions.md.
 
 ---
 
@@ -102,55 +102,52 @@ Policy snippets are inline in `docs/roles-permissions-v2.md` (unchanged).
 * Front‑end decodes, fetches row `links.id`, verifies expiry.
 * Micro‑copy on modal: *“Link will include the **static list** of travelers selected above.”*
 * `allow_add_travelers` flag reserved for Phase 2 (checkbox disabled in UI).
+* Full encryption & size benchmarks: docs/latest/jwe-link-spec.md.
 
 ---
 
 ## 7  DynamicForm Specs
 
-* *form‑specs‑v 2.3.3* will mark `phone`, `primaryEmail` required and add optional `isPlaceholder`.
+* Field dictionary is maintained in docs/latest/form-spec.md (currently v 2.3.4).  These JSON specs drive the React engine, Zod validation, and Supabase migrations.
 * Engine must expose util `isTravelerComplete()` used by Request Queue before submission.
 
 ---
 
 ### 7.5 Traveler Selector (UI Pattern)
 
-> **Purpose** — Attach one or more saved Travelers to a request while giving immediate
-feedback on data completeness.
+> **Purpose** — Attach one or more saved Travelers to a request while giving immediate feedback on data completeness.
 
-| Piece | Spec |
-|-------|------|
-| **Control** | `<TravelerSelector formType="hotel" value={ids} onChange={…} editable={boolean} />` |
-| **Internals** | Combines `@headlessui/react` `<Combobox>` with a chip row. |
-| **Chip states** | `default` (all required fields present) · `warning` (incomplete but non-blocking) · `error` (blocks submit). |
-| **Edit / Remove actions** | Shown only when `editable=true` **and** user has `role ∈ {admin, coordinator}` **OR** link flag `allow_add_travelers`. |
-| **Validation util** | `isTravelerComplete(traveler, formType)` exported by `src/lib/travelers/rules.ts`.<br>`REQUIREMENTS_BY_TYPE` centralises the per-form field lists. |
-| **Accessibility** | Each chip is a `button role="button"` with `aria-pressed="true"`, `aria-description` = “Missing: phone, passport expiry”. Combobox complies with WCAG 2.1 AA. |
-| **Mobile overflow** | If > 4 chips or viewport `< sm`, chips collapse into `[ + N selected ]` pill; tapping opens `TravelerListSheet`. |
+| Piece                     | Spec                                                                                                                                                           |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Control**               | `<TravelerSelector formType="hotel" value={ids} onChange={…} editable={boolean} />`                                                                            |
+| **Internals**             | Combines `@headlessui/react` `<Combobox>` with a chip row.                                                                                                     |
+| **Chip states**           | `default` (all required fields present) ▪ `warning` (incomplete but non‑blocking) ▪ `error` (blocks submit).                                                   |
+| **Edit / Remove actions** | Shown only when `editable=true` **and** user has `role ∈ {admin, coordinator}` **OR** link flag `allow_add_travelers`.                                         |
+| **Validation util**       | `isTravelerComplete(traveler, formType)` exported by `src/lib/travelers/rules.ts`.`REQUIREMENTS_BY_TYPE` centralises the per‑form field lists.                 |
+| **Accessibility**         | Each chip is a `button role="button"` with `aria-pressed="true"`, `aria-description` = “Missing : phone, passport expiry”. Combobox complies with WCAG 2.1 AA. |
+| **Mobile overflow**       | If > 4 chips or viewport `< sm`, chips collapse into `[ + N selected ]` pill; tapping opens `TravelerListSheet`.                                               |
 
-* **Traveler Edit Rights (chip pencil icon)**  
-  * Default **off** for link-based requesters.  
-  * Enabled when link JWT flag `allow_add_travelers = true` *or* role ∈ `admin, coordinator`.
+* **Traveler Edit Rights (chip pencil icon)**  Default **off** for link‑based requesters. Enabled when link JWT flag `allow_add_travelers = true` *or* role ∈ `admin, coordinator`.
 
 ---
 
 ## 8  Admin UI Wireframes Reference
 
-* Document **admin-ui-wireframes-v3.1.md** defines the UI.
-* TaskMaster must translate wireframes into Next.js pages/components and connect them to Supabase tables + link generator utils.
+* Component blueprints are captured in docs/latest/admin-ui-wireframes.md.  TaskMaster must translate those wireframes into Next.js pages/components and connect them to Supabase tables plus the link‑generator utilities.
 
 ---
 
 ## 9  Implementation Milestones & Exit Criteria
 
-| ID     | Milestone                        | Exit Criteria                                                                           |
+|| ID     | Milestone                        | Exit Criteria                                                                           |
 | ------ | -------------------------------- | --------------------------------------------------------------------------------------- |
-| **M1** | **Supabase Core**                | Schema + RLS compile; `features.supabase` true; tests prove role isolation.             |
-| **M2** | **DynamicForm Engine**           | Hotel/Flight/Car forms render; invalid submits blocked; unit tests snapshot validated.  |
-| **M3** | **Link Codec v4**                | Encode/Decode link\_id tokens; DB lookup passes; link copy UI.                          |
-| **M4** | **Admin UI & Links Tab**         | ATT admin can create client/project + link; Client admin dashboard; Request Queue stub. |
-| **M5** | **Request Queue & Batch Submit** | Draft save, multi‑select, submit; Summary card output.                                  |
-| **M6** | **QA & Accessibility**           | Vitest ≥ 70 %; axe tests zero violations; CI green.                                     |
-| **M7** | **Legacy cleanup & bundle**      | No `/legacy` imports; JS bundle < 250 kB.                                               |
+| **M1** | **Supabase Core**                | Schema + RLS compile; `features.supabase` true; tests prove role isolation.             |
+| **M2** | **DynamicForm Engine**           | Hotel/Flight/Car forms render; invalid submits blocked; unit tests snapshot validated.  |
+| **M3** | **Link Codec v4**                | Encode/Decode `link_id` tokens; DB lookup passes; link copy UI.                         |
+| **M4** | **Admin UI & Links Tab**         | ATT admin can create client/project + link; Client admin dashboard; Request Queue stub. |
+| **M5** | **Request Queue & Batch Submit** | Draft save, multi‑select, submit; Summary card output.                                  |
+| **M6** | **QA & Accessibility**           | Vitest ≥ 70 %; axe tests zero violations; CI green.                                     |
+| **M7** | **Legacy cleanup & bundle**      | No `/legacy` imports; JS bundle < 250 kB.                                               |                                             |
 
 ---
 
@@ -163,27 +160,20 @@ feedback on data completeness.
 
 ## 11  Environment & Feature Flags
 
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_JWE_KEY` (256‑bit) (not yet generated - required before E2E tests.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_JWE_KEY` (256‑bit) – required before E2E tests.
 
-**Feature‑flag logic (**\`\`**):**
-
+```ts
 export const features = {
+  /** Enables client‑side caching of drafts when offline. */
+  offlineDrafts: false,
 
-  /\*\* **Enables client‑side caching of drafts when offline.** \*/
-
-  offlineDrafts: false,
-
-  /\*\* Switches persistence layer to Supabase when both env vars are set. \*/
-
-  supabase:
-
-    typeof process !== "undefined" &&
-
-    !!process.env.NEXT\_PUBLIC\_SUPABASE\_URL &&
-
-    !!process.env.NEXT\_PUBLIC\_SUPABASE\_ANON\_KEY,
-
+  /** Switches persistence layer to Supabase when both env vars are set. */
+  supabase:
+    typeof process !== 'undefined' &&
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 } as const;
+```
 
 ---
 
@@ -223,11 +213,13 @@ export const features = {
 
 ## 15  Change Log
 
-| Ver            | Date       | Notes                                                                                                                        |
-| -------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **3.1.1** | 2025‑05‑28 | Added traveler chips + inline data-quality warnings pattern |
-| **3.1.0‑rev3** | 2025‑05‑28 | Added `links` table, Request Queue, traveler placeholders, hash duplicate detection, admin request path, DynamicForm rename. |
-| 3.1            | 2025‑05‑26 | Previous snapshot.                                                                                                           |
+| Ver             | Date       | Notes                                                                                                                        |
+| --------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **3.1.2‑patch** | 2025‑05‑29 | Added explicit `docs/latest/{file}` prefixes to every cross‑document reference; no functional changes.                       |
+| **3.1.2**       | 2025‑05‑28 | Consolidated final Expansion Pack decisions and traveler chips pattern.                                                      |
+| 3.1.1           | 2025‑05‑28 | Added traveler chips + inline data‑quality warnings pattern.                                                                 |
+| 3.1.0‑rev3      | 2025‑05‑28 | Added `links` table, Request Queue, traveler placeholders, hash duplicate detection, admin request path, DynamicForm rename. |
+| 3.1             | 2025‑05‑26 | Previous snapshot.         
 
 ---
 
