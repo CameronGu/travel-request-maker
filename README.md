@@ -1,8 +1,3 @@
-Got it! Here’s a more **internal-focused README.md** for you — less about sharing with others, more about **your own quick-reference and clarity**:
-
----
-
-````markdown
 # Travel-Request Platform Rebuild
 
 This repo contains the **Travel-Request Platform Rebuild** — a Next.js and Supabase-based application to manage enterprise travel requests.  
@@ -10,7 +5,7 @@ It consolidates all previous systems into a modern, maintainable, and well-docum
 
 ---
 
-## 🚀 Purpose
+## Purpose
 
 - Simplify travel request workflows for **coordinators, bookers, billing staff, and client admins**.
 - Use a **dynamic form engine** to reduce redundancy and support complex service needs.
@@ -19,7 +14,7 @@ It consolidates all previous systems into a modern, maintainable, and well-docum
 
 ---
 
-## 📂 Structure
+## Structure
 
 - **`docs/latest/`**:  
   The canonical location for all project specs.  
@@ -41,7 +36,7 @@ It consolidates all previous systems into a modern, maintainable, and well-docum
 
 ---
 
-## ⚙️ Setup & Dev Workflow
+## Setup & Dev Workflow
 
 1️⃣ **Install dependencies**  
 ```bash
@@ -75,7 +70,7 @@ npm run parse-prd
 
 ---
 
-## 🔧 Branch & Release Strategy
+## Branch & Release Strategy
 
 * **Active dev branch**: `next-migration`
 * **Stable branch**: `main` (protected, only merge via PRs)
@@ -84,7 +79,7 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
 
 ---
 
-## 📝 Notes for Me
+## Notes for Me
 
 * **TaskMaster parse command:**
 
@@ -107,7 +102,7 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
 
 ---
 
-## 🛠️ Lint & Tests
+## Lint & Tests
 
 * **Lint:**
 
@@ -123,7 +118,7 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
 
 ---
 
-## 🚀 Next Steps (MVP)
+## Next Steps (MVP)
 
 * Complete DynamicForm Engine
 * Finish admin views (based on `admin-ui-wireframes.md`)
@@ -132,7 +127,7 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
 
 ---
 
-## 🏷️ Misc
+## Misc
 
 * **Audience:** Me / internal dev team only
 * **Docs:** stored in `docs/latest/`
