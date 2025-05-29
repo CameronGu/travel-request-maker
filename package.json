@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest",
+    "parse-prd": "task-master parse-prd prd.md -k docs/latest/ -o tasks.json",
+    "tasks": "task-master list"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.3",
