@@ -5,7 +5,7 @@ export async function encodeToken(): Promise<string> {
   return ''
 }
 
-export async function decodeToken<T = any>(): Promise<T | null> {
+export async function decodeToken<T = unknown>(): Promise<T | null> {
   return {} as T
 }
 
@@ -13,6 +13,6 @@ export async function buildFragment(): Promise<string> {
   return '#'
 }
 
-export async function parseFragment<T = any>(): Promise<T | null> {
+export async function parseFragment<T = unknown>(): Promise<T | null> {
   return {} as T
 }

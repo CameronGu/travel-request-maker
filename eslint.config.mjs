@@ -109,7 +109,7 @@ export default [
     plugins: { vitest: vitestPlugin },
     env: { "vitest/globals": true },
     rules: (() => {
-      const cleaned = { ...pluginVitest.configs.recommended.rules };
+      const cleaned = { ...vitestPlugin.configs.recommended.rules };
       delete cleaned["vitest/expect-expect"];
       return cleaned;
     })()

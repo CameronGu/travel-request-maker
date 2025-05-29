@@ -9,9 +9,9 @@
  * runtime errors.
  */
 
-import { StorageDriver } from './StorageDriver'
-
 import { createClient as createBrowserClient } from '@/lib/supabase/client'
+
+import { StorageDriver } from './StorageDriver'
 
 const supabase = createBrowserClient()
 
