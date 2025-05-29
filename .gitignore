@@ -42,5 +42,5 @@ yarn-error.log*
 next-env.d.ts
 package-lock.json
 
-# Reference-only O3-generated JS splits (not used in build or tests)
-/legacy/__o3_reference_js_splits/
+# old documentation
+/docs/old_versions/
