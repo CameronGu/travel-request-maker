@@ -190,6 +190,10 @@ export const features = {
 | `ring-warning` | `colors.amber.500 / 40%`    | Incomplete but non-blocking    |
 | `ring-error`   | `colors.rose.500 / 40%`     | Blocks submission / hard error |
 
+- All design tokens live in `styles/tokens.ts` and are typed for use across Tailwind, runtime TS, and CSS variable theming.  
+- The generated CSS variables are defined in `styles/theme.css` for runtime theming.  
+- Themes are hot-swappable via `next-themes` (`.theme-claymorphism`, `.dark`, etc.).
+
 ---
 
 ## 13  Legacy Code Guidelines

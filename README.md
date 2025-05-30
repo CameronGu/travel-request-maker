@@ -70,6 +70,28 @@ npm run parse-prd
 
 ---
 
+## 🎨 Theming
+
+- Design tokens are managed in `styles/tokens.ts`.  
+- Runtime CSS variables for themes are in `styles/theme.css`.  
+- To add a new theme from tweakcn, run:
+
+  ```bash
+  npx shadcn@latest add https://tweakcn.com/r/themes/claymorphism.json
+  ```
+
+* Toggle themes using `next-themes`:
+
+  ```tsx
+  import { useTheme } from "next-themes";
+  const { setTheme } = useTheme();
+  setTheme("dark"); // or "light", "claymorphism", etc.
+  ```
+
+* See `layout.tsx` for theme provider setup.
+
+---
+
 ## Branch & Release Strategy
 
 * **Active dev branch**: `next-migration`
