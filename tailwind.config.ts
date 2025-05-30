@@ -1,20 +1,23 @@
-import { tokens } from './styles/tokens';
+import { themes } from './styles/tokens';
 
 import type { Config } from 'tailwindcss';
+
+// Pick the active theme (claymorphism for now)
+const activeTheme = themes.claymorphism;
 
 export default {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
-      colors: tokens.light.colors,
-      boxShadow: tokens.light.shadows,
+      colors: activeTheme.colors,
+      boxShadow: activeTheme.shadows,
       borderRadius: {
-        DEFAULT: tokens.light.radius,
+        DEFAULT: activeTheme.radius,
       },
       fontFamily: {
-        sans: [tokens.light.fonts.sans],
-        serif: [tokens.light.fonts.serif],
-        mono: [tokens.light.fonts.mono],
+        sans: [activeTheme.fonts.sans],
+        serif: [activeTheme.fonts.serif],
+        mono: [activeTheme.fonts.mono],
       },
     },
   },
