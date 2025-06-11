@@ -78,9 +78,18 @@
 **Budget Guidance Schema:**
 ```typescript
 interface BudgetGuidance {
-  hotel?: 'optimize' | 'mid-range' | 'premium';
-  flight?: 'lowest-logical-fare' | 'flexible' | 'premium'; 
-  car?: 'economy' | 'mid-size' | 'suv' | 'truck' | 'premium';
+  hotel?: {
+    preference?: 'optimize' | 'mid-range' | 'premium';
+    hardCapUSD?: number; // e.g., 200
+  };
+  flight?: {
+    preference?: 'lowest-logical-fare' | 'flexible' | 'premium';
+    hardCapUSD?: number; // e.g., 500
+  };
+  car?: {
+    preference?: 'economy' | 'mid-size' | 'suv' | 'truck' | 'premium';
+    hardCapUSD?: number; // e.g., 100
+  };
 }
 ```
 
@@ -90,6 +99,9 @@ interface RequestBlob {
   formType: 'hotel' | 'flight' | 'car';
   travelerIds: string[];
   formData: Record<string, any>; // specific to form type based on JSON specs
+  budgetOverride?: {
+    preference?: string;
+    hardCapUSD?: number;  
   metadata: {
     submittedAt: string;
     linkId: string;
@@ -110,7 +122,7 @@ interface RequestBlob {
 | `primaryEmail` | text    | ✅        | Deliverable address, validated with Zod email()     |
 | `secondaryEmail`| text   | ⬜        | Backup contact email                                |
 | `phone`        | text    | ✅        | E.164 format only, validated with `normalizeAndValidatePhone()` |
-| `dob`          | date    | ⬜        | Required for international bookings                 |
+| `dob`          | date    | ⬜        | Required for flight and car bookings                |
 | `gender`       | text    | ⬜        | Options: M/F/X/Unspecified (as on travel document) |
 | `isPlaceholder`| boolean | ⬜        | Blocks submission if true                           |
 | `traveler_hash`| text    | ⬜        | SHA-256(E164(phone)+lower(email)) for duplicate detection |
@@ -363,14 +375,18 @@ All form fields are defined with the following structure:
 
 ### 8.3 Shared Metadata Fields
 
-| id                    | label                 | type   | required | tooltip                                  | notes                                                     | logic                                   |
-| --------------------- | --------------------- | ------ | -------- | ---------------------------------------- | --------------------------------------------------------- | --------------------------------------- |
-| client                | Client                | text   | ✅        | Client code or ID                        | populated from Admin link                                 | *claim* (not in `blob` if from link)    |
-| project               | Project               | text   | ✅        | Project code or ID                       | populated from Admin link                                 | *claim*                                 |
-| clientReference       | Client Reference      | text   | ⬜        | Free text (team / PO #)                  | may be **read‑only** if Admin link locked                 | read‑only flag derived from link claims |
-| budgetGuidance.hotel  | Default Hotel Budget  | select | ⬜        | Prefill guidance for hotel requests      | dropdown presets (Optimize, Mid‑range, Premium)           | editable in form                        |
-| budgetGuidance.flight | Default Flight Budget | select | ⬜        | Prefill guidance for flight requests     | dropdown presets (Lowest Logical Fare, Flexible, Premium) | editable in form                        |
-| budgetGuidance.car    | Default Car Budget    | select | ⬜        | Prefill guidance for rental car requests | dropdown presets (Economy, Mid‑size, SUV, Truck, Premium) | editable in form                        |
+| id                               | label                    | type   | required | tooltip                                      | notes                                                     | logic                                   |
+| -------------------------------- | ------------------------ | ------ | -------- | -------------------------------------------- | --------------------------------------------------------- | --------------------------------------- |
+| client                           | Client                   | text   | ✅        | Client code or ID                            | populated from Admin link                                 | *claim* (not in `blob` if from link)    |
+| project                          | Project                  | text   | ✅        | Project code or ID                           | populated from Admin link                                 | *claim*                                 |
+| clientReference                  | Client Reference         | text   | ⬜        | Free text (team / PO #)                      | may be **read‑only** if Admin link locked                 | read‑only flag derived from link claims |
+| budgetGuidance.hotel.preference  | Hotel Budget Preference  | select | ⬜        | Prefill guidance for hotel requests          | dropdown presets (Optimize, Mid‑range, Premium)           | editable unless locked by link          |
+| budgetGuidance.hotel.hardCapUSD  | Hotel Budget Cap (USD)   | number | ⬜        | Optional max hotel budget per night (USD)    | pulled from project settings, editable per request        | override allowed                        |
+| budgetGuidance.flight.preference | Flight Budget Preference | select | ⬜        | Prefill guidance for flight requests         | dropdown presets (Lowest Logical Fare, Flexible, Premium) | editable unless locked by link          |
+| budgetGuidance.flight.hardCapUSD | Flight Budget Cap (USD)  | number | ⬜        | Optional max flight budget per segment (USD) | pulled from project settings, editable per request        | override allowed                        |
+| budgetGuidance.car.preference    | Car Budget Preference    | select | ⬜        | Prefill guidance for car rental requests     | dropdown presets (Economy, Mid‑size, SUV, Truck, Premium) | editable unless locked by link          |
+| budgetGuidance.car.hardCapUSD    | Car Budget Cap (USD)     | number | ⬜        | Optional max car rental budget per day (USD) | pulled from project settings, editable per request        | override allowed                        |
+
 
 ### 8.4 Hotel Request Fields
 
@@ -493,15 +509,15 @@ Requester (via Magic Link)
 ┌ Admin Dashboard ───────────────────────────────┐
 │ + New Client  + New Project                    │
 │                                               │
-│ Clients                                                     │
+│ Clients                                       │
 │ ───────────────────────────────────────────── │
 │ |  ACME Corp          | 4 projects | 12 links | ▶ |         │
 │ |  Beta Ltd.          | 1 project  |  3 links | ▶ |         │
 │                                               │
-│ Projects (selected client)                                   │
+│ Projects (selected client)                                  │
 │ ───────────────────────────────────────────── │
-│ |  2025 Rollout       | Budget $150 | Link ▶  |             │
-│ |  Pilot Phase        | Budget $180 | Link ▶  |             │
+│ |  2025 Rollout       | 6 links     | Link ▶  |             │
+│ |  Pilot Phase        | 2 links     | Link ▶  |             │
 └────────────────────────────────────────────────┘
 ```
 
