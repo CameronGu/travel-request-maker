@@ -302,6 +302,30 @@ for select using (
 );
 ```
 
+#### **Access Logs Table RLS Policies**
+
+- **RLS is enabled** on `access_logs`.
+- **attAdmin:** Full access (read/write).
+- **clientAdmin:** Can read logs for their own client’s links.
+- **requester:** No access.
+
+**SQL Example:**
+```sql
+alter table access_logs enable row level security;
+
+create policy "AccessLogs: att_admin full access" on access_logs
+for all using (auth.jwt() ->> 'role' = 'attAdmin');
+
+create policy "AccessLogs: client_admin own client" on access_logs
+for select using (
+  exists (
+    select 1 from links l
+    where l.id = access_logs.link_id
+    and l.client_id = (auth.jwt() ->> 'client_id')::uuid
+  )
+);
+```
+
 ---
 
 ## 6  State Management Strategy
