@@ -211,6 +211,65 @@ create index idx_links_email on links(target_email);
 create index idx_links_expires_at on links(expires_at);
 ```
 
+## 4.6 Change Logging & RLS Enforcement (Added June 13, 2025)
+
+### Audit Log Table
+
+An `audit_log` table was added to track insert/update/delete events across key tables (`travelers`, `requests`, etc.):
+
+```sql
+create table public.audit_log (
+  id uuid primary key default gen_random_uuid(),
+  table_name text not null,
+  operation text not null check (operation in ('INSERT', 'UPDATE', 'DELETE')),
+  record_id uuid not null,
+  changed_by uuid,
+  changed_at timestamptz default now()
+);
+````
+
+### Logging Function & Triggers
+
+The following function records changes to the audit log:
+
+```sql
+create or replace function log_audit_event() returns trigger as $$
+begin
+  insert into audit_log (table_name, operation, record_id, changed_by)
+  values (TG_TABLE_NAME, TG_OP, NEW.id, null); -- placeholder for `changed_by` until JWT attribution added
+  return NEW;
+end;
+$$ language plpgsql;
+```
+
+Triggers are enabled on:
+
+```sql
+-- Travelers table
+create trigger audit_travelers after insert or update or delete on travelers
+  for each row execute function log_audit_event();
+
+-- Requests table
+create trigger audit_requests after insert or update or delete on requests
+  for each row execute function log_audit_event();
+```
+
+### Cleanup Logic
+
+To limit table growth, old logs are purged automatically (manual or scheduled via future cron/Edge function):
+
+```sql
+delete from audit_log where changed_at < now() - interval '90 days';
+```
+
+A Supabase Edge Function (`purge-audit-log`) has been added and may be scheduled later.
+
+### Next Steps
+
+* Consider extending audit triggers to other tables if needed.
+* Add `changed_by` attribution using JWT claims once user auth context is available.
+
+
 ---
 
 ## 5  Authentication & Authorization System
@@ -825,6 +884,7 @@ export const features = {
 
 | Ver             | Date       | Notes                                                                                                                        |
 | --------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **5.0.1**       | 2025‑06‑13 | Added lightweight audit logging with auto‑purge logic; replaced all RLS policies to use `app_role` and aligned with intended role scopes. |
 | **5.0.0**       | 2025‑05‑29 | **Final Consolidated PRD** - Added magic link auth, complete schemas, implementation details, removed legacy mappings      |
 | **4.0.0**       | 2025‑05‑29 | **Consolidated PRD** - merged all supporting documentation into single definitive document                                   |
 | **3.1.2‑patch** | 2025‑05‑29 | Added explicit `docs/latest/{file}` prefixes to every cross‑document reference; no functional changes.                       |
