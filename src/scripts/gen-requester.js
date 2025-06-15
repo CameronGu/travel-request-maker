@@ -7,8 +7,8 @@ const payload = {
   sub: 'test-requester-id',
   email: 'requester@example.com',
   app_role: 'requester',
-  link_ids: ['829c23b2-eb86-4152-a17b-3ed23711e0ad'],
-  client_id: 'f798432d-715c-4235-a33b-efbc5b15daec',
+  link_ids: '88589edc-5759-4b64-b128-5c1c37fc91e3',
+  client_id: '83081349-bc63-4ca3-9e4b-d8611deefdc7',
   aud: 'authenticated',
   iss: 'https://cqavkotsnpnzjyewwpgi.supabase.co/auth/v1',
   exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)

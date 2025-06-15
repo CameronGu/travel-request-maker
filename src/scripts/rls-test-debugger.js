@@ -5,10 +5,27 @@ const jwt = require('jsonwebtoken');
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+function decodeToken(name, token) {
+  try {
+    const decoded = jwt.decode(token);
+    const exp = new Date(decoded.exp * 1000).toISOString();
+    console.log(`${name}: exp=${exp}, sub=${decoded.sub}, role=${decoded.app_role}`);
+  } catch (err) {
+    console.error(`${name}: ❌ failed to decode`);
+  }
+}
+
+console.log("🔍 Decoded JWTs:");
+decodeToken('attAdmin', process.env.TEST_JWT_ATTADMIN);
+decodeToken('clientAdmin', process.env.TEST_JWT_CLIENTADMIN);
+decodeToken('requester', process.env.TEST_JWT_REQUESTER);
+
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
   process.exit(1);
 }
+
+const VALID_PROJECT_ID = '34f52be0-36a2-4b32-8d27-bb79252e4f59';
 
 const roles = [
   {
@@ -71,7 +88,7 @@ async function testRole(role) {
   // INSERT
   try {
     const { error } = await client.from(TABLE).insert([
-      { type: 'hotel', blob: { test: true }, project_id: '00000000-0000-0000-0000-000000000000' }
+      { type: 'hotel', blob: { test: true }, project_id: VALID_PROJECT_ID }
     ]);
     results.insert = !error;
     if (error) console.error('  INSERT error:', error.message);
