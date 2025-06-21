@@ -4,7 +4,10 @@ const { createClient } = require('@supabase/supabase-js');
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-const VALID_PROJECT_ID = '34f52be0-36a2-4b32-8d27-bb79252e4f59';
+console.log(SUPABASE_URL, SUPABASE_ANON_KEY);
+console.log(process.env.TEST_JWT_ATTADMIN);
+console.log(process.env.TEST_JWT_CLIENTADMIN);
+console.log(process.env.TEST_JWT_REQUESTER);
 
 const roles = [
   {
@@ -44,7 +47,7 @@ async function testRole(role) {
   }
   // INSERT
   try {
-    const { error } = await client.from(TABLE).insert([{ type: 'hotel', blob: { test: true }, project_id: VALID_PROJECT_ID }]);
+    const { error } = await client.from(TABLE).insert([{ type: 'hotel', blob: { test: true }, project_id: '00000000-0000-0000-0000-000000000000' }]);
     results.insert = !error;
   } catch {
     results.insert = false;
