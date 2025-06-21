@@ -1,0 +1,26 @@
+{
+  "attAdmin": {
+    "select": true,
+    "insert": true,
+    "update": true,
+    "delete": true
+  },
+  "clientAdmin": {
+    "select": true,
+    "insert": true,
+    "update": true,
+    "delete": true
+  },
+  "requester": {
+    "select": true,
+    "insert": true,
+    "update": false,
+    "delete": false
+  },
+  "anon": {
+    "select": false,
+    "insert": false,
+    "update": false,
+    "delete": false
+  }
+}

@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_requests_project_id ON public.requests (project_id); 

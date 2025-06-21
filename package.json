@@ -9,7 +9,11 @@
     "lint": "next lint",
     "test": "vitest",
     "parse-prd": "task-master parse-prd prd.md -k docs/latest/ -o tasks.json",
-    "tasks": "task-master list"
+    "tasks": "task-master list",
+    "test:rls:seed": "node src/scripts/seed-rls-test-data.js",
+    "test:rls": "npm run test:rls:seed && node src/scripts/rls-test.js",
+    "ci:test:rls": "npm run test:rls && node -e \"process.exit(require('.taskmaster/test-results/rls-test-latest.json').failed ? 1 : 0)\"",
+    "test:middleware": "node src/scripts/test-middleware.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -21,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
+    "libphonenumber-js": "^1.12.9",
     "lucide-react": "^0.510.0",
     "next": "15.3.2",
     "next-themes": "^0.4.6",
@@ -61,6 +66,14 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
     "vitest": "^3.2.2",
-    "vitest-axe": "^0.1.0"
+    "vitest-axe": "^0.1.0",
+    "@faker-js/faker": "^8.4.1",
+    "globals": "^15.6.0",
+    "jose": "^5.4.1",
+    "node-fetch": "^2.7.0",
+    "supabase": "^1.178.2",
+    "eslint-config-next": "14.2.3",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-vitest": "^0.5.4"
   }
 }

@@ -1,0 +1,44 @@
+{
+  "attAdmin": {
+    "expected": {
+      "select": true,
+      "insert": true,
+      "update": true,
+      "delete": true
+    },
+    "actual": {
+      "select": true,
+      "insert": false,
+      "update": false,
+      "delete": false
+    }
+  },
+  "clientAdmin": {
+    "expected": {
+      "select": true,
+      "insert": true,
+      "update": true,
+      "delete": true
+    },
+    "actual": {
+      "select": true,
+      "insert": false,
+      "update": false,
+      "delete": false
+    }
+  },
+  "requester": {
+    "expected": {
+      "select": true,
+      "insert": false,
+      "update": false,
+      "delete": false
+    },
+    "actual": {
+      "select": true,
+      "insert": false,
+      "update": false,
+      "delete": false
+    }
+  }
+}

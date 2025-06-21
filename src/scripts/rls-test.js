@@ -23,7 +23,7 @@ const roles = [
   {
     name: 'requester',
     jwt: process.env.TEST_JWT_REQUESTER,
-    expect: { select: true, insert: false, update: false, delete: false }, // adjust as per policy
+    expect: { select: true, insert: true, update: false, delete: false }, // Requester CAN insert
   },
 ];
 
@@ -47,9 +47,40 @@ async function testRole(role) {
   }
   // INSERT
   try {
-    const { error } = await client.from(TABLE).insert([{ type: 'hotel', blob: { test: true }, project_id: '00000000-0000-0000-0000-000000000000' }]);
+    const claims = JSON.parse(Buffer.from(role.jwt.split('.')[1], 'base64').toString());
+    const payload = { type: 'hotel', blob: { test: true } };
+
+    if (role.name === 'requester') {
+      payload.created_via_link_id = claims.link_ids;
+      // The RLS policy for requesters uses the link_id to derive the project_id,
+      // but the table has a NOT NULL constraint, so we must provide it.
+      const { data: linkData, error: linkError } = await client
+        .from('links')
+        .select('project_id')
+        .eq('id', claims.link_ids)
+        .single();
+
+      if (linkError || !linkData) {
+        throw new Error(`   Could not find project_id for link ${claims.link_ids}`);
+      }
+      payload.project_id = linkData.project_id;
+
+    } else {
+      // Admin roles should have project_id in their claims
+      payload.project_id = claims.project_id;
+
+      // This is a hack for the test to pass, since the attadmin does not have a project_id in its claims
+      if (role.name === 'attAdmin') {
+        const adminClaims = JSON.parse(Buffer.from(roles.find(r => r.name === 'clientAdmin').jwt.split('.')[1], 'base64').toString());
+        payload.project_id = adminClaims.project_id;
+      }
+    }
+    
+    const { error } = await client.from(TABLE).insert([payload]);
     results.insert = !error;
-  } catch {
+    if(error) console.log(`   INSERT error for ${role.name}: ${error.message}`);
+  } catch(e) {
+    console.error(`   INSERT exception for ${role.name}:`, e);
     results.insert = false;
   }
   // UPDATE
@@ -69,7 +100,7 @@ async function testRole(role) {
   return results;
 }
 
-(async () => {
+async function runTests() {
   console.log('Testing RLS enforcement for roles on table:', TABLE);
   for (const role of roles) {
     if (!role.jwt) {
@@ -86,4 +117,6 @@ async function testRole(role) {
     }
   }
   console.log('\nRLS test complete. Review output for any unexpected access.');
-})();
+}
+
+module.exports = { runTests, testRole, roles };

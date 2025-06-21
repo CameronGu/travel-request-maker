@@ -1,0 +1,32 @@
+{
+  "attAdmin": {
+    "insert": {
+      "id": "da14dc03-7c16-4479-828b-cddcfe393911"
+    },
+    "select": true,
+    "update": true,
+    "delete": true
+  },
+  "clientAdmin": {
+    "insert": {
+      "id": "b3b5f859-fc5a-4fc3-a83c-fdc7bcb1fd8a"
+    },
+    "select": true,
+    "update": true,
+    "delete": true
+  },
+  "requester": {
+    "insert": {
+      "id": "65ba2134-3ac4-4895-bbd2-34db197c2078"
+    },
+    "select": true,
+    "update": false,
+    "delete": false
+  },
+  "anon": {
+    "insert": false,
+    "select": true,
+    "update": false,
+    "delete": false
+  }
+}
