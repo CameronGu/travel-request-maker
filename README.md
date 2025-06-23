@@ -156,3 +156,22 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
 * **AI tools:** TaskMaster + Cursor ready to generate + execute tasks
 
 ---
+
+## Development vs. Production Safeguards
+
+**Hardcoded User in Middleware:**
+- For local development, the middleware uses a hardcoded user (`app_att_admin`) to simplify RBAC testing.
+- This logic is guarded by `process.env.NODE_ENV === 'development'`.
+- **Before deploying to production:** Remove or disable the hardcoded user logic. In production, the middleware always uses the real Supabase session.
+
+**Debug Page with Service Role Key:**
+- The debug page (`/debug`) uses the Supabase service role key to bypass RLS and view all data for local/server-only debugging.
+- This is only enabled when `NODE_ENV === 'development'` and is automatically disabled in production.
+- **Never expose the service role key to client-side code or enable this page in production.**
+
+**General Guidance:**
+- Always check for and remove any dev-only logic before deploying.
+- The service role key must remain secret and server-only.
+- See code comments in `src/middleware.ts`, `src/app/debug/page.tsx`, and `src/lib/supabase/server.ts` for more details.
+
+---

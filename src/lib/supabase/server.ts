@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 export async function createClient() {
   const store = await cookies() // must be awaited on Next 15
@@ -23,5 +24,14 @@ export async function createClient() {
         },
       },
     },
+  )
+}
+
+// WARNING: createServiceClient must NEVER be used in client-side or production code.
+// It uses the Supabase service role key and is for server-only, local development debugging.
+export function createServiceClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 }
