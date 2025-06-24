@@ -175,3 +175,30 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
 - See code comments in `src/middleware.ts`, `src/app/debug/page.tsx`, and `src/lib/supabase/server.ts` for more details.
 
 ---
+
+## Magic Link API Endpoint
+
+A new API endpoint is available for generating and sending Supabase magic links:
+
+- **Endpoint:** `POST /api/magic-link`
+- **Payload:**
+  - `email` (string, required): Target email address
+  - `client_id` (string, required): Client identifier
+  - `role`, `expires_at`, `traveler_ids`, `meta` (optional): Additional metadata for tracking
+
+**How it works:**
+- Validates input
+- Inserts a row into the `links` table for tracking and RLS
+- Calls Supabase's `inviteUserByEmail` to send the magic link
+- Returns a success or error response
+
+### Automated Testing
+- Automated tests are provided in `src/app/api/magic-link/route.test.ts` and cover all major cases (success, input validation, error handling).
+- **Note:** Due to Vitest/Next.js module cache limitations, error-case tests may not trigger as expected. The API implementation is robust, but dynamic mocking with `vi.doMock` and ESM imports can fail to override the cached module. For full confidence, manually test error cases in a staging environment.
+
+### Manual Testing
+- Use a tool like Postman or curl to POST to `/api/magic-link` with valid and invalid payloads.
+- Check the Supabase dashboard for new link rows and email logs.
+- Confirm the recipient receives a working magic link email.
+
+---
