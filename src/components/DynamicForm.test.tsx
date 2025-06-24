@@ -68,4 +68,31 @@ describe("DynamicForm", () => {
       );
     });
   });
+
+  it("shows Zod validation errors and blocks submit", async () => {
+    // Custom Zod schema: firstName must be at least 3 chars
+    const { z } = await import("zod");
+    const zodSchema = z.object({
+      firstName: z.string().min(3, "First Name must be at least 3 characters"),
+      role: z.string().nonempty("Role is required"),
+      gender: z.string().nonempty("Gender is required"),
+    });
+    const handleSubmit = vi.fn();
+    render(<DynamicForm schema={baseFields.slice(0, 3)} onSubmit={handleSubmit} zodSchema={zodSchema} />);
+    // Fill firstName with too short value
+    fireEvent.change(screen.getByLabelText(/First Name/), { target: { value: "Al" } });
+    fireEvent.change(screen.getByLabelText(/Role/), { target: { value: "admin" } });
+    fireEvent.click(screen.getByLabelText(/M/));
+    fireEvent.click(screen.getByText(/Submit/));
+    await waitFor(() => {
+      expect(screen.getByText(/at least 3 characters/)).toBeInTheDocument();
+      expect(handleSubmit).not.toHaveBeenCalled();
+    });
+    // Fix firstName
+    fireEvent.change(screen.getByLabelText(/First Name/), { target: { value: "Alice" } });
+    fireEvent.click(screen.getByText(/Submit/));
+    await waitFor(() => {
+      expect(handleSubmit).toHaveBeenCalled();
+    });
+  });
 }); 

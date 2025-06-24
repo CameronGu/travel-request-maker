@@ -2,8 +2,8 @@
 
 import React from "react";
 import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
-// import { z } from "zod";
-// import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 /**
  * DynamicForm
@@ -34,6 +34,7 @@ interface DynamicFormProps {
   schema: FieldDefinition[];
   initialValues?: Record<string, any>;
   onSubmit: (values: Record<string, any>) => void;
+  zodSchema?: z.ZodType<any, any>;
   // Optionally: custom field renderers, overrides, etc.
 }
 
@@ -164,8 +165,47 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
   // Add more as needed
 };
 
-export default function DynamicForm({ schema, initialValues = {}, onSubmit }: DynamicFormProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues });
+function buildZodSchema(schema: FieldDefinition[]): z.ZodObject<any> {
+  const shape: Record<string, any> = {};
+  for (const field of schema) {
+    let zodType: any = z.any();
+    switch (field.type) {
+      case "text":
+      case "textarea":
+        zodType = z.string();
+        break;
+      case "select":
+      case "radio":
+        zodType = z.string();
+        break;
+      case "checkbox":
+        zodType = z.boolean().optional();
+        break;
+      case "date":
+        zodType = z.string(); // Could use z.coerce.date() for stricter
+        break;
+      case "slider":
+        zodType = z.number();
+        break;
+      default:
+        zodType = z.any();
+    }
+    if (field.required) {
+      zodType = zodType.nonempty({ message: `${field.label} is required` });
+    } else {
+      zodType = zodType.optional();
+    }
+    shape[field.id] = zodType;
+  }
+  return z.object(shape);
+}
+
+export default function DynamicForm({ schema, initialValues = {}, onSubmit, zodSchema }: DynamicFormProps) {
+  const effectiveSchema = zodSchema || buildZodSchema(schema);
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: initialValues,
+    resolver: zodResolver(effectiveSchema),
+  });
 
   const renderField = (field: FieldDefinition) => {
     const renderer = fieldComponentMap[field.type];
@@ -178,6 +218,13 @@ export default function DynamicForm({ schema, initialValues = {}, onSubmit }: Dy
       <form onSubmit={handleSubmit(onSubmit)}>
         {schema.map(renderField)}
         <button type="submit">Submit</button>
+        {Object.keys(errors).length > 0 && (
+          <div style={{ color: 'red', marginTop: 8 }}>
+            {Object.entries(errors).map(([key, err]: any) => (
+              <div key={key}>{err.message || "Invalid value"}</div>
+            ))}
+          </div>
+        )}
       </form>
     </ErrorBoundary>
   );
@@ -187,7 +234,7 @@ export default function DynamicForm({ schema, initialValues = {}, onSubmit }: Dy
 export async function loadFormSchema(schemaName: string): Promise<FieldDefinition[]> {
   try {
     // Dynamic import for local JSON files (e.g., 'fields.hotel.json')
-    const mod = await import(`../form-fields/${schemaName}`);
+    const mod = await import(`../form-fields/${schemaName}.json`);
     const schema = mod.default || mod;
     if (Array.isArray(schema) && schema.every(isFieldDefinition)) {
       return schema;
