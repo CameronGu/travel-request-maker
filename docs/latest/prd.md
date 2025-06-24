@@ -365,7 +365,7 @@ for select using (
 
 - **RLS is enabled** on `access_logs`.
 - **attAdmin:** Full access (read/write).
-- **clientAdmin:** Can read logs for their own client’s links.
+- **clientAdmin:** Can read logs for their own client's links.
 - **requester:** No access.
 
 **SQL Example:**
@@ -930,3 +930,10 @@ export const features = {
 ---
 
 This consolidated PRD serves as the complete, production-ready specification for building the Travel Request Management System. All authentication concerns have been resolved with magic link implementation, JSON schemas are defined, state management is clarified, and comprehensive implementation details are provided for successful development.
+
+## Magic Link Lifecycle: Expiry, Renewal, and Cleanup
+
+- **Expiry:** Each magic link has an `expires_at` timestamp stored in the `links` table. The API endpoint accepts this value and stores it on creation.
+- **Renewal:** If a user requests a new magic link after the previous one has expired, the API creates a new row in the `links` table with a fresh `expires_at` and sends a new magic link email. No update of the old row is needed.
+- **Cleanup:** Expired links are periodically deleted from the `links` table by a Supabase edge function (`purge-expired-links`), which runs a scheduled job to remove all rows where `expires_at` is in the past. This keeps the table clean and enforces security.
+- **No manual intervention is required:** The system is designed to be self-maintaining using Supabase's built-in features and scheduled edge functions.

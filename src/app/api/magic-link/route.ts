@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 
+// Magic Link Lifecycle:
+// - Expiry: Each link has an 'expires_at' timestamp stored in the 'links' table.
+// - Renewal: When a user requests a new link after expiry, a new row is created and a new email is sent.
+// - Cleanup: Expired links are deleted by a scheduled Supabase edge function (purge-expired-links).
+// No manual intervention is required; the system is self-maintaining.
+
 // POST /api/magic-link
 export async function POST(request: NextRequest) {
   // Parse and validate input (email, client_id)
