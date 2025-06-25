@@ -1,4 +1,5 @@
 import { createHook } from "@/hooks/factory";
+import { queryKeys } from "@/lib/queryKeys";
 
 /**
  * Traveler model placeholder.
@@ -10,6 +11,15 @@ export type Traveler = Record<string, unknown>;
 /**
  * useTravelers
  * ----------------------------------------------------------------------------
- * Fetches cached travelers list via TanStack Query.
+ * Returns the list of travelers for a given client.
+ * clientId is optional; if omitted, returns all travelers (if permitted by RLS).
+ * Returns a TanStack Query result.
  */
-export const useTravelers = createHook<Traveler[]>("travelers");
+export const useTravelers = (clientId?: string) =>
+  createHook<Traveler[]>(queryKeys.travelers(clientId))();
+
+/**
+ * Usage example:
+ * const { data, isLoading } = useTravelers(clientId);
+ * useTravelersRealtime(clientId); // for real-time sync
+ */

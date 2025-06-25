@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'; // Uncomment for debugging
+import React from 'react';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +27,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Create a QueryClient instance (singleton per session)
+  const [queryClient] = React.useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 2, // PRD: automatic retry for network errors
+        refetchOnWindowFocus: true,
+        staleTime: 60 * 1000, // 1 minute default
+        gcTime: 5 * 60 * 1000, // 5 minutes default (v5: use gcTime instead of cacheTime)
+      },
+      mutations: {
+        retry: 1,
+      },
+    },
+  }));
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          {children}
+          <QueryClientProvider client={queryClient}>
+            {children}
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+          </QueryClientProvider>
         </ThemeProvider>
       </body>
     </html>
