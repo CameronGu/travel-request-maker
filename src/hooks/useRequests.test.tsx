@@ -11,7 +11,7 @@ describe('useRequests (TanStack Query)', () => {
   it('caches and invalidates data', async () => {
     // Mock storage driver
     let data = [{ id: 1, name: 'A' }];
-    vi.spyOn(storage, 'activeDriver', 'get').mockReturnValue({
+    vi.spyOn(storage, 'getActiveDriver').mockReturnValue({
       get: ((key: string) => Promise.resolve(data)) as <T = unknown>(key: string) => Promise<T | null>,
       set: vi.fn(),
     });

@@ -1,7 +1,7 @@
-import { createClient } from './client';
+import { getSupabaseClient } from './client';
 
 export const signInWithMagicLink = async (email: string, redirectUrl: string) => {
-  const supabase = createClient();
+  const supabase = getSupabaseClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
@@ -18,7 +18,7 @@ export const signInWithMagicLink = async (email: string, redirectUrl: string) =>
 };
 
 export const signOut = async () => {
-  const supabase = createClient();
+  const supabase = getSupabaseClient();
   const { error } = await supabase.auth.signOut();
 
   if (error) {
@@ -29,7 +29,7 @@ export const signOut = async () => {
 };
 
 export const getUser = async () => {
-  const supabase = createClient();
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase.auth.getUser();
 
   if (error) {
@@ -41,7 +41,7 @@ export const getUser = async () => {
 };
 
 export const getSession = async () => {
-  const supabase = createClient();
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
 
   if (error) {

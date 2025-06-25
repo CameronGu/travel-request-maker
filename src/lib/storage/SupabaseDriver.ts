@@ -9,20 +9,19 @@
  * runtime errors.
  */
 
-import { createClient as createBrowserClient } from '@/lib/supabase/client'
+import { getSupabaseClient } from '../supabase/client';
+import { StorageDriver } from './StorageDriver';
 
-import { StorageDriver } from './StorageDriver'
+export class SupabaseDriver implements StorageDriver {
+  private readonly client = getSupabaseClient();
 
-const supabase = createBrowserClient()
-
-export const SupabaseDriver: StorageDriver = {
   async get<T>(key: string) {
-    const { data, error } = await supabase.from(key).select('*')
-    if (error) throw error
-    return data as T
-  },
+    const { data, error } = await this.client.from(key).select('*');
+    if (error) throw error;
+    return data as T;
+  }
   async set<T>(key: string, value: T) {
-    const { error } = await supabase.from(key).upsert(value)
-    if (error) throw error
-  },
+    const { error } = await this.client.from(key).upsert(value);
+    if (error) throw error;
+  }
 }

@@ -1,16 +1,12 @@
-import type { StorageDriver } from "./StorageDriver";
+import { features } from '@/config';
+import { LocalDriver } from './LocalDriver';
+import { SupabaseDriver } from './SupabaseDriver';
+import type { StorageDriver } from './StorageDriver';
 
-import { features } from "@/config";
+let cached: StorageDriver | undefined;
 
-import { LocalDriver } from "./LocalDriver";
-import { SupabaseDriver } from "./SupabaseDriver";
-
-
-// Determine the active storage implementation based on feature flags.
-const local = new LocalDriver();
-const supabase = SupabaseDriver;
-
-// Export the active driver instance based on config.
-// TODO: Provide a driver factory/singleton once requirements are clear.
-
-export const activeDriver: StorageDriver = features.supabase ? supabase : local;
+export function getActiveDriver(): StorageDriver {
+  if (cached) return cached;
+  cached = features.supabase ? new SupabaseDriver() : new LocalDriver();
+  return cached;
+}

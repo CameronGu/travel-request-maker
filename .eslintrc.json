@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "supabaseClient",
+        "message": "Use getSupabaseClient() instead."
+      },
+      {
+        "name": "activeDriver",
+        "message": "Use getActiveDriver() instead."
+      }
+    ]
+  }
+} 

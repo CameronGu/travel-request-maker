@@ -1,6 +1,6 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
-import { activeDriver } from "@/lib/storage";
+import { getActiveDriver } from "@/lib/storage";
 
 
 /**
@@ -27,7 +27,7 @@ export function createHook<T = unknown>(key: string | readonly unknown[]): () =>
         } else if (typeof key === 'string') {
           storageKey = key;
         }
-        return activeDriver.get<T>(storageKey);
+        return getActiveDriver().get<T>(storageKey);
       },
     });
 }

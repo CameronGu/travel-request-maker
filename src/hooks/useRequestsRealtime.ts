@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { supabaseClient } from '@/lib/supabase/client';
+import { getSupabaseClient } from '@/lib/supabase/client';
 import { queryKeys } from '@/lib/queryKeys';
+import { features } from '@/config';
 
 /**
  * useRequestsRealtime
@@ -14,7 +15,9 @@ export function useRequestsRealtime(projectId?: string) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const channel = supabaseClient.channel('requests-changes')
+    if (!features.supabase) return;
+    const channel = getSupabaseClient()
+      .channel('requests-changes')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'requests' },
