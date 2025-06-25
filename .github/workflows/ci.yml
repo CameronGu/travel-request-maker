@@ -1,9 +1,17 @@
 name: CI
+
+# TODO-CI: Re-enable GitHub Actions when project structure stabilizes
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
+
 on:
   push:
-    branches: [main]
+    branches: [nonexistent]
   pull_request:
-    branches: [main]
+    branches: [nonexistent]
 
 jobs:
   build:
