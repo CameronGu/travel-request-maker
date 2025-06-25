@@ -4,7 +4,7 @@ import DynamicForm from "./DynamicForm";
 import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
-import 'vitest-axe/extend-expect';
+import * as matchers from 'vitest-axe/matchers';
 import hotelSchema from '../form-fields/fields.hotel.json';
 import flightSchema from '../form-fields/fields.flight.json';
 import carSchema from '../form-fields/fields.car.json';
@@ -20,6 +20,8 @@ const user = userEvent.setup();
 const hotelSchemaAny = hotelSchema as any;
 const flightSchemaAny = flightSchema as any;
 const carSchemaAny = carSchema as any;
+
+expect.extend(matchers);
 
 describe("DynamicForm", () => {
   const baseFields = [
@@ -275,10 +277,10 @@ describe('DynamicForm error boundary', () => {
 
 describe('DynamicForm array/object/repeatable group fields', () => {
   it('renders array/object stubs for hotel and car schemas', () => {
-    // Use getAllByText and check length
-    expect(screen.getAllByText(/Array input not yet implemented/).length).toBeGreaterThanOrEqual(1);
+    render(<DynamicForm schema={hotelSchemaAny} onSubmit={() => {}} />);
+    expect(screen.getAllByText((content) => content.includes('Array input not yet implemented')).length).toBeGreaterThanOrEqual(1);
     render(<DynamicForm schema={carSchemaAny} onSubmit={() => {}} />);
-    expect(screen.getAllByText(/Array input not yet implemented/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText((content) => content.includes('Array input not yet implemented')).length).toBeGreaterThanOrEqual(1);
   });
 });
 

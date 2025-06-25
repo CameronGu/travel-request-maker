@@ -84,9 +84,21 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
           >
             Select...
           </option>
-          <option />
-          <option />
-          <option />
+          <option
+            value="Airport"
+          >
+            Airport
+          </option>
+          <option
+            value="Specific"
+          >
+            Specific
+          </option>
+          <option
+            value="General"
+          >
+            General
+          </option>
         </select>
       </div>
     </div>
@@ -94,10 +106,14 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       style="margin-bottom: 16px;"
     >
       <div
-        style="color: red;"
+        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
       >
-        Unsupported field type: 
-        dynamicMapAirport
+        <label>
+          Pickup Location
+        </label>
+        <div>
+          [DynamicMapAirport input not yet implemented]
+        </div>
       </div>
     </div>
     <div
@@ -145,10 +161,14 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       style="margin-bottom: 16px;"
     >
       <div
-        style="color: red;"
+        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
       >
-        Unsupported field type: 
-        time
+        <label>
+          Pickup Time
+        </label>
+        <div>
+          [Time input not yet implemented]
+        </div>
       </div>
     </div>
     <div
@@ -190,9 +210,21 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
           >
             Select...
           </option>
-          <option />
-          <option />
-          <option />
+          <option
+            value="Airport"
+          >
+            Airport
+          </option>
+          <option
+            value="Specific"
+          >
+            Specific
+          </option>
+          <option
+            value="General"
+          >
+            General
+          </option>
         </select>
       </div>
     </div>
@@ -200,10 +232,14 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       style="margin-bottom: 16px;"
     >
       <div
-        style="color: red;"
+        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
       >
-        Unsupported field type: 
-        dynamicMapAirport
+        <label>
+          Drop-Off Location
+        </label>
+        <div>
+          [DynamicMapAirport input not yet implemented]
+        </div>
       </div>
     </div>
     <div
@@ -298,11 +334,31 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
           >
             Select...
           </option>
-          <option />
-          <option />
-          <option />
-          <option />
-          <option />
+          <option
+            value="Economy"
+          >
+            Economy
+          </option>
+          <option
+            value="Mid-size"
+          >
+            Mid-size
+          </option>
+          <option
+            value="SUV"
+          >
+            SUV
+          </option>
+          <option
+            value="Truck"
+          >
+            Truck
+          </option>
+          <option
+            value="Premium"
+          >
+            Premium
+          </option>
         </select>
       </div>
     </div>
@@ -475,12 +531,36 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
           >
             Select...
           </option>
-          <option />
-          <option />
-          <option />
-          <option />
-          <option />
-          <option />
+          <option
+            value="Optimize"
+          >
+            Optimize
+          </option>
+          <option
+            value="Morning"
+          >
+            Morning
+          </option>
+          <option
+            value="Afternoon"
+          >
+            Afternoon
+          </option>
+          <option
+            value="Evening"
+          >
+            Evening
+          </option>
+          <option
+            value="Specific"
+          >
+            Specific
+          </option>
+          <option
+            value="Custom"
+          >
+            Custom
+          </option>
         </select>
       </div>
     </div>
@@ -521,9 +601,21 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
           >
             Select...
           </option>
-          <option />
-          <option />
-          <option />
+          <option
+            value="Lowest Logical Fare"
+          >
+            Lowest Logical Fare
+          </option>
+          <option
+            value="Flexible"
+          >
+            Flexible
+          </option>
+          <option
+            value="Premium"
+          >
+            Premium
+          </option>
         </select>
       </div>
     </div>
@@ -637,10 +729,14 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       style="margin-bottom: 16px;"
     >
       <div
-        style="color: red;"
+        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
       >
-        Unsupported field type: 
-        mapAutocomplete
+        <label>
+          Location
+        </label>
+        <div>
+          [MapAutocomplete input not yet implemented]
+        </div>
       </div>
     </div>
     <div
@@ -758,9 +854,21 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
           >
             Select...
           </option>
-          <option />
-          <option />
-          <option />
+          <option
+            value="Optimize"
+          >
+            Optimize
+          </option>
+          <option
+            value="Mid-range"
+          >
+            Mid-range
+          </option>
+          <option
+            value="Premium"
+          >
+            Premium
+          </option>
         </select>
       </div>
     </div>
