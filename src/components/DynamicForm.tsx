@@ -77,20 +77,33 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  select: (field, register, extra) => (
-    <div style={{ marginBottom: 16 }}>
-      <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
-        {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
-      </label>
-      <select id={field.id} {...register(field.id, { required: !!field.required })}>
-        <option value="">Select...</option>
-        {field.options?.map(opt => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
-        ))}
-      </select>
-      {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
-    </div>
-  ),
+  select: (field, register, extra) => {
+    // Support both string[] and {label, value}[] for options
+    let selectOptions: {label: string, value: string}[] = [];
+    if (Array.isArray(field.options) && field.options.length > 0) {
+      const first = field.options[0];
+      if (typeof first === 'string') {
+        const stringOptions = field.options as string[];
+        selectOptions = stringOptions.map(opt => ({ label: opt, value: opt }));
+      } else if (typeof first === 'object' && first !== null && 'label' in first && 'value' in first) {
+        selectOptions = field.options as {label: string, value: string}[];
+      }
+    }
+    return (
+      <div style={{ marginBottom: 16 }}>
+        <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
+          {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
+        </label>
+        <select id={field.id} {...register(field.id, { required: !!field.required })}>
+          <option value="">Select...</option>
+          {selectOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+        {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
+      </div>
+    );
+  },
   radio: (field, register, extra) => (
     <div style={{ marginBottom: 16 }}>
       <div>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
@@ -175,6 +188,24 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
       />
     );
   },
+  mapAutocomplete: (field, register, extra) => (
+    <div style={{ marginBottom: 16, color: '#888' }}>
+      <label>{field.label}</label>
+      <div>[MapAutocomplete input not yet implemented]</div>
+    </div>
+  ),
+  dynamicMapAirport: (field, register, extra) => (
+    <div style={{ marginBottom: 16, color: '#888' }}>
+      <label>{field.label}</label>
+      <div>[DynamicMapAirport input not yet implemented]</div>
+    </div>
+  ),
+  time: (field, register, extra) => (
+    <div style={{ marginBottom: 16, color: '#888' }}>
+      <label>{field.label}</label>
+      <div>[Time input not yet implemented]</div>
+    </div>
+  ),
   // Add more as needed
 };
 

@@ -1,0 +1,774 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 1`] = `
+<div>
+  <form>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="client"
+        name="client"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="project"
+        name="project"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="clientReference"
+        >
+          Client Reference
+        </label>
+        <input
+          id="clientReference"
+          name="clientReference"
+          type="text"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="border: 1px solid rgb(204, 204, 204); padding: 8px; border-radius: 8px; margin-bottom: 8px;"
+      >
+        <div>
+          Traveler Selector [stub]
+        </div>
+        <div>
+          Selected: 
+          None
+        </div>
+        <button
+          type="button"
+        >
+          + Add Traveler (stub)
+        </button>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="pickupType"
+        >
+          Pickup Location Type
+          <span
+            style="color: red;"
+          >
+             *
+          </span>
+        </label>
+        <select
+          id="pickupType"
+          name="pickupType"
+        >
+          <option
+            value=""
+          >
+            Select...
+          </option>
+          <option />
+          <option />
+          <option />
+        </select>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="color: red;"
+      >
+        Unsupported field type: 
+        dynamicMapAirport
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="pickup.location.lat"
+        name="pickup.location.lat"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="pickup.location.lng"
+        name="pickup.location.lng"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="rentalStart"
+        >
+          Pickup Date
+          <span
+            style="color: red;"
+          >
+             *
+          </span>
+        </label>
+        <input
+          id="rentalStart"
+          name="rentalStart"
+          type="date"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="color: red;"
+      >
+        Unsupported field type: 
+        time
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="sameDropoff"
+        >
+          <input
+            id="sameDropoff"
+            name="sameDropoff"
+            type="checkbox"
+          />
+           
+          Drop-Off = Pickup?
+        </label>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="dropoffType"
+        >
+          Drop-Off Location Type
+        </label>
+        <select
+          id="dropoffType"
+          name="dropoffType"
+        >
+          <option
+            value=""
+          >
+            Select...
+          </option>
+          <option />
+          <option />
+          <option />
+        </select>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="color: red;"
+      >
+        Unsupported field type: 
+        dynamicMapAirport
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="dropoff.location.lat"
+        name="dropoff.location.lat"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="dropoff.location.lng"
+        name="dropoff.location.lng"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="rentalEnd"
+        >
+          Drop-Off Date
+          <span
+            style="color: red;"
+          >
+             *
+          </span>
+        </label>
+        <input
+          id="rentalEnd"
+          name="rentalEnd"
+          type="date"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
+      >
+        <label>
+          Vehicles
+        </label>
+        <div>
+          [Array input not yet implemented]
+        </div>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="notes"
+        >
+          Notes
+        </label>
+        <textarea
+          id="notes"
+          name="notes"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="budgetGuidance"
+        >
+          Budget Guidance
+        </label>
+        <select
+          id="budgetGuidance"
+          name="budgetGuidance"
+        >
+          <option
+            value=""
+          >
+            Select...
+          </option>
+          <option />
+          <option />
+          <option />
+          <option />
+          <option />
+        </select>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;
+
+exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashing 1`] = `
+<div>
+  <form>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="client"
+        name="client"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="project"
+        name="project"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="clientReference"
+        >
+          Client Reference
+        </label>
+        <input
+          id="clientReference"
+          name="clientReference"
+          type="text"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="border: 1px solid rgb(204, 204, 204); padding: 8px; border-radius: 8px; margin-bottom: 8px;"
+      >
+        <div>
+          Traveler Selector [stub]
+        </div>
+        <div>
+          Selected: 
+          None
+        </div>
+        <button
+          type="button"
+        >
+          + Add Traveler (stub)
+        </button>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="color: red;"
+      >
+        Unsupported field type: 
+        airportPicker
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="color: red;"
+      >
+        Unsupported field type: 
+        airportPicker
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="tripType"
+        >
+          Trip Type
+          <span
+            style="color: red;"
+          >
+             *
+          </span>
+        </label>
+        <select
+          id="tripType"
+          name="tripType"
+        >
+          <option
+            value=""
+          >
+            Select...
+          </option>
+          <option
+            value="oneWay"
+          >
+            One-Way
+          </option>
+          <option
+            value="roundTrip"
+          >
+            Round-Trip
+          </option>
+        </select>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="flightDate"
+        >
+          Departure Date
+          <span
+            style="color: red;"
+          >
+             *
+          </span>
+        </label>
+        <input
+          id="flightDate"
+          name="flightDate"
+          type="date"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="flightTimePrefDepart"
+        >
+          Time Preference – Departure
+        </label>
+        <select
+          id="flightTimePrefDepart"
+          name="flightTimePrefDepart"
+        >
+          <option
+            value=""
+          >
+            Select...
+          </option>
+          <option />
+          <option />
+          <option />
+          <option />
+          <option />
+          <option />
+        </select>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="notes"
+        >
+          Notes
+        </label>
+        <textarea
+          id="notes"
+          name="notes"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="budgetGuidance"
+        >
+          Budget Guidance
+        </label>
+        <select
+          id="budgetGuidance"
+          name="budgetGuidance"
+        >
+          <option
+            value=""
+          >
+            Select...
+          </option>
+          <option />
+          <option />
+          <option />
+        </select>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;
+
+exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashing 1`] = `
+<div>
+  <form>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="client"
+        name="client"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="project"
+        name="project"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="clientReference"
+        >
+          Client Reference
+        </label>
+        <input
+          id="clientReference"
+          name="clientReference"
+          type="text"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="border: 1px solid rgb(204, 204, 204); padding: 8px; border-radius: 8px; margin-bottom: 8px;"
+      >
+        <div>
+          Traveler Selector [stub]
+        </div>
+        <div>
+          Selected: 
+          None
+        </div>
+        <button
+          type="button"
+        >
+          + Add Traveler (stub)
+        </button>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <div>
+          Target Location Type
+          <span
+            style="color: red;"
+          >
+             *
+          </span>
+        </div>
+        <label
+          style="margin-right: 12px;"
+        >
+          <input
+            name="targetLocationType"
+            type="radio"
+            value="specific"
+          />
+           
+          Specific Property
+        </label>
+        <label
+          style="margin-right: 12px;"
+        >
+          <input
+            name="targetLocationType"
+            type="radio"
+            value="general"
+          />
+           
+          General Area
+        </label>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="color: red;"
+      >
+        Unsupported field type: 
+        mapAutocomplete
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="location.lat"
+        name="location.lat"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <input
+        id="location.lng"
+        name="location.lng"
+        type="hidden"
+      />
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="checkInDate"
+        >
+          Check-In Date
+          <span
+            style="color: red;"
+          >
+             *
+          </span>
+        </label>
+        <input
+          id="checkInDate"
+          name="checkInDate"
+          type="date"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="checkOutDate"
+        >
+          Check-Out Date
+          <span
+            style="color: red;"
+          >
+             *
+          </span>
+        </label>
+        <input
+          id="checkOutDate"
+          name="checkOutDate"
+          type="date"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
+      >
+        <label>
+          Rooms
+        </label>
+        <div>
+          [Array input not yet implemented]
+        </div>
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="notes"
+        >
+          Notes
+        </label>
+        <textarea
+          id="notes"
+          name="notes"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-bottom: 16px;"
+    >
+      <div
+        style="margin-bottom: 16px;"
+      >
+        <label
+          for="budgetGuidance"
+        >
+          Budget Guidance
+        </label>
+        <select
+          id="budgetGuidance"
+          name="budgetGuidance"
+        >
+          <option
+            value=""
+          >
+            Select...
+          </option>
+          <option />
+          <option />
+          <option />
+        </select>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;

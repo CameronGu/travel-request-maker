@@ -3,6 +3,11 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import DynamicForm from "./DynamicForm";
 import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
 import userEvent from '@testing-library/user-event';
+import { axe } from 'vitest-axe';
+import 'vitest-axe/extend-expect';
+import hotelSchema from '../form-fields/fields.hotel.json';
+import flightSchema from '../form-fields/fields.flight.json';
+import carSchema from '../form-fields/fields.car.json';
 
 beforeAll(() => {
   vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => setTimeout(() => cb(performance.now()), 0));
@@ -10,6 +15,11 @@ beforeAll(() => {
 afterAll(() => vi.unstubAllGlobals());
 
 const user = userEvent.setup();
+
+// Cast imported schemas for test use (bypass strict FieldDefinition typing for test coverage)
+const hotelSchemaAny = hotelSchema as any;
+const flightSchemaAny = flightSchema as any;
+const carSchemaAny = carSchema as any;
 
 describe("DynamicForm", () => {
   const baseFields = [
@@ -202,5 +212,87 @@ describe("DynamicForm traveler selector and budget prefilling", () => {
         })
       );
     });
+  });
+});
+
+describe('DynamicForm accessibility (a11y) tests', () => {
+  it.each([
+    ['hotel', hotelSchemaAny],
+    ['flight', flightSchemaAny],
+    ['car', carSchemaAny],
+  ])('should have no a11y violations for %s schema', async (_label, schema) => {
+    const { container } = render(<DynamicForm schema={schema} onSubmit={() => {}} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+});
+
+describe('DynamicForm snapshot/smoke tests', () => {
+  it.each([
+    ['hotel', hotelSchemaAny],
+    ['flight', flightSchemaAny],
+    ['car', carSchemaAny],
+  ])('renders %s schema without crashing', (_label, schema) => {
+    const { container } = render(<DynamicForm schema={schema} onSubmit={() => {}} />);
+    expect(container).toMatchSnapshot();
+  });
+});
+
+describe('DynamicForm end-to-end (E2E) tests for real schemas', () => {
+  it('submits hotel form with required fields', async () => {
+    const handleSubmit = vi.fn();
+    render(<DynamicForm schema={hotelSchemaAny} onSubmit={handleSubmit} initialValues={{ travelerIds: ['t1'] }} />);
+    await user.click(screen.getByRole('radio', { name: /Specific Property/i }));
+    // Instead of typing into Location, check for the stub text
+    expect(screen.getByText(/MapAutocomplete input not yet implemented/)).toBeInTheDocument();
+    await user.type(screen.getByLabelText(/Check-In Date/i), '2025-08-01');
+    await user.type(screen.getByLabelText(/Check-Out Date/i), '2025-08-05');
+    fireEvent.click(screen.getByText('Submit'));
+    await waitFor(() => expect(handleSubmit).toHaveBeenCalled());
+  });
+  it('shows and hides conditional fields in flight form', async () => {
+    render(<DynamicForm schema={flightSchemaAny} onSubmit={() => {}} initialValues={{ travelerIds: ['t1'] }} />);
+    // Trip type: oneWay (returnDate hidden)
+    expect(screen.queryByLabelText(/Return Date/)).not.toBeInTheDocument();
+    await user.selectOptions(screen.getByLabelText(/Trip Type/), 'roundTrip');
+    expect(await screen.findByLabelText(/Return Date/)).toBeInTheDocument();
+  });
+  it('handles travelerMultiSelect and budgetGuidance in car form', async () => {
+    render(<DynamicForm schema={carSchemaAny} onSubmit={() => {}} initialValues={{ travelerIds: ['t1'], budgetGuidance: 'Economy' }} />);
+    expect(screen.getByText(/Traveler Selector/)).toBeInTheDocument();
+    // Should now work with select fix
+    expect(screen.getByLabelText(/Budget Guidance/)).toHaveValue('Economy');
+  });
+});
+
+describe('DynamicForm error boundary', () => {
+  it('renders error boundary on field render error', () => {
+    const badSchema = [{ id: 'bad', label: 'Bad', type: 'unknownType' }];
+    const { getByText } = render(<DynamicForm schema={badSchema as any} onSubmit={() => {}} />);
+    expect(getByText(/Unsupported field type/)).toBeInTheDocument();
+  });
+});
+
+describe('DynamicForm array/object/repeatable group fields', () => {
+  it('renders array/object stubs for hotel and car schemas', () => {
+    // Use getAllByText and check length
+    expect(screen.getAllByText(/Array input not yet implemented/).length).toBeGreaterThanOrEqual(1);
+    render(<DynamicForm schema={carSchemaAny} onSubmit={() => {}} />);
+    expect(screen.getAllByText(/Array input not yet implemented/).length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('DynamicForm advanced conditional logic', () => {
+  it('respects readOnlyIfLocked and defaultFrom logic', () => {
+    const schema = [
+      { id: 'clientReference', label: 'Client Reference', type: 'text', readOnlyIfLocked: true },
+      { id: 'budgetGuidance', label: 'Budget Guidance', type: 'select', options: [
+        { label: 'Optimize', value: 'optimize' },
+        { label: 'Premium', value: 'premium' }
+      ], defaultFrom: 'budgetGuidance' }
+    ];
+    render(<DynamicForm schema={schema as any} onSubmit={() => {}} initialValues={{ clientReference: 'LOCKED', budgetGuidance: 'premium' }} />);
+    expect(screen.getByLabelText(/Client Reference/)).toHaveValue('LOCKED');
+    expect(screen.getByLabelText(/Budget Guidance/)).toHaveValue('premium');
   });
 }); 
