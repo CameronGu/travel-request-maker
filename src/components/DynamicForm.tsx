@@ -82,10 +82,15 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
     let selectOptions: {label: string, value: string}[] = [];
     if (Array.isArray(field.options) && field.options.length > 0) {
       const first = field.options[0];
-      if (typeof first === 'string') {
-        const stringOptions = field.options as string[];
-        selectOptions = stringOptions.map(opt => ({ label: opt, value: opt }));
-      } else if (typeof first === 'object' && first !== null && 'label' in first && 'value' in first) {
+      if (typeof first === 'string' && field.options.every(opt => typeof opt === 'string')) {
+        selectOptions = (field.options as string[]).map(opt => ({ label: opt, value: opt }));
+      } else if (
+        typeof first === 'object' &&
+        first !== null &&
+        'label' in first &&
+        'value' in first &&
+        field.options.every(opt => typeof opt === 'object' && opt !== null && 'label' in opt && 'value' in opt)
+      ) {
         selectOptions = field.options as {label: string, value: string}[];
       }
     }

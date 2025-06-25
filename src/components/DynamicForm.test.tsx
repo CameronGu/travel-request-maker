@@ -21,6 +21,7 @@ const hotelSchemaAny = hotelSchema as any;
 const flightSchemaAny = flightSchema as any;
 const carSchemaAny = carSchema as any;
 
+// ts-expect-error vitest-axe matchers are dynamically added
 expect.extend(matchers);
 
 describe("DynamicForm", () => {
@@ -225,6 +226,7 @@ describe('DynamicForm accessibility (a11y) tests', () => {
   ])('should have no a11y violations for %s schema', async (_label, schema) => {
     const { container } = render(<DynamicForm schema={schema} onSubmit={() => {}} />);
     const results = await axe(container);
+    // @ts-expect-error: toHaveNoViolations is added by vitest-axe matcher
     expect(results).toHaveNoViolations();
   });
 });
