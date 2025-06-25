@@ -26,6 +26,8 @@ interface FieldDefinition {
   notes?: string;
   options?: { label: string; value: string }[]; // for select, radio, etc.
   logic?: string; // concise behaviour/dependency rules
+  showWhen?: Record<string, any>;
+  showWhenAny?: Record<string, any>[];
   // Additional fields for advanced types (array, object, etc.)
   [key: string]: any;
 }
@@ -60,9 +62,9 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 }
 
 // Field type to component mapping (factory pattern)
-const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, errors: any) => React.ReactNode> = {
-  text: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16 }}>
+const fieldComponentMap: Record<string, (field: FieldDefinition, register: any) => React.ReactNode> = {
+  text: (field, register) => (
+    <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
       </label>
@@ -71,12 +73,11 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
         {...register(field.id, { required: !!field.required })}
         type="text"
       />
-      {errors[field.id] && <span style={{ color: 'red' }}>Required</span>}
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  select: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16 }}>
+  select: (field, register) => (
+    <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
       </label>
@@ -86,12 +87,11 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
           <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
       </select>
-      {errors[field.id] && <span style={{ color: 'red' }}>Required</span>}
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  radio: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16 }}>
+  radio: (field, register) => (
+    <div style={{ marginBottom: 16 }}>
       <div>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
       </div>
@@ -100,12 +100,11 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
           <input type="radio" value={opt.value} {...register(field.id, { required: !!field.required })} /> {opt.label}
         </label>
       ))}
-      {errors[field.id] && <span style={{ color: 'red' }}>Required</span>}
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  checkbox: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16 }}>
+  checkbox: (field, register) => (
+    <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>
         <input id={field.id} type="checkbox" {...register(field.id)} /> {field.label}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
@@ -113,51 +112,49 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  date: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16 }}>
+  date: (field, register) => (
+    <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
       </label>
       <input id={field.id} type="date" {...register(field.id, { required: !!field.required })} />
-      {errors[field.id] && <span style={{ color: 'red' }}>Required</span>}
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  textarea: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16 }}>
+  textarea: (field, register) => (
+    <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
       </label>
       <textarea id={field.id} {...register(field.id, { required: !!field.required })} />
-      {errors[field.id] && <span style={{ color: 'red' }}>Required</span>}
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  hidden: (field, register, errors) => (
-    <input key={field.id} id={field.id} type="hidden" {...register(field.id)} />
+  hidden: (field, register) => (
+    <input id={field.id} type="hidden" {...register(field.id)} />
   ),
   // Stubs for advanced types (to be implemented)
-  map: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16, color: '#888' }}>
+  map: (field, register) => (
+    <div style={{ marginBottom: 16, color: '#888' }}>
       <label>{field.label}</label>
       <div>[Map input not yet implemented]</div>
     </div>
   ),
-  slider: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16 }}>
+  slider: (field, register) => (
+    <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}</label>
       <input id={field.id} type="range" min={field.min || 0} max={field.max || 100} {...register(field.id)} />
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  array: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16, color: '#888' }}>
+  array: (field, register) => (
+    <div style={{ marginBottom: 16, color: '#888' }}>
       <label>{field.label}</label>
       <div>[Array input not yet implemented]</div>
     </div>
   ),
-  object: (field, register, errors) => (
-    <div key={field.id} style={{ marginBottom: 16, color: '#888' }}>
+  object: (field, register) => (
+    <div style={{ marginBottom: 16, color: '#888' }}>
       <label>{field.label}</label>
       <div>[Object input not yet implemented]</div>
     </div>
@@ -201,21 +198,137 @@ function buildZodSchema(schema: FieldDefinition[]): z.ZodObject<any> {
 }
 
 export default function DynamicForm({ schema, initialValues = {}, onSubmit, zodSchema }: DynamicFormProps) {
-  const effectiveSchema = zodSchema || buildZodSchema(schema);
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: initialValues,
-    resolver: zodResolver(effectiveSchema),
-  });
+  const [visibleFields, setVisibleFields] = React.useState<FieldDefinition[]>(schema);
+
+  // Helper to evaluate showWhen/showWhenAny
+  function shouldShowField(field: FieldDefinition, values: Record<string, any>): boolean {
+    if (field.showWhen) {
+      return Object.entries(field.showWhen).every(([dep, val]) => values[dep] === val);
+    }
+    if (field.showWhenAny) {
+      return field.showWhenAny.some((cond: Record<string, any>) =>
+        Object.entries(cond).every(([dep, val]) => values[dep] === val)
+      );
+    }
+    return true;
+  }
+
+  // Only watch the fields that are dependencies for conditional logic
+  const dependencyFields = React.useMemo(() => {
+    const deps = new Set<string>();
+    for (const field of schema) {
+      if (field.showWhen) Object.keys(field.showWhen).forEach(dep => deps.add(dep));
+      if (field.showWhenAny) field.showWhenAny.forEach((cond: any) => Object.keys(cond).forEach(dep => deps.add(dep)));
+    }
+    return Array.from(deps);
+  }, [schema]);
+
+  // Watch only dependency fields
+  const [depValues, setDepValues] = React.useState<Record<string, any>>({});
+  const formRef = React.useRef<any>(null);
+
+  // Build a Zod schema for only visible fields
+  function buildVisibleZodSchema(fields: FieldDefinition[]): z.ZodObject<any> {
+    const shape: Record<string, any> = {};
+    for (const field of fields) {
+      let zodType: any = z.any();
+      switch (field.type) {
+        case "text":
+        case "textarea":
+          zodType = z.string();
+          break;
+        case "select":
+        case "radio":
+          zodType = z.string();
+          break;
+        case "checkbox":
+          zodType = z.boolean().optional();
+          break;
+        case "date":
+          zodType = z.string();
+          break;
+        case "slider":
+          zodType = z.number();
+          break;
+        default:
+          zodType = z.any();
+      }
+      if (field.required) {
+        zodType = zodType.nonempty({ message: `${field.label} is required` });
+      } else {
+        zodType = zodType.optional();
+      }
+      shape[field.id] = zodType;
+    }
+    return z.object(shape);
+  }
+
+  // Memoize the resolver for visible fields
+  const resolver = React.useMemo(() =>
+    zodResolver(zodSchema || buildVisibleZodSchema(visibleFields)),
+    [zodSchema, JSON.stringify(visibleFields)]
+  );
+
+  // useForm instance, do not use a changing key
+  const { register, handleSubmit, formState: { errors }, watch, getValues, reset } =
+    require('react-hook-form').useForm({
+      defaultValues: initialValues,
+      resolver,
+      mode: 'onSubmit',
+      reValidateMode: 'onChange',
+      shouldUnregister: false,
+    });
+
+  // Watch dependency fields and update visibleFields when they change
+  React.useEffect(() => {
+    const subscription = watch((values: any) => {
+      setDepValues((prev) => {
+        const changed = dependencyFields.some(dep => prev[dep] !== values[dep]);
+        if (changed) {
+          const newVisible = schema.filter(field => shouldShowField(field, values));
+          // Only update if the set of visible field IDs has changed
+          const prevIds = visibleFields.map(f => f.id).join(',');
+          const newIds = newVisible.map(f => f.id).join(',');
+          if (prevIds !== newIds) {
+            setVisibleFields(newVisible);
+          }
+        }
+        return values;
+      });
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, dependencyFields, schema]);
+
+  // Custom submit handler: only submit visible fields
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const handleDynamicSubmit = (values: Record<string, any>) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    onSubmit(values);
+    requestAnimationFrame(() => setIsSubmitting(false)); // allow next submit after a frame
+  };
 
   const renderField = (field: FieldDefinition) => {
+    const currentValues = getValues();
+    if (!shouldShowField(field, currentValues)) return null;
     const renderer = fieldComponentMap[field.type];
-    if (renderer) return renderer(field, register, errors);
-    return <div key={field.id} style={{ color: 'red' }}>Unsupported field type: {field.type}</div>;
+    const rawErrorMsg = errors[field.id]?.message;
+    const errorMsg = typeof rawErrorMsg === 'string' ? rawErrorMsg : undefined;
+    return (
+      <div key={field.id} style={{ marginBottom: 16 }}>
+        {renderer ? renderer(field, register) : (
+          <div style={{ color: 'red' }}>Unsupported field type: {field.type}</div>
+        )}
+        {errorMsg && (
+          <span role="alert" style={{ color: 'red', display: 'block', marginTop: 4 }}>{errorMsg}</span>
+        )}
+      </div>
+    );
   };
 
   return (
     <ErrorBoundary>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(handleDynamicSubmit)}>
         {schema.map(renderField)}
         <button type="submit">Submit</button>
         {Object.keys(errors).length > 0 && (
