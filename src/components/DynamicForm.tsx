@@ -61,9 +61,25 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
   }
 }
 
+// TravelerSelector stub (to be extracted to its own file)
+function TravelerSelector({ value, onChange, editable = true }: { value: string[]; onChange: (ids: string[]) => void; editable?: boolean }) {
+  // TODO: Replace with real traveler list and chip UI
+  return (
+    <div style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8, marginBottom: 8 }}>
+      <div>Traveler Selector [stub]</div>
+      <div>Selected: {value?.join(", ") || "None"}</div>
+      {editable && (
+        <button type="button" onClick={() => onChange([...(value || []), `traveler${(value?.length || 0) + 1}`])}>
+          + Add Traveler (stub)
+        </button>
+      )}
+    </div>
+  );
+}
+
 // Field type to component mapping (factory pattern)
-const fieldComponentMap: Record<string, (field: FieldDefinition, register: any) => React.ReactNode> = {
-  text: (field, register) => (
+const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, extra: any) => React.ReactNode> = {
+  text: (field, register, extra) => (
     <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
@@ -76,7 +92,7 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any) 
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  select: (field, register) => (
+  select: (field, register, extra) => (
     <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
@@ -90,7 +106,7 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any) 
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  radio: (field, register) => (
+  radio: (field, register, extra) => (
     <div style={{ marginBottom: 16 }}>
       <div>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
@@ -103,7 +119,7 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any) 
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  checkbox: (field, register) => (
+  checkbox: (field, register, extra) => (
     <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>
         <input id={field.id} type="checkbox" {...register(field.id)} /> {field.label}
@@ -112,7 +128,7 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any) 
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  date: (field, register) => (
+  date: (field, register, extra) => (
     <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
@@ -121,7 +137,7 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any) 
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  textarea: (field, register) => (
+  textarea: (field, register, extra) => (
     <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}
         {field.tooltip && <span title={field.tooltip} style={{ marginLeft: 4, cursor: 'help' }}>🛈</span>}
@@ -130,35 +146,50 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any) 
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  hidden: (field, register) => (
+  hidden: (field, register, extra) => (
     <input id={field.id} type="hidden" {...register(field.id)} />
   ),
   // Stubs for advanced types (to be implemented)
-  map: (field, register) => (
+  map: (field, register, extra) => (
     <div style={{ marginBottom: 16, color: '#888' }}>
       <label>{field.label}</label>
       <div>[Map input not yet implemented]</div>
     </div>
   ),
-  slider: (field, register) => (
+  slider: (field, register, extra) => (
     <div style={{ marginBottom: 16 }}>
       <label htmlFor={field.id}>{field.label}</label>
       <input id={field.id} type="range" min={field.min || 0} max={field.max || 100} {...register(field.id)} />
       {field.notes && <div style={{ fontSize: 12, color: '#888' }}>{field.notes}</div>}
     </div>
   ),
-  array: (field, register) => (
+  array: (field, register, extra) => (
     <div style={{ marginBottom: 16, color: '#888' }}>
       <label>{field.label}</label>
       <div>[Array input not yet implemented]</div>
     </div>
   ),
-  object: (field, register) => (
+  object: (field, register, extra) => (
     <div style={{ marginBottom: 16, color: '#888' }}>
       <label>{field.label}</label>
       <div>[Object input not yet implemented]</div>
     </div>
   ),
+  travelerMultiSelect: (field, register, extra) => {
+    // Use Controller for RHF integration
+    const { control } = extra;
+    const Controller = require('react-hook-form').Controller;
+    return (
+      <Controller
+        name={field.id}
+        control={control}
+        defaultValue={extra.initialValue || []}
+        render={({ field: rhfField }: { field: any }) => (
+          <TravelerSelector value={rhfField.value || []} onChange={rhfField.onChange} editable={true} />
+        )}
+      />
+    );
+  },
   // Add more as needed
 };
 
@@ -184,11 +215,18 @@ function buildZodSchema(schema: FieldDefinition[]): z.ZodObject<any> {
       case "slider":
         zodType = z.number();
         break;
+      case "travelerMultiSelect":
+        zodType = z.array(z.string());
+        break;
       default:
         zodType = z.any();
     }
     if (field.required) {
-      zodType = zodType.nonempty({ message: `${field.label} is required` });
+      if (field.type === "text" || field.type === "textarea" || field.type === "select" || field.type === "radio" || field.type === "date") {
+        zodType = zodType.nonempty({ message: `${field.label} is required` });
+      } else if (field.type === "travelerMultiSelect") {
+        zodType = zodType.min(1, { message: `${field.label} is required` });
+      } // else leave as is for now
     } else {
       zodType = zodType.optional();
     }
@@ -250,11 +288,18 @@ export default function DynamicForm({ schema, initialValues = {}, onSubmit, zodS
         case "slider":
           zodType = z.number();
           break;
+        case "travelerMultiSelect":
+          zodType = z.array(z.string());
+          break;
         default:
           zodType = z.any();
       }
       if (field.required) {
-        zodType = zodType.nonempty({ message: `${field.label} is required` });
+        if (field.type === "text" || field.type === "textarea" || field.type === "select" || field.type === "radio" || field.type === "date") {
+          zodType = zodType.nonempty({ message: `${field.label} is required` });
+        } else if (field.type === "travelerMultiSelect") {
+          zodType = zodType.min(1, { message: `${field.label} is required` });
+        }
       } else {
         zodType = zodType.optional();
       }
@@ -270,7 +315,7 @@ export default function DynamicForm({ schema, initialValues = {}, onSubmit, zodS
   );
 
   // useForm instance, do not use a changing key
-  const { register, handleSubmit, formState: { errors }, watch, getValues, reset } =
+  const { register, handleSubmit, formState: { errors }, watch, getValues, reset, control } =
     require('react-hook-form').useForm({
       defaultValues: initialValues,
       resolver,
@@ -299,6 +344,23 @@ export default function DynamicForm({ schema, initialValues = {}, onSubmit, zodS
     return () => subscription.unsubscribe();
   }, [watch, dependencyFields, schema]);
 
+  // Prefill fields with 'defaultFrom' if not already set
+  React.useEffect(() => {
+    const updates: Record<string, any> = {};
+    schema.forEach(field => {
+      if (field.defaultFrom && initialValues[field.id] === undefined) {
+        // Try to prefill from initialValues[defaultFrom] or context (not implemented)
+        if (initialValues[field.defaultFrom] !== undefined) {
+          updates[field.id] = initialValues[field.defaultFrom];
+        }
+      }
+    });
+    if (Object.keys(updates).length > 0) {
+      reset({ ...getValues(), ...updates });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schema]);
+
   // Custom submit handler: only submit visible fields
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const handleDynamicSubmit = (values: Record<string, any>) => {
@@ -314,9 +376,10 @@ export default function DynamicForm({ schema, initialValues = {}, onSubmit, zodS
     const renderer = fieldComponentMap[field.type];
     const rawErrorMsg = errors[field.id]?.message;
     const errorMsg = typeof rawErrorMsg === 'string' ? rawErrorMsg : undefined;
+    // Pass extra props for custom field types
     return (
       <div key={field.id} style={{ marginBottom: 16 }}>
-        {renderer ? renderer(field, register) : (
+        {renderer ? renderer(field, register, { control, initialValue: initialValues[field.id] }) : (
           <div style={{ color: 'red' }}>Unsupported field type: {field.type}</div>
         )}
         {errorMsg && (

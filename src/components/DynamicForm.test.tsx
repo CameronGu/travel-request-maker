@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import DynamicForm from "./DynamicForm";
 import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
 import userEvent from '@testing-library/user-event';
@@ -169,6 +169,38 @@ describe("DynamicForm conditional field logic", () => {
     userEvent.selectOptions(screen.getByLabelText(/Y/), "A");
     await waitFor(() => {
       expect(screen.queryByLabelText(/Conditional/)).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe("DynamicForm traveler selector and budget prefilling", () => {
+  it("renders travelerMultiSelect and updates value", () => {
+    const schema = [
+      { id: "travelerIds", label: "Travelers", type: "travelerMultiSelect", required: true },
+      { id: "budgetGuidance", label: "Budget Guidance", type: "select", options: [
+        { label: "Optimize", value: "optimize" },
+        { label: "Premium", value: "premium" }
+      ], defaultFrom: "budgetGuidance" }
+    ];
+    const initialValues = { budgetGuidance: "premium" };
+    const handleSubmit = vi.fn();
+    render(<DynamicForm schema={schema} initialValues={initialValues} onSubmit={handleSubmit} />);
+    // TravelerSelector stub should render
+    expect(screen.getByText(/Traveler Selector/)).toBeInTheDocument();
+    // Budget Guidance should be prefilled
+    const select = screen.getByLabelText(/Budget Guidance/);
+    expect(select).toHaveValue("premium");
+    // Add a traveler (stub button)
+    fireEvent.click(screen.getByText("+ Add Traveler (stub)"));
+    // Submit the form
+    fireEvent.click(screen.getByText("Submit"));
+    waitFor(() => {
+      expect(handleSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          travelerIds: ["traveler1"],
+          budgetGuidance: "premium"
+        })
+      );
     });
   });
 }); 
