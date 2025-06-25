@@ -1,13 +1,10 @@
 [
-  // ── Shared Metadata (hidden) ───────────────────────────────────────────
   { "id": "client",          "type": "hidden", "defaultFrom": "client" },
   { "id": "project",         "type": "hidden", "defaultFrom": "project" },
   { "id": "clientReference", "label": "Client Reference", "type": "text", "readOnlyIfLocked": true, "defaultFrom": "clientReference" },
 
-  // ── Travelers ──────────────────────────────────────────────────────────
   { "id": "travelerIds", "label": "Travelers", "type": "travelerMultiSelect", "required": true },
 
-  // ── Pickup ─────────────────────────────────────────────────────────────
   { "id": "pickupType", "label": "Pickup Location Type", "type": "select", "required": true,
     "options": ["Airport", "Specific", "General"] },
   { "id": "pickup.location.text",   "label": "Pickup Location",       "type": "dynamicMapAirport", "required": true },
@@ -18,7 +15,6 @@
   { "id": "rentalStart",            "label": "Pickup Date",           "type": "date", "required": true },
   { "id": "pickupTime",             "label": "Pickup Time",           "type": "time" },
 
-  // ── Drop-Off ───────────────────────────────────────────────────────────
   { "id": "sameDropoff",            "label": "Drop-Off = Pickup?",    "type": "checkbox", "default": true },
   { "id": "dropoffType",            "label": "Drop-Off Location Type", "type": "select", "showWhen": { "sameDropoff": false },
     "options": ["Airport", "Specific", "General"] },
@@ -30,13 +26,11 @@
   { "id": "rentalEnd",              "label": "Drop-Off Date",         "type": "date", "required": true },
   { "id": "dropoffTime",            "label": "Drop-Off Time",         "type": "time", "showWhen": { "pickupTime": { "$exists": true } } },
 
-  // ── Vehicle Group ──────────────────────────────────────────────────────
   { "id": "vehicle.group", "type": "array", "label": "Vehicles", "itemFields": [
       { "id": "travelerIds",  "label": "Traveler Assignment", "type": "travelerMultiSelect" },
       { "id": "primaryDriver", "label": "Primary Driver",      "type": "travelerSelect", "required": true }
     ] },
 
-  // ── Misc ───────────────────────────────────────────────────────────────
   { "id": "notes",           "label": "Notes",            "type": "textarea" },
   { "id": "budgetGuidance", "label": "Budget Guidance", "type": "select",
     "options": ["Economy", "Mid-size", "SUV", "Truck", "Premium"], "defaultFrom": "budgetGuidance.car" }
