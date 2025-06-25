@@ -4,6 +4,7 @@ import React from "react";
 import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import TravelerSelector from "./TravelerSelector";
 
 /**
  * DynamicForm
@@ -59,22 +60,6 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
     }
     return this.props.children;
   }
-}
-
-// TravelerSelector stub (to be extracted to its own file)
-function TravelerSelector({ value, onChange, editable = true }: { value: string[]; onChange: (ids: string[]) => void; editable?: boolean }) {
-  // TODO: Replace with real traveler list and chip UI
-  return (
-    <div style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8, marginBottom: 8 }}>
-      <div>Traveler Selector [stub]</div>
-      <div>Selected: {value?.join(", ") || "None"}</div>
-      {editable && (
-        <button type="button" onClick={() => onChange([...(value || []), `traveler${(value?.length || 0) + 1}`])}>
-          + Add Traveler (stub)
-        </button>
-      )}
-    </div>
-  );
 }
 
 // Field type to component mapping (factory pattern)
@@ -176,7 +161,7 @@ const fieldComponentMap: Record<string, (field: FieldDefinition, register: any, 
     </div>
   ),
   travelerMultiSelect: (field, register, extra) => {
-    // Use Controller for RHF integration
+    // Uses Controller for RHF integration. TravelerSelector is a stub; see TravelerSelector.tsx for full implementation plan.
     const { control } = extra;
     const Controller = require('react-hook-form').Controller;
     return (
