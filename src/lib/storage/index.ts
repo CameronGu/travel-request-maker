@@ -1,7 +1,9 @@
+import type { StorageDriver } from './StorageDriver';
+
 import { features } from '@/config';
+
 import { LocalDriver } from './LocalDriver';
 import { SupabaseDriver } from './SupabaseDriver';
-import type { StorageDriver } from './StorageDriver';
 
 let cached: StorageDriver | undefined;
 

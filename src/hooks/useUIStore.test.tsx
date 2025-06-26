@@ -1,7 +1,8 @@
 import { render, act } from '@testing-library/react';
-import { useUIStore } from './useUIStore';
 import React from 'react';
 import { describe, it, expect } from 'vitest';
+
+import { useUIStore } from './useUIStore';
 
 function TestComponent() {
   const { isModalOpen, setModalOpen, selectedTravelers, setSelectedTravelers, formDraft, setFormDraft } = useUIStore();
@@ -12,7 +13,7 @@ function TestComponent() {
       <button onClick={() => setFormDraft({ foo: 'bar' })}>Set Draft</button>
       <div data-testid="modal">{isModalOpen ? 'open' : 'closed'}</div>
       <div data-testid="travelers">{selectedTravelers.join(',')}</div>
-      <div data-testid="draft">{formDraft.foo || ''}</div>
+      <div data-testid="draft">{String(formDraft.foo ?? '')}</div>
     </div>
   );
 }

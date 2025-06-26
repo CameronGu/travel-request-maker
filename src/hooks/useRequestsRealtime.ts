@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { getSupabaseClient } from '@/lib/supabase/client';
-import { queryKeys } from '@/lib/queryKeys';
+import { useEffect } from 'react';
+
 import { features } from '@/config';
+import { queryKeys } from '@/lib/queryKeys';
+import { getSupabaseClient } from '@/lib/supabase/client';
 
 /**
  * useRequestsRealtime
@@ -21,7 +22,7 @@ export function useRequestsRealtime(projectId?: string) {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'requests' },
-        (payload) => {
+        (_payload) => {
           // Invalidate the requests query for the relevant project
           queryClient.invalidateQueries({ queryKey: queryKeys.requests(projectId) });
         }

@@ -2,6 +2,8 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+import { logger } from './lib/utils';
+
 // DEVELOPMENT SAFEGUARD: This middleware uses a hardcoded user for local development only.
 // In production, it always uses the real Supabase session. Remove or disable the hardcoded user logic before deploying.
 // See README for details.
@@ -32,7 +34,7 @@ export async function middleware(request: NextRequest) {
 
   const projectRef = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname.split('.')[0];
   const cookieName = `sb-${projectRef}-auth-token`;
-  console.log('[COOKIE DEBUG]', {
+  logger.log('[COOKIE DEBUG]', {
     cookieName,
     cookieValue: request.cookies.get(cookieName)?.value?.slice(0, 80),
   });
@@ -72,7 +74,7 @@ export async function middleware(request: NextRequest) {
       Object.entries(protectedRoutes).find(([route]) =>
         pathname.startsWith(route),
       )?.[1] ?? []
-    console.log('[MIDDLEWARE DEBUG]', {
+    logger.log('[MIDDLEWARE DEBUG]', {
       pathname,
       user,
       userRole,

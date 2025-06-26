@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -16,4 +18,11 @@ export const decode = <T = unknown>(str: string): T | null => {
   } catch {
     return null;
   }
+};
+
+export const logger = {
+  log: (...args: unknown[]) => console.log(...args),
+  error: (...args: unknown[]) => console.error(...args),
+  warn: (...args: unknown[]) => console.warn(...args),
+  info: (...args: unknown[]) => console.info(...args),
 };

@@ -1,13 +1,17 @@
-import React from "react";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import DynamicForm from "./DynamicForm";
-import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
+import type { FieldDefinition } from "./DynamicForm/types";
+
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { axe } from 'vitest-axe';
 import * as matchers from 'vitest-axe/matchers';
-import hotelSchema from '../form-fields/fields.hotel.json';
-import flightSchema from '../form-fields/fields.flight.json';
-import carSchema from '../form-fields/fields.car.json';
+
+import carFields from '../form-fields/fields.car.json';
+import flightFields from '../form-fields/fields.flight.json';
+import hotelFields from '../form-fields/fields.hotel.json';
+
+import DynamicForm from './DynamicForm';
 
 beforeAll(() => {
   vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => setTimeout(() => cb(performance.now()), 0));
@@ -17,9 +21,9 @@ afterAll(() => vi.unstubAllGlobals());
 const user = userEvent.setup();
 
 // Cast imported schemas for test use (bypass strict FieldDefinition typing for test coverage)
-const hotelSchemaAny = hotelSchema as any;
-const flightSchemaAny = flightSchema as any;
-const carSchemaAny = carSchema as any;
+const hotelSchemaTyped = hotelFields as FieldDefinition[];
+const flightSchemaTyped = flightFields as FieldDefinition[];
+const carSchemaTyped = carFields as FieldDefinition[];
 
 // ts-expect-error vitest-axe matchers are dynamically added
 expect.extend(matchers);
@@ -153,10 +157,10 @@ describe("DynamicForm conditional field logic", () => {
     // Initially hidden
     expect(screen.queryByLabelText(/Conditional Field/)).not.toBeInTheDocument();
     // Select B
-    userEvent.selectOptions(screen.getByLabelText(/Type/), "B");
+    await userEvent.selectOptions(screen.getByLabelText(/Type/), "B");
     expect(await screen.findByLabelText(/Conditional Field/)).toBeInTheDocument();
     // Select A
-    userEvent.selectOptions(screen.getByLabelText(/Type/), "A");
+    await userEvent.selectOptions(screen.getByLabelText(/Type/), "A");
     await waitFor(() => {
       expect(screen.queryByLabelText(/Conditional Field/)).not.toBeInTheDocument();
     });
@@ -172,14 +176,14 @@ describe("DynamicForm conditional field logic", () => {
     // Initially hidden
     expect(screen.queryByLabelText(/Conditional/)).not.toBeInTheDocument();
     // Set x=1
-    userEvent.selectOptions(screen.getByLabelText(/X/), "1");
+    await userEvent.selectOptions(screen.getByLabelText(/X/), "1");
     expect(await screen.findByLabelText(/Conditional/)).toBeInTheDocument();
     // Set x=2, y=B
-    userEvent.selectOptions(screen.getByLabelText(/X/), "2");
-    userEvent.selectOptions(screen.getByLabelText(/Y/), "B");
+    await userEvent.selectOptions(screen.getByLabelText(/X/), "2");
+    await userEvent.selectOptions(screen.getByLabelText(/Y/), "B");
     expect(await screen.findByLabelText(/Conditional/)).toBeInTheDocument();
     // Set y=A
-    userEvent.selectOptions(screen.getByLabelText(/Y/), "A");
+    await userEvent.selectOptions(screen.getByLabelText(/Y/), "A");
     await waitFor(() => {
       expect(screen.queryByLabelText(/Conditional/)).not.toBeInTheDocument();
     });
@@ -220,9 +224,9 @@ describe("DynamicForm traveler selector and budget prefilling", () => {
 
 describe('DynamicForm accessibility (a11y) tests', () => {
   it.each([
-    ['hotel', hotelSchemaAny],
-    ['flight', flightSchemaAny],
-    ['car', carSchemaAny],
+    ['hotel', hotelSchemaTyped],
+    ['flight', flightSchemaTyped],
+    ['car', carSchemaTyped],
   ])('should have no a11y violations for %s schema', async (_label, schema) => {
     const { container } = render(<DynamicForm schema={schema} onSubmit={() => {}} />);
     const results = await axe(container);
@@ -233,9 +237,9 @@ describe('DynamicForm accessibility (a11y) tests', () => {
 
 describe('DynamicForm snapshot/smoke tests', () => {
   it.each([
-    ['hotel', hotelSchemaAny],
-    ['flight', flightSchemaAny],
-    ['car', carSchemaAny],
+    ['hotel', hotelSchemaTyped],
+    ['flight', flightSchemaTyped],
+    ['car', carSchemaTyped],
   ])('renders %s schema without crashing', (_label, schema) => {
     const { container } = render(<DynamicForm schema={schema} onSubmit={() => {}} />);
     expect(container).toMatchSnapshot();
@@ -245,7 +249,7 @@ describe('DynamicForm snapshot/smoke tests', () => {
 describe('DynamicForm end-to-end (E2E) tests for real schemas', () => {
   it('submits hotel form with required fields', async () => {
     const handleSubmit = vi.fn();
-    render(<DynamicForm schema={hotelSchemaAny} onSubmit={handleSubmit} initialValues={{ travelerIds: ['t1'] }} />);
+    render(<DynamicForm schema={hotelSchemaTyped} onSubmit={handleSubmit} initialValues={{ travelerIds: ['t1'] }} />);
     await user.click(screen.getByRole('radio', { name: /Specific Property/i }));
     // Instead of typing into Location, check for the stub text
     expect(screen.getByText(/MapAutocomplete input not yet implemented/)).toBeInTheDocument();
@@ -255,14 +259,14 @@ describe('DynamicForm end-to-end (E2E) tests for real schemas', () => {
     await waitFor(() => expect(handleSubmit).toHaveBeenCalled());
   });
   it('shows and hides conditional fields in flight form', async () => {
-    render(<DynamicForm schema={flightSchemaAny} onSubmit={() => {}} initialValues={{ travelerIds: ['t1'] }} />);
+    render(<DynamicForm schema={flightSchemaTyped} onSubmit={() => {}} initialValues={{ travelerIds: ['t1'] }} />);
     // Trip type: oneWay (returnDate hidden)
     expect(screen.queryByLabelText(/Return Date/)).not.toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText(/Trip Type/), 'roundTrip');
     expect(await screen.findByLabelText(/Return Date/)).toBeInTheDocument();
   });
   it('handles travelerMultiSelect and budgetGuidance in car form', async () => {
-    render(<DynamicForm schema={carSchemaAny} onSubmit={() => {}} initialValues={{ travelerIds: ['t1'], budgetGuidance: 'Economy' }} />);
+    render(<DynamicForm schema={carSchemaTyped} onSubmit={() => {}} initialValues={{ travelerIds: ['t1'], budgetGuidance: 'Economy' }} />);
     expect(screen.getByText(/Traveler Selector/)).toBeInTheDocument();
     // Should now work with select fix
     expect(screen.getByLabelText(/Budget Guidance/)).toHaveValue('Economy');
@@ -272,16 +276,16 @@ describe('DynamicForm end-to-end (E2E) tests for real schemas', () => {
 describe('DynamicForm error boundary', () => {
   it('renders error boundary on field render error', () => {
     const badSchema = [{ id: 'bad', label: 'Bad', type: 'unknownType' }];
-    const { getByText } = render(<DynamicForm schema={badSchema as any} onSubmit={() => {}} />);
+    const { getByText } = render(<DynamicForm schema={badSchema as FieldDefinition[]} onSubmit={() => {}} />);
     expect(getByText(/Unsupported field type/)).toBeInTheDocument();
   });
 });
 
 describe('DynamicForm array/object/repeatable group fields', () => {
   it('renders array/object stubs for hotel and car schemas', () => {
-    render(<DynamicForm schema={hotelSchemaAny} onSubmit={() => {}} />);
+    render(<DynamicForm schema={hotelSchemaTyped} onSubmit={() => {}} />);
     expect(screen.getAllByText((content) => content.includes('Array input not yet implemented')).length).toBeGreaterThanOrEqual(1);
-    render(<DynamicForm schema={carSchemaAny} onSubmit={() => {}} />);
+    render(<DynamicForm schema={carSchemaTyped} onSubmit={() => {}} />);
     expect(screen.getAllByText((content) => content.includes('Array input not yet implemented')).length).toBeGreaterThanOrEqual(1);
   });
 });
@@ -295,7 +299,7 @@ describe('DynamicForm advanced conditional logic', () => {
         { label: 'Premium', value: 'premium' }
       ], defaultFrom: 'budgetGuidance' }
     ];
-    render(<DynamicForm schema={schema as any} onSubmit={() => {}} initialValues={{ clientReference: 'LOCKED', budgetGuidance: 'premium' }} />);
+    render(<DynamicForm schema={schema as FieldDefinition[]} onSubmit={() => {}} initialValues={{ clientReference: 'LOCKED', budgetGuidance: 'premium' }} />);
     expect(screen.getByLabelText(/Client Reference/)).toHaveValue('LOCKED');
     expect(screen.getByLabelText(/Budget Guidance/)).toHaveValue('premium');
   });

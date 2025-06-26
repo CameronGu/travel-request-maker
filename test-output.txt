@@ -1,0 +1,1350 @@
+
+> travel-request-react@0.1.0 test /home/cameron/Projects/travel-request-react
+> vitest -- --reporter verbose
+
+
+ DEV  v3.2.2 /home/cameron/Projects/travel-request-react
+
+ ✓ src/hooks/useRequests.test.tsx (1 test) 118ms
+stdout | src/components/DynamicForm.test.tsx > DynamicForm > renders all supported field types and stubs for advanced types
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'firstName'[39m,   [32m'role'[39m,
+  [32m'gender'[39m,      [32m'subscribe'[39m,
+  [32m'dob'[39m,         [32m'bio'[39m,
+  [32m'hiddenField'[39m, [32m'location'[39m,
+  [32m'score'[39m,       [32m'tags'[39m,
+  [32m'meta'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'firstName'[39m,   [32m'role'[39m,
+  [32m'gender'[39m,      [32m'subscribe'[39m,
+  [32m'dob'[39m,         [32m'bio'[39m,
+  [32m'hiddenField'[39m, [32m'location'[39m,
+  [32m'score'[39m,       [32m'tags'[39m,
+  [32m'meta'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm > validates required fields and submits values
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'firstName'[39m, [32m'role'[39m, [32m'gender'[39m ]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'firstName'[39m, [32m'role'[39m, [32m'gender'[39m ]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm > validates required fields and submits values
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm > shows Zod validation errors and blocks submit
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'firstName'[39m, [32m'role'[39m, [32m'gender'[39m ]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'firstName'[39m, [32m'role'[39m, [32m'gender'[39m ]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm > shows Zod validation errors and blocks submit
+DynamicFormInner errors: {
+  firstName: {
+    message: [32m'First Name must be at least 3 characters'[39m,
+    type: [32m'too_small'[39m,
+    ref: HTMLInputElement {
+      [32m'__reactFiber$lum4b7klew'[39m: [36m[FiberNode][39m,
+      [32m'__reactProps$lum4b7klew'[39m: [36m[Object][39m,
+      [32m'__reactEvents$lum4b7klew'[39m: [36m[Set][39m,
+      value: [36m[Getter/Setter][39m,
+      _valueTracker: [36m[Object][39m,
+      setSelectionRange: [36m[Function][39m,
+      selectionStart: [36m[Getter/Setter][39m,
+      selectionEnd: [36m[Getter/Setter][39m,
+      select: [36m[Function][39m,
+      setRangeText: [36m[Function][39m,
+      [[32mSymbol(Last check for pointer-events)[39m]: [36m[Object][39m,
+      [[32mSymbol(Displayed selection in UI)[39m]: [36m[Object][39m,
+      [[32mSymbol(Node prepared with document state workarounds)[39m]: [32mSymbol(Node prepared with document state workarounds)[39m,
+      [[32mSymbol(Initial value to compare on blur)[39m]: [90mundefined[39m,
+      [[32mSymbol(Displayed value in UI)[39m]: [32m'Al'[39m,
+      [[32mSymbol(Track programmatic changes for React workaround)[39m]: [90mundefined[39m
+    }
+  }
+}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm > shows Zod validation errors and blocks submit
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm > shows Zod validation errors and blocks submit
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm conditional field logic > shows a field only when showWhen condition is met
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'type'[39m ]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'type'[39m ]
+DynamicFormInner errors: {}
+
+ ✓ src/app/api/magic-link/route.test.ts (5 tests | 2 skipped) 38ms
+stdout | src/components/DynamicForm.test.tsx > DynamicForm conditional field logic > shows a field when any showWhenAny condition is met
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'x'[39m, [32m'y'[39m ]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'x'[39m, [32m'y'[39m ]
+DynamicFormInner errors: {}
+
+ ✓ src/lib/validation/__tests__/phone.test.ts (8 tests) 13ms
+stdout | src/components/DynamicForm.test.tsx > DynamicForm traveler selector and budget prefilling > renders travelerMultiSelect and updates value
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'travelerIds'[39m, [32m'budgetGuidance'[39m ]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'travelerIds'[39m, [32m'budgetGuidance'[39m ]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm accessibility (a11y) tests > should have no a11y violations for hotel schema
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'targetLocationType'[39m,
+  [32m'location.text'[39m,
+  [32m'location.lat'[39m,
+  [32m'location.lng'[39m,
+  [32m'checkInDate'[39m,
+  [32m'checkOutDate'[39m,
+  [32m'room.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'targetLocationType'[39m,
+  [32m'location.text'[39m,
+  [32m'location.lat'[39m,
+  [32m'location.lng'[39m,
+  [32m'checkInDate'[39m,
+  [32m'checkOutDate'[39m,
+  [32m'room.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm accessibility (a11y) tests > should have no a11y violations for flight schema
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'departureAirport'[39m,
+  [32m'arrivalAirport'[39m,
+  [32m'tripType'[39m,
+  [32m'flightDate'[39m,
+  [32m'flightTimePrefDepart'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'departureAirport'[39m,
+  [32m'arrivalAirport'[39m,
+  [32m'tripType'[39m,
+  [32m'flightDate'[39m,
+  [32m'flightTimePrefDepart'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+ ✓ src/hooks/useUIStore.test.tsx (1 test) 47ms
+stdout | src/components/DynamicForm.test.tsx > DynamicForm accessibility (a11y) tests > should have no a11y violations for car schema
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'pickupType'[39m,
+  [32m'pickup.location.text'[39m,
+  [32m'pickup.location.lat'[39m,
+  [32m'pickup.location.lng'[39m,
+  [32m'rentalStart'[39m,
+  [32m'pickupTime'[39m,
+  [32m'sameDropoff'[39m,
+  [32m'rentalEnd'[39m,
+  [32m'vehicle.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'pickupType'[39m,
+  [32m'pickup.location.text'[39m,
+  [32m'pickup.location.lat'[39m,
+  [32m'pickup.location.lng'[39m,
+  [32m'rentalStart'[39m,
+  [32m'pickupTime'[39m,
+  [32m'sameDropoff'[39m,
+  [32m'rentalEnd'[39m,
+  [32m'vehicle.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm snapshot/smoke tests > renders hotel schema without crashing
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'targetLocationType'[39m,
+  [32m'location.text'[39m,
+  [32m'location.lat'[39m,
+  [32m'location.lng'[39m,
+  [32m'checkInDate'[39m,
+  [32m'checkOutDate'[39m,
+  [32m'room.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'targetLocationType'[39m,
+  [32m'location.text'[39m,
+  [32m'location.lat'[39m,
+  [32m'location.lng'[39m,
+  [32m'checkInDate'[39m,
+  [32m'checkOutDate'[39m,
+  [32m'room.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm snapshot/smoke tests > renders flight schema without crashing
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'departureAirport'[39m,
+  [32m'arrivalAirport'[39m,
+  [32m'tripType'[39m,
+  [32m'flightDate'[39m,
+  [32m'flightTimePrefDepart'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'departureAirport'[39m,
+  [32m'arrivalAirport'[39m,
+  [32m'tripType'[39m,
+  [32m'flightDate'[39m,
+  [32m'flightTimePrefDepart'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm snapshot/smoke tests > renders car schema without crashing
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'pickupType'[39m,
+  [32m'pickup.location.text'[39m,
+  [32m'pickup.location.lat'[39m,
+  [32m'pickup.location.lng'[39m,
+  [32m'rentalStart'[39m,
+  [32m'pickupTime'[39m,
+  [32m'sameDropoff'[39m,
+  [32m'rentalEnd'[39m,
+  [32m'vehicle.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'pickupType'[39m,
+  [32m'pickup.location.text'[39m,
+  [32m'pickup.location.lat'[39m,
+  [32m'pickup.location.lng'[39m,
+  [32m'rentalStart'[39m,
+  [32m'pickupTime'[39m,
+  [32m'sameDropoff'[39m,
+  [32m'rentalEnd'[39m,
+  [32m'vehicle.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm end-to-end (E2E) tests for real schemas > submits hotel form with required fields
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'targetLocationType'[39m,
+  [32m'location.text'[39m,
+  [32m'location.lat'[39m,
+  [32m'location.lng'[39m,
+  [32m'checkInDate'[39m,
+  [32m'checkOutDate'[39m,
+  [32m'room.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'targetLocationType'[39m,
+  [32m'location.text'[39m,
+  [32m'location.lat'[39m,
+  [32m'location.lng'[39m,
+  [32m'checkInDate'[39m,
+  [32m'checkOutDate'[39m,
+  [32m'room.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm end-to-end (E2E) tests for real schemas > submits hotel form with required fields
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm end-to-end (E2E) tests for real schemas > shows and hides conditional fields in flight form
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'departureAirport'[39m,
+  [32m'arrivalAirport'[39m,
+  [32m'tripType'[39m,
+  [32m'flightDate'[39m,
+  [32m'flightTimePrefDepart'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'departureAirport'[39m,
+  [32m'arrivalAirport'[39m,
+  [32m'tripType'[39m,
+  [32m'flightDate'[39m,
+  [32m'flightTimePrefDepart'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm end-to-end (E2E) tests for real schemas > handles travelerMultiSelect and budgetGuidance in car form
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'pickupType'[39m,
+  [32m'pickup.location.text'[39m,
+  [32m'pickup.location.lat'[39m,
+  [32m'pickup.location.lng'[39m,
+  [32m'rentalStart'[39m,
+  [32m'pickupTime'[39m,
+  [32m'sameDropoff'[39m,
+  [32m'rentalEnd'[39m,
+  [32m'vehicle.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'pickupType'[39m,
+  [32m'pickup.location.text'[39m,
+  [32m'pickup.location.lat'[39m,
+  [32m'pickup.location.lng'[39m,
+  [32m'rentalStart'[39m,
+  [32m'pickupTime'[39m,
+  [32m'sameDropoff'[39m,
+  [32m'rentalEnd'[39m,
+  [32m'vehicle.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm error boundary > renders error boundary on field render error
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'bad'[39m ]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'bad'[39m ]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm array/object/repeatable group fields > renders array/object stubs for hotel and car schemas
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'targetLocationType'[39m,
+  [32m'location.text'[39m,
+  [32m'location.lat'[39m,
+  [32m'location.lng'[39m,
+  [32m'checkInDate'[39m,
+  [32m'checkOutDate'[39m,
+  [32m'room.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'targetLocationType'[39m,
+  [32m'location.text'[39m,
+  [32m'location.lat'[39m,
+  [32m'location.lng'[39m,
+  [32m'checkInDate'[39m,
+  [32m'checkOutDate'[39m,
+  [32m'room.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'pickupType'[39m,
+  [32m'pickup.location.text'[39m,
+  [32m'pickup.location.lat'[39m,
+  [32m'pickup.location.lng'[39m,
+  [32m'rentalStart'[39m,
+  [32m'pickupTime'[39m,
+  [32m'sameDropoff'[39m,
+  [32m'rentalEnd'[39m,
+  [32m'vehicle.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [
+  [32m'client'[39m,
+  [32m'project'[39m,
+  [32m'clientReference'[39m,
+  [32m'travelerIds'[39m,
+  [32m'pickupType'[39m,
+  [32m'pickup.location.text'[39m,
+  [32m'pickup.location.lat'[39m,
+  [32m'pickup.location.lng'[39m,
+  [32m'rentalStart'[39m,
+  [32m'pickupTime'[39m,
+  [32m'sameDropoff'[39m,
+  [32m'rentalEnd'[39m,
+  [32m'vehicle.group'[39m,
+  [32m'notes'[39m,
+  [32m'budgetGuidance'[39m
+]
+DynamicFormInner errors: {}
+
+stdout | src/components/DynamicForm.test.tsx > DynamicForm advanced conditional logic > respects readOnlyIfLocked and defaultFrom logic
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'clientReference'[39m, [32m'budgetGuidance'[39m ]
+DynamicFormInner errors: {}
+DynamicForm values: {}
+DynamicForm visibleFields: [ [32m'clientReference'[39m, [32m'budgetGuidance'[39m ]
+DynamicFormInner errors: {}
+
+ ❯ src/components/DynamicForm.test.tsx (19 tests | 3 failed | 1 skipped) 5021ms
+   ✓ DynamicForm > renders all supported field types and stubs for advanced types 96ms
+   ✓ DynamicForm > validates required fields and submits values  353ms
+   ✓ DynamicForm > shows Zod validation errors and blocks submit  376ms
+   ↓ DynamicForm > does not validate or submit hidden conditional fields
+   × DynamicForm conditional field logic > shows a field only when showWhen condition is met 1057ms
+     → Unable to find a label with the text of: /Conditional Field/
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<form>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"type"[39m
+          [36m>[39m
+            [0mType[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-red-500"[39m
+            [36m>[39m
+              [0m *[0m
+            [36m</span>[39m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"type"[39m
+            [33mname[39m=[32m"type"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"A"[39m
+            [36m>[39m
+              [0mA[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"B"[39m
+            [36m>[39m
+              [0mB[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [0mSubmit[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<form>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"type"[39m
+          [36m>[39m
+            [0mType[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-red-500"[39m
+            [36m>[39m
+              [0m *[0m
+            [36m</span>[39m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"type"[39m
+            [33mname[39m=[32m"type"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"A"[39m
+            [36m>[39m
+              [0mA[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"B"[39m
+            [36m>[39m
+              [0mB[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [0mSubmit[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × DynamicForm conditional field logic > shows a field when any showWhenAny condition is met 1006ms
+     → Unable to find a label with the text of: /Conditional/
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<form>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"x"[39m
+          [36m>[39m
+            [0mX[0m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"x"[39m
+            [33mname[39m=[32m"x"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"1"[39m
+            [36m>[39m
+              [0m1[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"2"[39m
+            [36m>[39m
+              [0m2[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"y"[39m
+          [36m>[39m
+            [0mY[0m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"y"[39m
+            [33mname[39m=[32m"y"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"A"[39m
+            [36m>[39m
+              [0mA[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"B"[39m
+            [36m>[39m
+              [0mB[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [0mSubmit[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<form>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"x"[39m
+          [36m>[39m
+            [0mX[0m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"x"[39m
+            [33mname[39m=[32m"x"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"1"[39m
+            [36m>[39m
+              [0m1[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"2"[39m
+            [36m>[39m
+              [0m2[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"y"[39m
+          [36m>[39m
+            [0mY[0m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"y"[39m
+            [33mname[39m=[32m"y"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"A"[39m
+            [36m>[39m
+              [0mA[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"B"[39m
+            [36m>[39m
+              [0mB[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [0mSubmit[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   ✓ DynamicForm traveler selector and budget prefilling > renders travelerMultiSelect and updates value 50ms
+   ✓ DynamicForm accessibility (a11y) tests > should have no a11y violations for hotel schema 196ms
+   ✓ DynamicForm accessibility (a11y) tests > should have no a11y violations for flight schema 104ms
+   ✓ DynamicForm accessibility (a11y) tests > should have no a11y violations for car schema 201ms
+   ✓ DynamicForm snapshot/smoke tests > renders hotel schema without crashing 24ms
+   ✓ DynamicForm snapshot/smoke tests > renders flight schema without crashing 28ms
+   ✓ DynamicForm snapshot/smoke tests > renders car schema without crashing 57ms
+   ✓ DynamicForm end-to-end (E2E) tests for real schemas > submits hotel form with required fields  316ms
+   × DynamicForm end-to-end (E2E) tests for real schemas > shows and hides conditional fields in flight form 1066ms
+     → Unable to find a label with the text of: /Return Date/
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<form>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33mid[39m=[32m"client"[39m
+          [33mname[39m=[32m"client"[39m
+          [33mtype[39m=[32m"hidden"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33mid[39m=[32m"project"[39m
+          [33mname[39m=[32m"project"[39m
+          [33mtype[39m=[32m"hidden"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"clientReference"[39m
+          [36m>[39m
+            [0mClient Reference[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"clientReference"[39m
+            [33mname[39m=[32m"clientReference"[39m
+            [33mtype[39m=[32m"text"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"border border-gray-300 p-2 rounded mb-2"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [0mTraveler Selector [stub][0m
+          [36m</div>[39m
+          [36m<div>[39m
+            [0mSelected: [0m
+            [0mt1[0m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m+ Add Traveler (stub)[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-red-500"[39m
+        [36m>[39m
+          [0mUnsupported field type: [0m
+          [0mairportPicker[0m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-red-500"[39m
+        [36m>[39m
+          [0mUnsupported field type: [0m
+          [0mairportPicker[0m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"tripType"[39m
+          [36m>[39m
+            [0mTrip Type[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-red-500"[39m
+            [36m>[39m
+              [0m *[0m
+            [36m</span>[39m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"tripType"[39m
+            [33mname[39m=[32m"tripType"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"oneWay"[39m
+            [36m>[39m
+              [0mOne-Way[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"roundTrip"[39m
+            [36m>[39m
+              [0mRound-Trip[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"flightDate"[39m
+          [36m>[39m
+            [0mDeparture Date[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-red-500"[39m
+            [36m>[39m
+              [0m *[0m
+            [36m</span>[39m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"flightDate"[39m
+            [33mname[39m=[32m"flightDate"[39m
+            [33mtype[39m=[32m"date"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"flightTimePrefDepart"[39m
+          [36m>[39m
+            [0mTime Preference – Departure[0m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"flightTimePrefDepart"[39m
+            [33mname[39m=[32m"flightTimePrefDepart"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Optimize"[39m
+            [36m>[39m
+              [0mOptimize[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Morning"[39m
+            [36m>[39m
+              [0mMorning[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Afternoon"[39m
+            [36m>[39m
+              [0mAfternoon[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Evening"[39m
+            [36m>[39m
+              [0mEvening[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Specific"[39m
+            [36m>[39m
+              [0mSpecific[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Custom"[39m
+            [36m>[39m
+              [0mCustom[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"notes"[39m
+          [36m>[39m
+            [0mNotes[0m
+          [36m</label>[39m
+          [36m<textarea[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"notes"[39m
+            [33mname[39m=[32m"notes"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"budgetGuidance"[39m
+          [36m>[39m
+            [0mBudget Guidance[0m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"budgetGuidance"[39m
+            [33mname[39m=[32m"budgetGuidance"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Lowest Logical Fare"[39m
+            [36m>[39m
+              [0mLowest Logical Fare[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Flexible"[39m
+            [36m>[39m
+              [0mFlexible[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Premium"[39m
+            [36m>[39m
+              [0mPremium[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [0mSubmit[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<form>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33mid[39m=[32m"client"[39m
+          [33mname[39m=[32m"client"[39m
+          [33mtype[39m=[32m"hidden"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33mid[39m=[32m"project"[39m
+          [33mname[39m=[32m"project"[39m
+          [33mtype[39m=[32m"hidden"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"clientReference"[39m
+          [36m>[39m
+            [0mClient Reference[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"clientReference"[39m
+            [33mname[39m=[32m"clientReference"[39m
+            [33mtype[39m=[32m"text"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"border border-gray-300 p-2 rounded mb-2"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [0mTraveler Selector [stub][0m
+          [36m</div>[39m
+          [36m<div>[39m
+            [0mSelected: [0m
+            [0mt1[0m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m+ Add Traveler (stub)[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-red-500"[39m
+        [36m>[39m
+          [0mUnsupported field type: [0m
+          [0mairportPicker[0m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-red-500"[39m
+        [36m>[39m
+          [0mUnsupported field type: [0m
+          [0mairportPicker[0m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"tripType"[39m
+          [36m>[39m
+            [0mTrip Type[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-red-500"[39m
+            [36m>[39m
+              [0m *[0m
+            [36m</span>[39m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"tripType"[39m
+            [33mname[39m=[32m"tripType"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"oneWay"[39m
+            [36m>[39m
+              [0mOne-Way[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"roundTrip"[39m
+            [36m>[39m
+              [0mRound-Trip[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"flightDate"[39m
+          [36m>[39m
+            [0mDeparture Date[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-red-500"[39m
+            [36m>[39m
+              [0m *[0m
+            [36m</span>[39m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"flightDate"[39m
+            [33mname[39m=[32m"flightDate"[39m
+            [33mtype[39m=[32m"date"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"flightTimePrefDepart"[39m
+          [36m>[39m
+            [0mTime Preference – Departure[0m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"flightTimePrefDepart"[39m
+            [33mname[39m=[32m"flightTimePrefDepart"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Optimize"[39m
+            [36m>[39m
+              [0mOptimize[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Morning"[39m
+            [36m>[39m
+              [0mMorning[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Afternoon"[39m
+            [36m>[39m
+              [0mAfternoon[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Evening"[39m
+            [36m>[39m
+              [0mEvening[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Specific"[39m
+            [36m>[39m
+              [0mSpecific[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Custom"[39m
+            [36m>[39m
+              [0mCustom[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"notes"[39m
+          [36m>[39m
+            [0mNotes[0m
+          [36m</label>[39m
+          [36m<textarea[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"notes"[39m
+            [33mname[39m=[32m"notes"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"budgetGuidance"[39m
+          [36m>[39m
+            [0mBudget Guidance[0m
+          [36m</label>[39m
+          [36m<select[39m
+            [33mclass[39m=[32m"border rounded px-2 py-1 w-full"[39m
+            [33mid[39m=[32m"budgetGuidance"[39m
+            [33mname[39m=[32m"budgetGuidance"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m""[39m
+            [36m>[39m
+              [0mSelect...[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Lowest Logical Fare"[39m
+            [36m>[39m
+              [0mLowest Logical Fare[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Flexible"[39m
+            [36m>[39m
+              [0mFlexible[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"Premium"[39m
+            [36m>[39m
+              [0mPremium[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [0mSubmit[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   ✓ DynamicForm end-to-end (E2E) tests for real schemas > handles travelerMultiSelect and budgetGuidance in car form 30ms
+   ✓ DynamicForm error boundary > renders error boundary on field render error 9ms
+   ✓ DynamicForm array/object/repeatable group fields > renders array/object stubs for hotel and car schemas 38ms
+   ✓ DynamicForm advanced conditional logic > respects readOnlyIfLocked and defaultFrom logic 5ms
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  3 failed | 28 passed | 3 skipped (34)
+   Start at  11:06:25
+   Duration  7.40s (transform 669ms, setup 537ms, collect 1.90s, tests 5.24s, environment 2.70s, prepare 785ms)
+
+ FAIL  Tests failed. Watching for file changes...
+       press h to show help, press q to quit

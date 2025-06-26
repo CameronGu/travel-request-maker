@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/lib/supabase/server', () => ({
   createServiceClient: () => ({
@@ -14,12 +14,14 @@ vi.mock('@/lib/supabase/server', () => ({
   })
 }));
 
-function makeRequest(body: any) {
-  return new NextRequest('http://localhost/api/magic-link', {
+function makeRequest(body: Record<string, unknown>) {
+  // Only include method, body, and headers to avoid signal type issues
+  const reqInit = {
     method: 'POST',
     body: JSON.stringify(body),
-    headers: { 'content-type': 'application/json' },
-  } as any);
+    headers: { 'content-type': 'application/json' }
+  };
+  return new NextRequest('http://localhost/api/magic-link', reqInit);
 }
 
 // PRD NOTE: Due to Vitest/Next.js ESM module cache limitations, error-case tests that rely on dynamic mocking (vi.doMock) may not work as expected. See PRD section 15.1. For full confidence, manually test error cases in a staging environment. Known-failing tests are marked as test.skip below.

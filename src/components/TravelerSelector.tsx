@@ -11,7 +11,7 @@ import React from "react";
 export default function TravelerSelector({ value, onChange, editable = true }: { value: string[]; onChange: (ids: string[]) => void; editable?: boolean }) {
   // TODO: Replace with real traveler list and chip UI per PRD 8.7
   return (
-    <div style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8, marginBottom: 8 }}>
+    <div className="border border-gray-300 p-2 rounded mb-2">
       <div>Traveler Selector [stub]</div>
       <div>Selected: {value?.join(", ") || "None"}</div>
       {editable && (

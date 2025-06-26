@@ -4,28 +4,30 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
 <div>
   <form>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="client"
         name="client"
         type="hidden"
+        value=""
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="project"
         name="project"
         type="hidden"
+        value=""
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="clientReference"
@@ -33,6 +35,7 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
           Client Reference
         </label>
         <input
+          class="border rounded px-2 py-1 w-full"
           id="clientReference"
           name="clientReference"
           type="text"
@@ -40,10 +43,10 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="border: 1px solid rgb(204, 204, 204); padding: 8px; border-radius: 8px; margin-bottom: 8px;"
+        class="border border-gray-300 p-2 rounded mb-2"
       >
         <div>
           Traveler Selector [stub]
@@ -60,22 +63,23 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="pickupType"
         >
           Pickup Location Type
           <span
-            style="color: red;"
+            class="text-red-500"
           >
              *
           </span>
         </label>
         <select
+          class="border rounded px-2 py-1 w-full"
           id="pickupType"
           name="pickupType"
         >
@@ -103,10 +107,10 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
+        class="mb-4 text-gray-500"
       >
         <label>
           Pickup Location
@@ -117,40 +121,43 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="pickup.location.lat"
         name="pickup.location.lat"
         type="hidden"
+        value=""
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="pickup.location.lng"
         name="pickup.location.lng"
         type="hidden"
+        value=""
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="rentalStart"
         >
           Pickup Date
           <span
-            style="color: red;"
+            class="text-red-500"
           >
              *
           </span>
         </label>
         <input
+          class="border rounded px-2 py-1 w-full"
           id="rentalStart"
           name="rentalStart"
           type="date"
@@ -158,10 +165,10 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
+        class="mb-4 text-gray-500"
       >
         <label>
           Pickup Time
@@ -172,10 +179,10 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="sameDropoff"
@@ -191,10 +198,10 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="dropoffType"
@@ -202,6 +209,7 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
           Drop-Off Location Type
         </label>
         <select
+          class="border rounded px-2 py-1 w-full"
           id="dropoffType"
           name="dropoffType"
         >
@@ -229,10 +237,10 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
+        class="mb-4 text-gray-500"
       >
         <label>
           Drop-Off Location
@@ -243,7 +251,7 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="dropoff.location.lat"
@@ -252,7 +260,7 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="dropoff.location.lng"
@@ -261,22 +269,23 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="rentalEnd"
         >
           Drop-Off Date
           <span
-            style="color: red;"
+            class="text-red-500"
           >
              *
           </span>
         </label>
         <input
+          class="border rounded px-2 py-1 w-full"
           id="rentalEnd"
           name="rentalEnd"
           type="date"
@@ -284,10 +293,10 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
+        class="mb-4 text-gray-500"
       >
         <label>
           Vehicles
@@ -298,10 +307,10 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="notes"
@@ -309,16 +318,17 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
           Notes
         </label>
         <textarea
+          class="border rounded px-2 py-1 w-full"
           id="notes"
           name="notes"
         />
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="budgetGuidance"
@@ -326,6 +336,7 @@ exports[`DynamicForm snapshot/smoke tests > renders car schema without crashing 
           Budget Guidance
         </label>
         <select
+          class="border rounded px-2 py-1 w-full"
           id="budgetGuidance"
           name="budgetGuidance"
         >
@@ -375,7 +386,7 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
 <div>
   <form>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="client"
@@ -384,7 +395,7 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="project"
@@ -393,10 +404,10 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="clientReference"
@@ -404,6 +415,7 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
           Client Reference
         </label>
         <input
+          class="border rounded px-2 py-1 w-full"
           id="clientReference"
           name="clientReference"
           type="text"
@@ -411,10 +423,10 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="border: 1px solid rgb(204, 204, 204); padding: 8px; border-radius: 8px; margin-bottom: 8px;"
+        class="border border-gray-300 p-2 rounded mb-2"
       >
         <div>
           Traveler Selector [stub]
@@ -431,42 +443,43 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="color: red;"
+        class="text-red-500"
       >
         Unsupported field type: 
         airportPicker
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="color: red;"
+        class="text-red-500"
       >
         Unsupported field type: 
         airportPicker
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="tripType"
         >
           Trip Type
           <span
-            style="color: red;"
+            class="text-red-500"
           >
              *
           </span>
         </label>
         <select
+          class="border rounded px-2 py-1 w-full"
           id="tripType"
           name="tripType"
         >
@@ -489,22 +502,23 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="flightDate"
         >
           Departure Date
           <span
-            style="color: red;"
+            class="text-red-500"
           >
              *
           </span>
         </label>
         <input
+          class="border rounded px-2 py-1 w-full"
           id="flightDate"
           name="flightDate"
           type="date"
@@ -512,10 +526,10 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="flightTimePrefDepart"
@@ -523,6 +537,7 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
           Time Preference – Departure
         </label>
         <select
+          class="border rounded px-2 py-1 w-full"
           id="flightTimePrefDepart"
           name="flightTimePrefDepart"
         >
@@ -565,10 +580,10 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="notes"
@@ -576,16 +591,17 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
           Notes
         </label>
         <textarea
+          class="border rounded px-2 py-1 w-full"
           id="notes"
           name="notes"
         />
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="budgetGuidance"
@@ -593,6 +609,7 @@ exports[`DynamicForm snapshot/smoke tests > renders flight schema without crashi
           Budget Guidance
         </label>
         <select
+          class="border rounded px-2 py-1 w-full"
           id="budgetGuidance"
           name="budgetGuidance"
         >
@@ -632,7 +649,7 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
 <div>
   <form>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="client"
@@ -641,7 +658,7 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="project"
@@ -650,10 +667,10 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="clientReference"
@@ -661,6 +678,7 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
           Client Reference
         </label>
         <input
+          class="border rounded px-2 py-1 w-full"
           id="clientReference"
           name="clientReference"
           type="text"
@@ -668,10 +686,10 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="border: 1px solid rgb(204, 204, 204); padding: 8px; border-radius: 8px; margin-bottom: 8px;"
+        class="border border-gray-300 p-2 rounded mb-2"
       >
         <div>
           Traveler Selector [stub]
@@ -688,21 +706,21 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <div>
           Target Location Type
           <span
-            style="color: red;"
+            class="text-red-500"
           >
              *
           </span>
         </div>
         <label
-          style="margin-right: 12px;"
+          class="mr-3"
         >
           <input
             name="targetLocationType"
@@ -713,7 +731,7 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
           Specific Property
         </label>
         <label
-          style="margin-right: 12px;"
+          class="mr-3"
         >
           <input
             name="targetLocationType"
@@ -726,10 +744,10 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
+        class="mb-4 text-gray-500"
       >
         <label>
           Location
@@ -740,7 +758,7 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="location.lat"
@@ -749,7 +767,7 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <input
         id="location.lng"
@@ -758,22 +776,23 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       />
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="checkInDate"
         >
           Check-In Date
           <span
-            style="color: red;"
+            class="text-red-500"
           >
              *
           </span>
         </label>
         <input
+          class="border rounded px-2 py-1 w-full"
           id="checkInDate"
           name="checkInDate"
           type="date"
@@ -781,22 +800,23 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="checkOutDate"
         >
           Check-Out Date
           <span
-            style="color: red;"
+            class="text-red-500"
           >
              *
           </span>
         </label>
         <input
+          class="border rounded px-2 py-1 w-full"
           id="checkOutDate"
           name="checkOutDate"
           type="date"
@@ -804,10 +824,10 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px; color: rgb(136, 136, 136);"
+        class="mb-4 text-gray-500"
       >
         <label>
           Rooms
@@ -818,10 +838,10 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="notes"
@@ -829,16 +849,17 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
           Notes
         </label>
         <textarea
+          class="border rounded px-2 py-1 w-full"
           id="notes"
           name="notes"
         />
       </div>
     </div>
     <div
-      style="margin-bottom: 16px;"
+      class="mb-4"
     >
       <div
-        style="margin-bottom: 16px;"
+        class="mb-4"
       >
         <label
           for="budgetGuidance"
@@ -846,6 +867,7 @@ exports[`DynamicForm snapshot/smoke tests > renders hotel schema without crashin
           Budget Guidance
         </label>
         <select
+          class="border rounded px-2 py-1 w-full"
           id="budgetGuidance"
           name="budgetGuidance"
         >

@@ -1,7 +1,8 @@
-require('dotenv').config(); // loads .env into process.env
-const secret = process.env.SUPABASE_JWT_SECRET;
+/* eslint-disable no-console */
+import 'dotenv/config'; // loads .env into process.env
+import jwt from 'jsonwebtoken';
 
-const jwt = require('jsonwebtoken');
+const secret = process.env.SUPABASE_JWT_SECRET;
 
 const payload = {
   sub: 'test-requester-id',

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { createServiceClient } from '@/lib/supabase/server';
+// import { createMagicLink } from '@/lib/link/jweLink';
 
 // Magic Link Lifecycle:
 // - Expiry: Each link has an 'expires_at' timestamp stored in the 'links' table.

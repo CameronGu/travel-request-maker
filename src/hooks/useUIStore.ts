@@ -10,8 +10,8 @@ interface UIState {
   isLoading: boolean;
   setLoading: (loading: boolean) => void;
 
-  formDraft: Record<string, any>;
-  setFormDraft: (draft: Record<string, any>) => void;
+  formDraft: Record<string, unknown>;
+  setFormDraft: (draft: Record<string, unknown>) => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({

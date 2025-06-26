@@ -1,5 +1,6 @@
-require('dotenv').config();
-const jwt = require('jsonwebtoken');
+/* eslint-disable no-console */
+import 'dotenv/config';
+import jwt from 'jsonwebtoken';
 
 const base64Secret = process.env.SUPABASE_JWT_SECRET;
 const rawSecret = Buffer.from(base64Secret, 'base64').toString('utf8');

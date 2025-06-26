@@ -1,14 +1,11 @@
+/* eslint-disable no-console */
 /**
  * RLS Test Data Seeder
  * Creates test projects and data for RLS verification
  */
 
-// Load root .env first
-require('dotenv').config();
-// Then load functions .env, which will override any duplicates
-require('dotenv').config({ path: 'supabase/functions/.env' });
-
-const { createClient } = require('@supabase/supabase-js');
+import 'dotenv/config';
+import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SERVICE_ROLE_KEY;

@@ -1,10 +1,12 @@
-require('dotenv').config(); // loads .env into process.env
+/* eslint-disable no-console */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import 'dotenv/config'; // loads .env into process.env
+import jwt from 'jsonwebtoken';
+
 const secret = process.env.SUPABASE_JWT_SECRET;
 
 console.log([...secret]);
 console.log(secret.length);
-
-const jwt = require('jsonwebtoken');
 
 const payload = {
   sub: 'test-attadmin-id',

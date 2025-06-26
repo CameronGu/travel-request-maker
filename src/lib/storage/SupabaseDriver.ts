@@ -10,6 +10,7 @@
  */
 
 import { getSupabaseClient } from '../supabase/client';
+
 import { StorageDriver } from './StorageDriver';
 
 export class SupabaseDriver implements StorageDriver {

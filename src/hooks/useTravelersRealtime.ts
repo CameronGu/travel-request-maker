@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { getSupabaseClient } from '@/lib/supabase/client';
-import { queryKeys } from '@/lib/queryKeys';
+import { useEffect } from 'react';
+
 import { features } from '@/config';
+import { queryKeys } from '@/lib/queryKeys';
+import { getSupabaseClient } from '@/lib/supabase/client';
 
 /**
  * useTravelersRealtime
@@ -21,7 +22,7 @@ export function useTravelersRealtime(clientId?: string) {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'travelers' },
-        (payload) => {
+        (_payload) => {
           // Invalidate the travelers query for the relevant client
           queryClient.invalidateQueries({ queryKey: queryKeys.travelers(clientId) });
         }

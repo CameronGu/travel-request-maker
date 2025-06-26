@@ -1,9 +1,10 @@
+import { CountryCode } from 'libphonenumber-js/max';
 import { describe, it, expect } from 'vitest';
+
 import {
   normalizeAndValidatePhone,
   generateTravelerHash,
 } from '../phone';
-import { CountryCode } from 'libphonenumber-js/max';
 
 describe('normalizeAndValidatePhone', () => {
   it('should return a valid result for a valid US phone number', () => {

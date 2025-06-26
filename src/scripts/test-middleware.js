@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
-require('dotenv').config({ path: require('path').resolve(process.cwd(), '.env.local') });
-const { createClient } = require('@supabase/supabase-js');
-const fetch = require('node-fetch');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import 'dotenv/config';
+
+import { createClient } from '@supabase/supabase-js';
+import fetch from 'node-fetch';
 
 // Test configuration
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -80,11 +82,11 @@ async function runTest(userConfig, session) {
               const parts      = [];
         
                     if (rawValue.length <= CHUNK_SIZE) {
-                        // single-chunk still gets the “.0” suffix
+                        // single-chunk still gets the "0" suffix
                         parts.push(`${baseName}.0=${rawValue}`);
               } else {
                 for (let i = 0; i < rawValue.length; i += CHUNK_SIZE) {
-                  const chunkName = `${baseName}.${parts.length}`; // .0, .1, …
+                  const chunkName = `${baseName}.${parts.length}`; // .0, .1, ...
                   parts.push(`${chunkName}=${rawValue.slice(i, i + CHUNK_SIZE)}`);
                 }
               }

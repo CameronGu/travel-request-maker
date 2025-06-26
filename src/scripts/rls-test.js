@@ -1,5 +1,6 @@
-require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
+/* eslint-disable no-console */
+import 'dotenv/config';
+import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -29,7 +30,7 @@ const roles = [
 
 const TABLE = 'requests'; // Change as needed
 
-async function testRole(role) {
+export async function testRole(role) {
   if (!role.jwt) {
     console.warn(`JWT for role ${role.name} is missing. Skipping.`);
     return null;
@@ -40,7 +41,7 @@ async function testRole(role) {
   const results = {};
   // SELECT
   try {
-    const { data, error } = await client.from(TABLE).select('*').limit(1);
+    const { error } = await client.from(TABLE).select('*').limit(1);
     results.select = !error;
   } catch {
     results.select = false;
@@ -100,7 +101,7 @@ async function testRole(role) {
   return results;
 }
 
-async function runTests() {
+export async function runTests() {
   console.log('Testing RLS enforcement for roles on table:', TABLE);
   for (const role of roles) {
     if (!role.jwt) {
@@ -119,4 +120,4 @@ async function runTests() {
   console.log('\nRLS test complete. Review output for any unexpected access.');
 }
 
-module.exports = { runTests, testRole, roles };
+export { roles };

@@ -15,7 +15,7 @@ export default async function Debug() {
   const { data, error } = await supabase.from('requests').select('*').limit(10);
   return (
     <div>
-      <div style={{ background: '#fffae6', color: '#b26a00', padding: 8, marginBottom: 8, borderRadius: 4 }}>
+      <div className="bg-yellow-50 text-yellow-800 p-2 mb-2 rounded">
         <b>Warning:</b> This page uses the Supabase service role key and is for <b>local development only</b>.
         Never enable in production.
       </div>
