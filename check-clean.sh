@@ -51,6 +51,7 @@ RUN_OUTDATED=1
 RUN_TESTSCAN=1
 RUN_TODO=1
 ONLY=()
+DEBUG_DYNAMIC_FORM=0
 
 for arg in "$@"; do
   case $arg in
@@ -70,11 +71,11 @@ for arg in "$@"; do
     --only-outdated) ONLY+=(outdated) ;;
     --only-testscan) ONLY+=(testscan) ;;
     --only-todo) ONLY+=(todo) ;;
+    --debug|--verbose) DEBUG_DYNAMIC_FORM=1 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown flag: $arg"; usage; exit 1 ;;
   esac
-  shift
-}
+done
 
 if [ ${#ONLY[@]} -gt 0 ]; then
   # If any --only-* flag is set, only run those
@@ -110,7 +111,7 @@ fi
 # 3. Test
 if [ $RUN_TEST -eq 1 ]; then
   printf "\n==> Running tests...\n"
-  pnpm vitest --run --reporter verbose || fail "Tests failed."
+  DEBUG_DYNAMIC_FORM=$DEBUG_DYNAMIC_FORM pnpm vitest --run --reporter verbose || fail "Tests failed."
   pass "Tests"
 fi
 
@@ -164,4 +165,11 @@ if [ $RUN_TODO -eq 1 ]; then
   fi
 fi
 
-printf "\n${GREEN}All checks complete!${NC}\n" 
+printf "\n${GREEN}All checks complete!${NC}\n"
+
+export DEBUG_DYNAMIC_FORM
+if [ $DEBUG_DYNAMIC_FORM -eq 1 ]; then
+  echo "DEBUG=true"
+else
+  echo "DEBUG=false" 
+fi

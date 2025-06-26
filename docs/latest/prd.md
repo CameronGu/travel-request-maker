@@ -937,3 +937,46 @@ This consolidated PRD serves as the complete, production-ready specification for
 - **Renewal:** If a user requests a new magic link after the previous one has expired, the API creates a new row in the `links` table with a fresh `expires_at` and sends a new magic link email. No update of the old row is needed.
 - **Cleanup:** Expired links are periodically deleted from the `links` table by a Supabase edge function (`purge-expired-links`), which runs a scheduled job to remove all rows where `expires_at` is in the past. This keeps the table clean and enforces security.
 - **No manual intervention is required:** The system is designed to be self-maintaining using Supabase's built-in features and scheduled edge functions.
+
+## Debug and Test Environment Flag Convention
+
+To enable module-specific debug output during tests or scripts, use environment variables with the `DEBUG_` prefix. For example:
+
+- `DEBUG_DYNAMIC_FORM=1 pnpm test` — enables verbose logging for DynamicForm.
+- `./check-clean.sh --only-test --debug` — enables DynamicForm debug output via the script.
+
+### Adding New Debug Flags
+
+1. In your module/component, check for the environment variable:
+   ```js
+   if (process.env.DEBUG_MYMODULE === '1') {
+     // debug output
+   }
+   ```
+2. In scripts, add a flag (e.g., `--debug-mymodule`) that sets and passes the variable:
+   ```bash
+   # In check-clean.sh
+   --debug-mymodule) DEBUG_MYMODULE=1 ;;
+   ...
+   DEBUG_MYMODULE=$DEBUG_MYMODULE pnpm test
+   ```
+3. Document the flag in the PRD and README.
+
+**Best Practice:**
+Always pass debug flags as environment variables inline to subprocesses for reliability.
+
+### Current Debug Flags
+
+| Flag                | Purpose                        | How to Enable                        |
+|---------------------|--------------------------------|--------------------------------------|
+| DEBUG_DYNAMIC_FORM  | DynamicForm debug output       | `--debug` or `DEBUG_DYNAMIC_FORM=1`  |
+
+### Example Usage
+
+```bash
+# Enable DynamicForm debug output in tests
+DEBUG_DYNAMIC_FORM=1 pnpm test
+
+# Or via the health check script
+./check-clean.sh --only-test --debug
+```

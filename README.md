@@ -97,6 +97,13 @@ You can skip or run only specific checks with flags, e.g.:
 **Recommended:**  
 Run this script before merging, releasing, or after major changes to ensure a healthy codebase.
 
+**Debug/Verbose Output:**
+- To enable verbose DynamicForm debug output during tests, add `--debug` or `--verbose`:
+  ```bash
+  ./check-clean.sh --only-test --debug
+  ```
+  This sets `DEBUG_DYNAMIC_FORM=1` for all subprocesses, so you only see detailed logs when you want them.
+
 ---
 
 ## 🎨 Theming
@@ -165,6 +172,16 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
   ```bash
   pnpm tsc --noEmit
   ```
+* **Enable DynamicForm debug output in tests:**
+  - To see detailed DynamicForm field/value debug logs during tests, set the environment variable:
+    ```bash
+    DEBUG_DYNAMIC_FORM=1 pnpm test
+    ```
+  - Or, when using the project health check script:
+    ```bash
+    ./check-clean.sh --only-test --debug
+    ```
+  - The `--debug` or `--verbose` flag on `check-clean.sh` will enable this automatically for all subprocesses.
 * **Tests only (non-interactive):**
   ```bash
   pnpm vitest --run --reporter verbose
@@ -246,5 +263,50 @@ A new API endpoint is available for generating and sending Supabase magic links:
 - Use a tool like Postman or curl to POST to `/api/magic-link` with valid and invalid payloads.
 - Check the Supabase dashboard for new link rows and email logs.
 - Confirm the recipient receives a working magic link email.
+
+---
+
+## Debug and Test Environment Flag Convention
+
+To enable module-specific debug output during tests or scripts, use environment variables with the `DEBUG_` prefix. For example:
+
+- `DEBUG_DYNAMIC_FORM=1 pnpm test` — enables verbose logging for DynamicForm.
+- `./check-clean.sh --only-test --debug` — enables DynamicForm debug output via the script.
+
+### Adding New Debug Flags
+
+1. In your module/component, check for the environment variable:
+  ```js
+  if (process.env.DEBUG_MYMODULE === '1') {
+    // debug output
+  }
+  ```
+2. In scripts, add a flag (e.g., `--debug-mymodule`) that sets and passes the variable:
+  ```bash
+  # In check-clean.sh
+  --debug-mymodule) DEBUG_MYMODULE=1 ;;
+  ...
+  DEBUG_MYMODULE=$DEBUG_MYMODULE pnpm test
+  ```
+3. Document the flag in the README.
+
+**Best Practice:**
+Always pass debug flags as environment variables inline to subprocesses for reliability.
+
+### Current Debug Flags
+
+| Flag                | Purpose                        | How to Enable                        |
+|---------------------|--------------------------------|--------------------------------------|
+| DEBUG_DYNAMIC_FORM  | DynamicForm debug output       | `--debug` or `DEBUG_DYNAMIC_FORM=1`  |
+
+### Example Usage
+
+```bash
+# Enable DynamicForm debug output in tests
+DEBUG_DYNAMIC_FORM=1 pnpm test
+
+# Or via the health check script
+./check-clean.sh --only-test --debug
+```
 
 ---
