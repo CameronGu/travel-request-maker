@@ -40,8 +40,8 @@ It consolidates all previous systems into a modern, maintainable, and well-docum
 
 1️⃣ **Install dependencies**  
 ```bash
-npm install
-````
+pnpm install
+```
 
 2️⃣ **Create local environment**
 
@@ -59,14 +59,43 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 3️⃣ **Run locally**
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 4️⃣ **(Re)generate tasks for Cursor**
 
 ```bash
-npm run parse-prd
+pnpm parse-prd
 ```
+
+---
+
+## Project Health Check
+
+To verify your codebase is in a clean, production-ready state, use the included all-in-one script:
+
+```bash
+./check-clean.sh
+```
+
+This script will sequentially:
+- Lint
+- Type-check
+- Run all tests (non-interactive)
+- Build for production
+- Run a security audit
+- Check for outdated dependencies
+- Scan for `.only`/`.skip` in tests
+- Scan for `TODO`/`FIXME` comments
+
+**Flags:**  
+You can skip or run only specific checks with flags, e.g.:
+- `./check-clean.sh --only-test`
+- `./check-clean.sh --no-build --no-audit`
+- `./check-clean.sh --help` for full usage
+
+**Recommended:**  
+Run this script before merging, releasing, or after major changes to ensure a healthy codebase.
 
 ---
 
@@ -124,19 +153,36 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
 
 ---
 
-## Lint & Tests
+## Lint, Type Check, and Tests
 
-* **Lint:**
+* **All-in-one check:** See [Project Health Check](#project-health-check) above.
 
+* **Lint only:**
   ```bash
-  npm run lint
+  pnpm lint
+  ```
+* **Type check only:**
+  ```bash
+  pnpm tsc --noEmit
+  ```
+* **Tests only (non-interactive):**
+  ```bash
+  pnpm vitest --run --reporter verbose
   ```
 
-* **Tests:**
+---
 
-  ```bash
-  npm run test
-  ```
+## Useful Scripts
+
+- **`check-clean.sh`**: All-in-one project health check (see above).
+- **`pnpm dev`**: Start local development server.
+- **`pnpm build`**: Production build.
+- **`pnpm lint`**: Lint the codebase.
+- **`pnpm tsc --noEmit`**: Type-check the codebase.
+- **`pnpm vitest`**: Run tests (add `--run` for non-interactive).
+- **`pnpm parse-prd`**: Regenerate tasks from the PRD.
+
+All scripts assume you are using `pnpm` as the package manager.
 
 ---
 
