@@ -1,0 +1,17 @@
+[
+  { "id": "firstName", "label": "First Name", "type": "text", "required": true },
+  { "id": "middleName", "label": "Middle Name", "type": "text" },
+  { "id": "lastName", "label": "Last Name", "type": "text", "required": true },
+  { "id": "preferredName", "label": "Preferred Name", "type": "text" },
+  { "id": "primaryEmail", "label": "Primary Email", "type": "text", "required": true, "notes": "Deliverable address, validated with Zod email()" },
+  { "id": "secondaryEmail", "label": "Secondary Email", "type": "text", "notes": "Backup contact email" },
+  { "id": "phone", "label": "Phone", "type": "text", "required": true, "notes": "E.164 format only" },
+  { "id": "dob", "label": "Date of Birth", "type": "date", "notes": "Required for flight and car bookings" },
+  { "id": "gender", "label": "Gender", "type": "select", "options": [
+    { "label": "Male", "value": "M" },
+    { "label": "Female", "value": "F" },
+    { "label": "X / Other", "value": "X" },
+    { "label": "Unspecified", "value": "Unspecified" }
+  ] },
+  { "id": "isPlaceholder", "label": "Placeholder Traveler", "type": "checkbox", "notes": "Blocks submission if true" }
+] 

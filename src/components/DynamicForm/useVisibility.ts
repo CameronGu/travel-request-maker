@@ -44,9 +44,9 @@ export function buildVisibleZodSchema(fields: FieldDefinition[]): z.ZodObject<z.
     }
     if (field.required) {
       if ((zodType instanceof z.ZodString) && (field.type === 'text' || field.type === 'textarea' || field.type === 'select' || field.type === 'radio' || field.type === 'date')) {
-        zodType = zodType.nonempty({ message: `${field.label} is required` });
+        zodType = (zodType as z.ZodString).nonempty({ message: `${field.label} is required` });
       } else if (zodType instanceof z.ZodArray && field.type === 'travelerMultiSelect') {
-        zodType = zodType.min(1, { message: `${field.label} is required` });
+        zodType = (zodType as z.ZodArray<z.ZodTypeAny>).min(1, { message: `${field.label} is required` });
       }
     } else {
       zodType = zodType.optional();

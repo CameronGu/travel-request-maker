@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-lines -- This file is long due to comprehensive DynamicForm and TravelerModal integration tests. Consider splitting into unit and integration test files if it grows further.
 import type { FieldDefinition } from "./DynamicForm/types";
 
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
@@ -12,6 +13,7 @@ import flightFields from '../form-fields/fields.flight.json';
 import hotelFields from '../form-fields/fields.hotel.json';
 
 import DynamicForm from './DynamicForm';
+import TravelerModal from "./TravelerModal";
 
 beforeAll(() => {
   vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => setTimeout(() => cb(performance.now()), 0));
@@ -302,5 +304,66 @@ describe('DynamicForm advanced conditional logic', () => {
     render(<DynamicForm schema={schema as FieldDefinition[]} onSubmit={() => {}} initialValues={{ clientReference: 'LOCKED', budgetGuidance: 'premium' }} />);
     expect(screen.getByLabelText(/Client Reference/)).toHaveValue('LOCKED');
     expect(screen.getByLabelText(/Budget Guidance/)).toHaveValue('premium');
+  });
+});
+
+describe("TravelerModal integration", () => {
+  const travelerInitial = {
+    firstName: "Ana",
+    lastName: "Ramirez",
+    primaryEmail: "ana@acme.com",
+    phone: "+50688888888",
+  };
+
+  it("renders add traveler form and validates required fields", async () => {
+    render(<TravelerModal open={true} onClose={vi.fn()} />);
+    // Wait for form to load
+    await screen.findByLabelText(/First Name/i);
+    // Try to submit empty form
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await waitFor(() => {
+      expect(screen.getByText('First Name is required')).toBeInTheDocument();
+      expect(screen.getByText('Last Name is required')).toBeInTheDocument();
+      expect(screen.getByText('Primary Email is required')).toBeInTheDocument();
+      expect(screen.getByText('Phone is required')).toBeInTheDocument();
+    });
+  });
+
+  it("shows error for invalid phone and email", async () => {
+    render(<TravelerModal open={true} onClose={vi.fn()} />);
+    // Wait for form
+    await screen.findByLabelText(/First Name/i);
+    fireEvent.change(screen.getByLabelText(/First Name/i), { target: { value: "Test" } });
+    fireEvent.change(screen.getByLabelText(/Last Name/i), { target: { value: "User" } });
+    fireEvent.change(screen.getByLabelText(/Primary Email/i), { target: { value: "notanemail" } });
+    fireEvent.change(screen.getByLabelText(/Phone/i), { target: { value: "123" } });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/Invalid primary email address|Invalid email address/i)).toBeInTheDocument();
+      expect(screen.getByText(/Phone error/i)).toBeInTheDocument();
+    });
+  });
+
+  it("submits valid traveler and calls onClose", async () => {
+    const onClose = vi.fn();
+    render(<TravelerModal open={true} onClose={onClose} />);
+    await screen.findByLabelText(/First Name/i);
+    fireEvent.change(screen.getByLabelText(/First Name/i), { target: { value: "Ana" } });
+    fireEvent.change(screen.getByLabelText(/Last Name/i), { target: { value: "Ramirez" } });
+    fireEvent.change(screen.getByLabelText(/Primary Email/i), { target: { value: "ana@acme.com" } });
+    fireEvent.change(screen.getByLabelText(/Phone/i), { target: { value: "+50688888888" } });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
+
+  it("renders edit mode with initial values", async () => {
+    render(<TravelerModal open={true} onClose={vi.fn()} traveler={travelerInitial} />);
+    expect(await screen.findByDisplayValue("Ana")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Ramirez")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("ana@acme.com")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("+50688888888")).toBeInTheDocument();
+    expect(screen.getByText(/Edit Traveler/i)).toBeInTheDocument();
   });
 }); 
