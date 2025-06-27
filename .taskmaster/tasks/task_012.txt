@@ -1,0 +1,49 @@
+# Task ID: 12
+# Title: Setup Testing Infrastructure and CI Pipeline
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Implement comprehensive testing suite with unit tests, accessibility tests, and CI/CD pipeline with performance monitoring
+# Details:
+Set up Vitest testing framework with Testing Library for component tests. Configure vitest-axe for automated accessibility testing. Implement Playwright for E2E testing of critical user journeys (magic link flow, form submission, admin workflows). Set up GitHub Actions CI pipeline with ESLint flat config, bundle size analysis, and performance monitoring. Configure automated testing for RLS policies and authentication flows. Implement bundle size limits (300kB) and file size limits (300 LOC).
+
+# Test Strategy:
+Achieve >70% test coverage across all components and utilities. Verify zero accessibility violations in axe tests. Test critical user journeys end-to-end including magic link authentication, form submission, and admin operations. Validate CI pipeline performance and bundle size enforcement.
+
+# Subtasks:
+## 1. Set up Vitest and Testing Library for unit/component tests [pending]
+### Dependencies: None
+### Description: Install and configure Vitest as the test runner along with Testing Library for React component testing. Set up test utilities, mocks, and basic configuration files.
+### Details:
+Install vitest, @testing-library/react, @testing-library/jest-dom, and @testing-library/user-event. Configure vitest.config.ts with proper test environment setup, coverage reporting, and test file patterns. Create test utilities and setup files for consistent testing patterns.
+
+## 2. Configure vitest-axe for accessibility testing [pending]
+### Dependencies: 12.1
+### Description: Integrate vitest-axe into the testing setup to automatically check components for accessibility violations during unit and component tests.
+### Details:
+Install vitest-axe and jest-axe packages. Configure axe-core rules and create helper functions for accessibility testing. Add accessibility tests to existing component test suites and establish accessibility testing patterns.
+
+## 3. Implement Playwright for E2E tests [pending]
+### Dependencies: None
+### Description: Set up Playwright for end-to-end testing with proper browser configuration, test data management, and page object patterns.
+### Details:
+Install @playwright/test and configure playwright.config.ts with multiple browser support. Create page object models, test fixtures, and utilities for E2E testing. Set up test data seeding and cleanup procedures for isolated test runs.
+
+## 4. Set up GitHub Actions CI pipeline [pending]
+### Dependencies: 12.1, 12.2, 12.3
+### Description: Create comprehensive GitHub Actions workflows for automated testing, including unit tests, E2E tests, and code quality checks.
+### Details:
+Create .github/workflows/ci.yml with jobs for linting, type checking, unit tests, accessibility tests, and E2E tests. Configure test result reporting, artifact collection, and parallel job execution. Set up proper caching strategies for dependencies and build outputs.
+
+## 5. Add bundle size and file size enforcement [pending]
+### Dependencies: 12.4
+### Description: Implement automated bundle size monitoring and enforcement to prevent performance regressions through CI checks and reporting.
+### Details:
+Install and configure bundlesize or similar tools to monitor JavaScript bundle sizes. Set up size limits for different bundle chunks and create CI checks that fail on size increases. Implement bundle analysis reporting and size comparison between branches.
+
+## 6. Integrate automated testing for RLS and auth flows [pending]
+### Dependencies: 12.1, 12.3
+### Description: Create comprehensive test suites for Row Level Security policies and authentication flows, including both unit tests and E2E scenarios.
+### Details:
+Develop test utilities for mocking authentication states and RLS contexts. Create unit tests for auth-related components and hooks. Implement E2E tests covering login, logout, role-based access, and data isolation scenarios. Set up test database with proper RLS policies for testing.
+

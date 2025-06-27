@@ -68,9 +68,7 @@ node_modules/
 *.sln
 *.sw?
 # OS specific
-# Task files
-tasks.json
-tasks/ 
+
 
 # Cursor MCP files excluded to protect keys
 .cursor/mcp.json

@@ -1,0 +1,43 @@
+# Task ID: 10
+# Title: Implement State Management with TanStack Query and Zustand
+# Status: pending
+# Dependencies: 3
+# Priority: medium
+# Description: Set up comprehensive state management separating server state (TanStack Query) from UI state (Zustand) with real-time subscriptions
+# Details:
+Configure TanStack Query 5 for server state management with Supabase integration. Set up query keys, caching strategies, and background refetching for travelers, requests, and links. Implement Zustand stores for UI state (form drafts, modal states, selected items, loading indicators). Add real-time subscriptions using Supabase realtime for live data updates. Configure query invalidation strategies for data consistency.
+
+# Test Strategy:
+Test query caching and invalidation strategies. Verify real-time subscription functionality with multiple clients. Test UI state persistence across component unmounts. Validate performance with large datasets and concurrent users.
+
+# Subtasks:
+## 1. Configure TanStack Query for server state [pending]
+### Dependencies: None
+### Description: Set up TanStack Query (React Query) client configuration with proper defaults, error handling, and retry logic for managing server state
+### Details:
+Install TanStack Query, configure QueryClient with appropriate default options, set up QueryClientProvider, configure global error handling and retry strategies
+
+## 2. Set up query keys and caching [pending]
+### Dependencies: 10.1
+### Description: Define consistent query key patterns and configure caching strategies for different types of data
+### Details:
+Create query key factories, establish naming conventions, configure cache times and stale times, set up query key hierarchies for related data
+
+## 3. Implement Zustand stores for UI state [pending]
+### Dependencies: None
+### Description: Create Zustand stores to manage client-side UI state separate from server state
+### Details:
+Install Zustand, create stores for UI state like modals, forms, filters, navigation state, and user preferences, implement store persistence if needed
+
+## 4. Add real-time subscriptions [pending]
+### Dependencies: 10.1, 10.2
+### Description: Implement real-time data subscriptions using WebSockets or Server-Sent Events integrated with TanStack Query
+### Details:
+Set up WebSocket connections or SSE, create subscription hooks, integrate real-time updates with existing queries, handle connection states and reconnection logic
+
+## 5. Configure query invalidation and consistency strategies [pending]
+### Dependencies: 10.2, 10.4
+### Description: Implement strategies for maintaining data consistency through query invalidation, optimistic updates, and conflict resolution
+### Details:
+Set up query invalidation patterns, implement optimistic updates for mutations, create conflict resolution strategies, configure background refetching and synchronization
+

@@ -1,0 +1,43 @@
+# Task ID: 2
+# Title: Implement Phone Number Validation Pipeline
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Build the phone number validation and normalization system using libphonenumber-js for E.164 format conversion and traveler hash generation
+# Details:
+Create src/lib/validation/phone.ts with normalizeAndValidatePhone() function. Implement pipeline: input normalization → E.164 conversion → validation → hash generation for duplicate detection. Use libphonenumber-js for international phone number parsing and validation. Generate SHA-256 hash from normalized phone + lowercase email for traveler_hash field. Handle edge cases like invalid formats, missing country codes, and provide clear error messages.
+
+# Test Strategy:
+Unit tests with various phone number formats (US, international, with/without country codes). Test E.164 conversion accuracy, hash consistency for duplicate detection, and error handling for invalid inputs. Verify integration with traveler creation workflow.
+
+# Subtasks:
+## 1. Implement phone normalization and validation logic [pending]
+### Dependencies: None
+### Description: Create core functions to normalize phone number input by removing special characters, whitespace, and standardizing format before validation
+### Details:
+Develop utility functions to clean and normalize phone number strings, implement basic validation rules for phone number structure, and create helper methods for input sanitization
+
+## 2. Integrate libphonenumber-js for E.164 conversion [pending]
+### Dependencies: 2.1
+### Description: Install and configure libphonenumber-js library to handle international phone number parsing and conversion to E.164 format
+### Details:
+Add libphonenumber-js dependency, implement wrapper functions for parsing phone numbers with country codes, and create conversion logic to E.164 standard format
+
+## 3. Implement SHA-256 hash generation [pending]
+### Dependencies: 2.2
+### Description: Create secure hash generation functionality using SHA-256 algorithm for processed phone numbers
+### Details:
+Implement SHA-256 hashing using built-in crypto libraries, create functions to generate consistent hashes from E.164 formatted phone numbers, and ensure proper encoding handling
+
+## 4. Handle edge cases and error messaging [pending]
+### Dependencies: 2.1, 2.2, 2.3
+### Description: Implement comprehensive error handling for invalid phone numbers, missing country codes, and other edge cases with user-friendly error messages
+### Details:
+Create error handling for invalid formats, missing or incorrect country codes, empty inputs, and malformed numbers. Implement informative error messages and fallback behaviors
+
+## 5. Write unit tests for various phone formats and edge cases [pending]
+### Dependencies: 2.1, 2.2, 2.3, 2.4
+### Description: Develop comprehensive test suite covering different international phone number formats, edge cases, and error scenarios
+### Details:
+Create unit tests for various country phone formats, test E.164 conversion accuracy, validate hash generation consistency, test error handling scenarios, and ensure edge case coverage
+

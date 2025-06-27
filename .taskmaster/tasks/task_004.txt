@@ -1,0 +1,55 @@
+# Task ID: 4
+# Title: Build Dynamic Form Engine with JSON Schema Support
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Implement the DynamicForm component that renders forms from JSON specifications using React Hook Form and Zod validation
+# Details:
+Create src/components/DynamicForm.tsx that reads form field specifications from src/form-fields/*.json files. Implement component mapping system (text → Input, date → DatePicker, map → LocationPicker, etc.). Integrate React Hook Form for form state management and Zod for validation schemas generated from JSON specs. Handle conditional field visibility based on logic rules. Implement traveler selector integration and budget guidance prefilling from project settings.
+
+# Test Strategy:
+Unit tests for each form type (hotel, flight, car) with JSON schema validation. Test conditional field logic, form submission with valid/invalid data, and integration with traveler selection. Verify accessibility compliance with screen readers and keyboard navigation.
+
+# Subtasks:
+## 1. Implement DynamicForm component [pending]
+### Dependencies: None
+### Description: Create the core DynamicForm React component that serves as the main container for rendering dynamic forms based on JSON schemas
+### Details:
+Build the foundational component structure with props interface, state management, and basic rendering logic. Include form submission handling and error boundary implementation.
+
+## 2. Develop JSON schema loader and parser [pending]
+### Dependencies: None
+### Description: Create utilities to load, validate, and parse JSON schemas that define form structure and field configurations
+### Details:
+Implement schema loading from various sources (API, local files), schema validation against predefined structure, and parsing logic to extract field definitions and metadata.
+
+## 3. Map schema fields to UI components [pending]
+### Dependencies: 4.1, 4.2
+### Description: Build the mapping system that converts JSON schema field definitions into appropriate React UI components
+### Details:
+Create field type mappings (text, select, checkbox, etc.), component factory pattern, and props transformation logic to render correct UI elements based on schema definitions.
+
+## 4. Integrate React Hook Form and Zod validation [pending]
+### Dependencies: 4.1, 4.2
+### Description: Implement form state management using React Hook Form and schema-based validation using Zod
+### Details:
+Set up React Hook Form integration, create Zod schema generation from JSON schema, implement validation rules, error handling, and form submission logic.
+
+## 5. Add conditional field logic [pending]
+### Dependencies: 4.3, 4.4
+### Description: Implement dynamic field visibility and behavior based on conditional rules defined in the schema
+### Details:
+Build conditional rendering engine, field dependency tracking, show/hide logic based on other field values, and dynamic validation rule application.
+
+## 6. Integrate traveler selector and budget prefilling [pending]
+### Dependencies: 4.3, 4.5
+### Description: Add specialized components for traveler selection and automatic budget field population based on selections
+### Details:
+Create traveler selector component, implement budget calculation logic, integrate with existing form state, and handle data prefilling from external sources.
+
+## 7. Write unit tests for form types and logic [pending]
+### Dependencies: 4.4, 4.5, 4.6
+### Description: Develop comprehensive unit tests covering form component behavior, validation logic, and conditional field functionality
+### Details:
+Create test suites for DynamicForm component, schema parsing utilities, validation logic, conditional field behavior, and integration scenarios using Jest and React Testing Library.
+

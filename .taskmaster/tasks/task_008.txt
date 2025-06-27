@@ -1,0 +1,43 @@
+# Task ID: 8
+# Title: Implement Magic Link Management System
+# Status: pending
+# Dependencies: 3, 5
+# Priority: medium
+# Description: Build the magic link generation, management, and expiry handling system for admin users
+# Details:
+Create MagicLinkModal component for link generation with email, role, traveler selection, and expiry settings. Build LinksTab component for link management with filtering, status tracking, and bulk operations. Implement link expiry warning system with progressive UI alerts (48h, 24h, expired). Create link renewal functionality for admins. Add email validation and duplicate link handling for same email addresses.
+
+# Test Strategy:
+Test link generation with various role/traveler combinations. Verify expiry warning system timing and UI updates. Test link renewal workflow and email delivery. Validate link management table functionality and filtering.
+
+# Subtasks:
+## 1. Build MagicLinkModal for link generation [pending]
+### Dependencies: None
+### Description: Create a modal component for generating magic links with form inputs for email, expiry settings, and link configuration options
+### Details:
+Develop MagicLinkModal component with form fields for recipient email, expiration time selection, custom message options, and generate button. Include validation for required fields and proper styling.
+
+## 2. Implement LinksTab for management and filtering [pending]
+### Dependencies: 8.1
+### Description: Build a comprehensive tab interface for viewing, managing, and filtering existing magic links with search and sort capabilities
+### Details:
+Create LinksTab component with table/list view of generated links, filtering options by status/expiry/recipient, search functionality, and action buttons for link management operations.
+
+## 3. Add expiry warning and renewal logic [pending]
+### Dependencies: 8.2
+### Description: Implement automatic expiry detection, warning notifications, and renewal functionality for magic links
+### Details:
+Develop expiry monitoring system with visual indicators for soon-to-expire links, automated warning notifications, and renewal workflow with updated expiration dates.
+
+## 4. Handle email validation and duplicate links [pending]
+### Dependencies: 8.1
+### Description: Implement robust email validation and duplicate link detection to prevent conflicts and ensure data integrity
+### Details:
+Add email format validation, domain verification, duplicate link checking based on email/purpose, and appropriate error handling with user feedback messages.
+
+## 5. Write tests for link workflows [pending]
+### Dependencies: 8.3, 8.4
+### Description: Create comprehensive test suite covering magic link generation, management, expiry handling, and validation scenarios
+### Details:
+Develop unit and integration tests for link creation, expiry logic, email validation, duplicate detection, renewal processes, and error handling scenarios with proper test coverage.
+

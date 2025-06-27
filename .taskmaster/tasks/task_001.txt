@@ -1,0 +1,92 @@
+# Task ID: 1
+# Title: Setup Supabase Database Schema and RLS Policies
+# Status: in-progress
+# Dependencies: None
+# Priority: high
+# Description: Create the complete database schema with all tables, indexes, and Row Level Security policies for the Travel Request Management System
+# Details:
+Execute the SQL schema creation script to establish core tables: clients, projects, travelers, requests, links, and access_logs. Implement comprehensive RLS policies for role-based access control (attAdmin, clientAdmin, requester). Create indexes for performance optimization on frequently queried columns like client_id, traveler_hash, project_id, and link expiry. Set up proper foreign key relationships and constraints. Test RLS policies with different JWT claims to ensure proper data isolation.
+
+# Test Strategy:
+Create test JWT tokens for each role type and verify data isolation. Test that attAdmin can access all data, clientAdmin can only access their client's data, and requesters can only access assigned links. Verify foreign key constraints and index performance with sample data.
+
+# Subtasks:
+## 1. Define tables and columns [done]
+### Dependencies: None
+### Description: Design and create the database schema by defining all necessary tables, columns, data types, and basic constraints
+### Details:
+Create comprehensive table structures with appropriate data types, primary keys, and basic constraints. Document the schema design and ensure all business requirements are captured in the table definitions.
+
+## 2. Create indexes [done]
+### Dependencies: 1.1
+### Description: Design and implement database indexes to optimize query performance for expected access patterns
+### Details:
+Analyze query patterns and create appropriate indexes including primary, unique, composite, and partial indexes. Consider index types (B-tree, GIN, GiST) based on data types and query requirements.
+
+## 3. Establish foreign key relationships and constraints [done]
+### Dependencies: 1.1
+### Description: Define and implement foreign key relationships and additional constraints to ensure data integrity
+### Details:
+Create foreign key constraints between related tables, implement check constraints, unique constraints, and other business rule validations. Ensure referential integrity across the schema.
+
+## 4. Write and apply RLS policies for each role [done]
+### Dependencies: 1.3
+### Description: Implement Row Level Security policies to control data access based on user roles and permissions
+### Details:
+Design and implement comprehensive RLS policies for different user roles (admin, user, guest, etc.). Create policies for SELECT, INSERT, UPDATE, and DELETE operations ensuring proper data isolation and security.
+
+## 5. Generate test JWT tokens for each role [done]
+### Dependencies: 1.4
+### Description: Create test JWT tokens representing different user roles for testing authentication and authorization
+### Details:
+Generate valid JWT tokens with appropriate claims for each defined role. Include necessary user information, role assignments, and expiration times for comprehensive testing scenarios.
+
+## 6. Test RLS enforcement and data isolation [pending]
+### Dependencies: 1.5
+### Description: Validate that Row Level Security policies correctly enforce data access restrictions for different roles
+### Details:
+Execute comprehensive tests using the generated JWT tokens to verify RLS policies work correctly. Test data isolation, unauthorized access prevention, and proper data visibility for each role.
+<info added on 2025-06-12T21:46:05.966Z>
+Implementation Plan for Testing RLS Enforcement and Data Isolation:
+
+1. **Identify RLS Policy and JWT Setup:**
+   - Locate the Supabase SQL schema and RLS policy definitions (likely in migration or setup SQL files).
+   - Confirm the existence and content of the generated JWT tokens for each role (attAdmin, clientAdmin, requester).
+
+2. **Test Script Design:**
+   - Create a set of automated test scripts (preferably in JavaScript/TypeScript using the Supabase JS client or via direct HTTP requests) that:
+     - Authenticate using each role's JWT token.
+     - Attempt to SELECT, INSERT, UPDATE, and DELETE data in all relevant tables.
+     - Assert that each role can only access or modify data as permitted by the RLS policies.
+     - Specifically test:
+       - attAdmin: Full access to all data.
+       - clientAdmin: Access only to their client's data.
+       - requester: Access only to assigned links.
+     - Attempt unauthorized actions and verify they are blocked.
+
+3. **Test Execution:**
+   - Run the scripts for each role and collect results.
+   - Log any failures or unexpected access.
+
+4. **Verification:**
+   - Confirm that all RLS policies enforce the intended restrictions.
+   - Document any issues or policy gaps for remediation.
+
+5. **Success Criteria:**
+   - All roles are restricted to their permitted data.
+   - Unauthorized access attempts are blocked.
+   - No policy bypasses are possible via JWT manipulation.
+
+**Next Steps:**
+- Locate or create the test script directory (e.g., `src/scripts/` or `src/tests/`).
+- Implement the test scripts as described.
+- Execute the tests and verify results.
+- Update this subtask with findings and mark as done if successful.
+</info added on 2025-06-12T21:46:05.966Z>
+
+## 7. Benchmark index performance with sample data [pending]
+### Dependencies: 1.2, 1.6
+### Description: Evaluate database performance by testing index effectiveness with representative sample data
+### Details:
+Load sample data into the database and run performance benchmarks on queries. Measure index effectiveness, query execution times, and identify potential performance bottlenecks. Optimize indexes based on results.
+

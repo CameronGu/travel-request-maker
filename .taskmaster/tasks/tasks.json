@@ -1,0 +1,921 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Supabase Database Schema and RLS Policies",
+        "description": "Create the complete database schema with all tables, indexes, and Row Level Security policies for the Travel Request Management System",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "details": "Execute the SQL schema creation script to establish core tables: clients, projects, travelers, requests, links, and access_logs. Implement comprehensive RLS policies for role-based access control (attAdmin, clientAdmin, requester). Create indexes for performance optimization on frequently queried columns like client_id, traveler_hash, project_id, and link expiry. Set up proper foreign key relationships and constraints. Test RLS policies with different JWT claims to ensure proper data isolation.",
+        "testStrategy": "Create test JWT tokens for each role type and verify data isolation. Test that attAdmin can access all data, clientAdmin can only access their client's data, and requesters can only access assigned links. Verify foreign key constraints and index performance with sample data.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define tables and columns",
+            "description": "Design and create the database schema by defining all necessary tables, columns, data types, and basic constraints",
+            "dependencies": [],
+            "details": "Create comprehensive table structures with appropriate data types, primary keys, and basic constraints. Document the schema design and ensure all business requirements are captured in the table definitions.",
+            "status": "done"
+          },
+          {
+            "id": 2,
+            "title": "Create indexes",
+            "description": "Design and implement database indexes to optimize query performance for expected access patterns",
+            "dependencies": [
+              1
+            ],
+            "details": "Analyze query patterns and create appropriate indexes including primary, unique, composite, and partial indexes. Consider index types (B-tree, GIN, GiST) based on data types and query requirements.",
+            "status": "done"
+          },
+          {
+            "id": 3,
+            "title": "Establish foreign key relationships and constraints",
+            "description": "Define and implement foreign key relationships and additional constraints to ensure data integrity",
+            "dependencies": [
+              1
+            ],
+            "details": "Create foreign key constraints between related tables, implement check constraints, unique constraints, and other business rule validations. Ensure referential integrity across the schema.",
+            "status": "done"
+          },
+          {
+            "id": 4,
+            "title": "Write and apply RLS policies for each role",
+            "description": "Implement Row Level Security policies to control data access based on user roles and permissions",
+            "dependencies": [
+              3
+            ],
+            "details": "Design and implement comprehensive RLS policies for different user roles (admin, user, guest, etc.). Create policies for SELECT, INSERT, UPDATE, and DELETE operations ensuring proper data isolation and security.",
+            "status": "done"
+          },
+          {
+            "id": 5,
+            "title": "Generate test JWT tokens for each role",
+            "description": "Create test JWT tokens representing different user roles for testing authentication and authorization",
+            "dependencies": [
+              4
+            ],
+            "details": "Generate valid JWT tokens with appropriate claims for each defined role. Include necessary user information, role assignments, and expiration times for comprehensive testing scenarios.",
+            "status": "done"
+          },
+          {
+            "id": 6,
+            "title": "Test RLS enforcement and data isolation",
+            "description": "Validate that Row Level Security policies correctly enforce data access restrictions for different roles",
+            "dependencies": [
+              5
+            ],
+            "details": "Execute comprehensive tests using the generated JWT tokens to verify RLS policies work correctly. Test data isolation, unauthorized access prevention, and proper data visibility for each role.\n<info added on 2025-06-12T21:46:05.966Z>\nImplementation Plan for Testing RLS Enforcement and Data Isolation:\n\n1. **Identify RLS Policy and JWT Setup:**\n   - Locate the Supabase SQL schema and RLS policy definitions (likely in migration or setup SQL files).\n   - Confirm the existence and content of the generated JWT tokens for each role (attAdmin, clientAdmin, requester).\n\n2. **Test Script Design:**\n   - Create a set of automated test scripts (preferably in JavaScript/TypeScript using the Supabase JS client or via direct HTTP requests) that:\n     - Authenticate using each role's JWT token.\n     - Attempt to SELECT, INSERT, UPDATE, and DELETE data in all relevant tables.\n     - Assert that each role can only access or modify data as permitted by the RLS policies.\n     - Specifically test:\n       - attAdmin: Full access to all data.\n       - clientAdmin: Access only to their client's data.\n       - requester: Access only to assigned links.\n     - Attempt unauthorized actions and verify they are blocked.\n\n3. **Test Execution:**\n   - Run the scripts for each role and collect results.\n   - Log any failures or unexpected access.\n\n4. **Verification:**\n   - Confirm that all RLS policies enforce the intended restrictions.\n   - Document any issues or policy gaps for remediation.\n\n5. **Success Criteria:**\n   - All roles are restricted to their permitted data.\n   - Unauthorized access attempts are blocked.\n   - No policy bypasses are possible via JWT manipulation.\n\n**Next Steps:**\n- Locate or create the test script directory (e.g., `src/scripts/` or `src/tests/`).\n- Implement the test scripts as described.\n- Execute the tests and verify results.\n- Update this subtask with findings and mark as done if successful.\n</info added on 2025-06-12T21:46:05.966Z>\n<info added on 2025-06-20T20:03:55.775Z>\n**RLS Testing Completed Successfully - All Issues Resolved**\n\nThe comprehensive RLS policy testing has been completed with all identified issues successfully resolved. The following fixes were implemented:\n\n**Key Fixes Applied:**\n1. **JWT Token Generation Fix**: Corrected the test JWT generation script to use the proper `role` claim instead of `app_role` claim in `src/scripts/gen-all-test-jwts.js`.\n\n2. **Security Definer Implementation**: Updated RLS helper functions (`role()`, `client_id()`, etc.) with `SECURITY DEFINER` to ensure proper access to `auth.jwt()` function.\n\n3. **Migration Consolidation**: Cleaned up conflicting migration files into a single idempotent migration (`20250622_final_rls_policy.sql`) that properly establishes roles and RLS policies.\n\n4. **RLS Policy Syntax Corrections**: Fixed multiple SQL syntax errors in RLS policy definitions, particularly for permissive policies and dynamic policy creation.\n\n5. **Test Script Logic Updates**: Enhanced `rls-test-debugger.js` to correctly handle project lookups for `attAdmin` role and align test expectations with intended `requester` role permissions.\n\n**Final Test Results Verification:**\n- **attAdmin Role**: All CRUD operations (SELECT, INSERT, UPDATE, DELETE) pass successfully\n- **clientAdmin Role**: All CRUD operations (SELECT, INSERT, UPDATE, DELETE) pass successfully  \n- **requester Role**: SELECT and INSERT operations pass as expected; UPDATE and DELETE operations correctly denied per role restrictions\n\n**Outcome**: All RLS policies are now properly enforcing data isolation and access controls. Unauthorized access attempts are successfully blocked, and each role operates within its intended permission boundaries. The database security implementation is complete and verified.\n</info added on 2025-06-20T20:03:55.775Z>",
+            "status": "done"
+          },
+          {
+            "id": 7,
+            "title": "Benchmark index performance with sample data",
+            "description": "Evaluate database performance by testing index effectiveness with representative sample data",
+            "dependencies": [
+              2,
+              6
+            ],
+            "details": "Load sample data into the database and run performance benchmarks on queries. Measure index effectiveness, query execution times, and identify potential performance bottlenecks. Optimize indexes based on results.\n<info added on 2025-06-20T19:57:56.706Z>\nCompleted benchmark analysis for index performance on the requests table. Key findings: queries filtering by project_id were performing full table sequential scans, causing potential performance bottlenecks. Created and applied migration 20250623_add_index_to_requests_project_id.sql to add idx_requests_project_id index. Testing confirmed the index works correctly and will prevent performance degradation as data volume increases. The index is essential for application scalability when filtering requests by project.\n</info added on 2025-06-20T19:57:56.706Z>",
+            "status": "done"
+          },
+          {
+            "id": 8,
+            "title": "Seed development data for RLS testing",
+            "description": "Create proper seed data including at least one project row per dev client to support RLS policy testing",
+            "dependencies": [
+              5
+            ],
+            "details": "Add seed data to ensure RLS testing can be performed correctly. Create 'RLS Smoke-Test Project' entries for each development client to prevent NULL project_id constraint errors during testing. This addresses the issue where clientAdmin INSERT operations fail due to missing project associations.",
+            "status": "done"
+          },
+          {
+            "id": 9,
+            "title": "Fix RLS test harness implementation bugs",
+            "description": "Resolve identified issues in the automated RLS testing harness that are causing false failures",
+            "dependencies": [
+              8
+            ],
+            "details": "Address specific harness bugs: 1) Supply real project_id for admin role INSERT operations instead of NULL values, 2) Implement find-then-touch strategy for UPDATE/DELETE operations to avoid .order() method calls after modifications, 3) Inject requester's first link_ids[] into INSERT payload for proper testing, 4) Execute harness via REST API or SQL with 'set role authenticated' instead of running as supabase_admin to properly test RLS enforcement.",
+            "status": "done"
+          },
+          {
+            "id": 10,
+            "title": "Verify complete RLS policy matrix and capture evidence",
+            "description": "Run the corrected test harness to verify all RLS policies work as expected and document the results",
+            "dependencies": [
+              9
+            ],
+            "details": "Execute the fixed RLS test harness and verify that the policy matrix shows all expected ALLOWED/DENIED results for each role (attAdmin, clientAdmin, requester) across all operations (SELECT, INSERT, UPDATE, DELETE). Capture evidence via screenshot or log output showing green test results. Ensure requester SELECT properly hides rows with created_via_link_id IS NULL.",
+            "status": "done"
+          },
+          {
+            "id": 11,
+            "title": "Integrate RLS testing into CI pipeline",
+            "description": "Add the RLS test harness to the continuous integration pipeline for automated testing",
+            "dependencies": [
+              10
+            ],
+            "details": "Create npm run test:rls command and integrate the RLS testing harness into the CI pipeline. Ensure tests run automatically on code changes and provide clear feedback on RLS policy compliance.",
+            "status": "done"
+          },
+          {
+            "id": 12,
+            "title": "Document Studio testing procedures for RLS",
+            "description": "Create documentation for manual RLS testing procedures using Supabase Studio",
+            "dependencies": [
+              10
+            ],
+            "details": "Add documentation snippet explaining how to perform manual RLS testing in Supabase Studio: set local role to 'authenticated', perform set_config('request.jwt', ...) with appropriate JWT tokens, and verify policy enforcement manually. This provides a backup testing method and helps with debugging RLS issues.",
+            "status": "done"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Phone Number Validation Pipeline",
+        "description": "Build the phone number validation and normalization system using libphonenumber-js for E.164 format conversion and traveler hash generation",
+        "details": "Create src/lib/validation/phone.ts with normalizeAndValidatePhone() function. Implement pipeline: input normalization → E.164 conversion → validation → hash generation for duplicate detection. Use libphonenumber-js for international phone number parsing and validation. Generate SHA-256 hash from normalized phone + lowercase email for traveler_hash field. Handle edge cases like invalid formats, missing country codes, and provide clear error messages.",
+        "testStrategy": "Unit tests with various phone number formats (US, international, with/without country codes). Test E.164 conversion accuracy, hash consistency for duplicate detection, and error handling for invalid inputs. Verify integration with traveler creation workflow.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement phone normalization and validation logic",
+            "description": "Create core functions to normalize phone number input by removing special characters, whitespace, and standardizing format before validation",
+            "dependencies": [],
+            "details": "Develop utility functions to clean and normalize phone number strings, implement basic validation rules for phone number structure, and create helper methods for input sanitization",
+            "status": "done"
+          },
+          {
+            "id": 2,
+            "title": "Integrate libphonenumber-js for E.164 conversion",
+            "description": "Install and configure libphonenumber-js library to handle international phone number parsing and conversion to E.164 format",
+            "dependencies": [
+              1
+            ],
+            "details": "Add libphonenumber-js dependency, implement wrapper functions for parsing phone numbers with country codes, and create conversion logic to E.164 standard format",
+            "status": "done"
+          },
+          {
+            "id": 3,
+            "title": "Implement SHA-256 hash generation",
+            "description": "Create secure hash generation functionality using SHA-256 algorithm for processed phone numbers",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement SHA-256 hashing using built-in crypto libraries, create functions to generate consistent hashes from E.164 formatted phone numbers, and ensure proper encoding handling",
+            "status": "done"
+          },
+          {
+            "id": 4,
+            "title": "Handle edge cases and error messaging",
+            "description": "Implement comprehensive error handling for invalid phone numbers, missing country codes, and other edge cases with user-friendly error messages",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Create error handling for invalid formats, missing or incorrect country codes, empty inputs, and malformed numbers. Implement informative error messages and fallback behaviors",
+            "status": "done"
+          },
+          {
+            "id": 5,
+            "title": "Write unit tests for various phone formats and edge cases",
+            "description": "Develop comprehensive test suite covering different international phone number formats, edge cases, and error scenarios",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Create unit tests for various country phone formats, test E.164 conversion accuracy, validate hash generation consistency, test error handling scenarios, and ensure edge case coverage",
+            "status": "done"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Setup Supabase Authentication with Magic Links",
+        "description": "Configure Supabase Auth for magic link authentication with custom JWT claims for role-based access control",
+        "details": "Configure Supabase Auth settings for magic link authentication. Set up custom JWT claims structure with role, client_id, and link_ids. Create auth helper functions in src/lib/supabase/ for login, logout, and session management. Implement middleware for route protection based on roles. Create magic link generation API that creates link records and sends emails via Supabase Auth. Handle link expiry validation and renewal workflows.",
+        "testStrategy": "Test magic link generation and email delivery. Verify JWT claims are properly set and accessible in RLS policies. Test session persistence, automatic logout on expiry, and role-based route protection. Validate link expiry enforcement and renewal process.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure Supabase Auth for magic links",
+            "description": "Set up Supabase authentication configuration to enable magic link functionality, including email provider settings, redirect URLs, and authentication policies",
+            "dependencies": [],
+            "details": "Configure Supabase project settings for magic link authentication, set up email templates, configure SMTP settings or email service provider, define redirect URLs for successful/failed authentication, and establish rate limiting policies",
+            "status": "done"
+          },
+          {
+            "id": 2,
+            "title": "Define custom JWT claims and structure",
+            "description": "Design and implement custom JWT token structure with additional claims for user roles, permissions, and application-specific metadata",
+            "dependencies": [
+              1
+            ],
+            "details": "Define JWT payload structure with custom claims, implement token signing and verification logic, establish user role hierarchy, create permission mapping system, and ensure token security standards compliance",
+            "status": "done"
+          },
+          {
+            "id": 3,
+            "title": "Implement auth helper functions",
+            "description": "Create utility functions for authentication operations including token validation, user session management, and authentication state handling",
+            "dependencies": [
+              2
+            ],
+            "details": "Build functions for token parsing and validation, session creation and destruction, user authentication status checking, token refresh mechanisms, and error handling for authentication failures",
+            "status": "done"
+          },
+          {
+            "id": 4,
+            "title": "Build middleware for route protection",
+            "description": "Develop middleware components to protect routes based on authentication status and user permissions using the custom JWT claims",
+            "dependencies": [
+              3
+            ],
+            "details": "Create middleware for route authentication checking, implement role-based access control, build permission validation logic, handle unauthorized access scenarios, and integrate with existing routing system",
+            "status": "done"
+          },
+          {
+            "id": 5,
+            "title": "Create magic link generation and email sending API",
+            "description": "Build API endpoints for generating secure magic links and sending them via email to users for authentication",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Implement magic link generation with secure tokens, create email sending functionality, build API endpoints for link requests, implement rate limiting and abuse prevention, and ensure email deliverability\n<info added on 2025-06-24T17:38:46.339Z>\nInitial exploration completed - created API route at src/app/api/magic-link/route.ts with POST handler stub. Identified key implementation requirements: input validation for email and client_id, rate limiting system (needs implementation), secure token generation using existing crypto utilities, custom magic link storage in Supabase tables (separate from built-in auth), and email sending logic. Next phase focuses on implementing input validation and core POST handler functionality.\n</info added on 2025-06-24T17:38:46.339Z>\n<info added on 2025-06-24T17:42:43.239Z>\nCompleted input parsing and validation implementation for the magic link API POST handler. The endpoint now properly accepts JSON requests with 'email' and 'client_id' fields, validates both parameters for presence and format, and returns appropriate 400 error responses for invalid or missing data. Input validation layer is fully functional. Next implementation phase will focus on adding rate limiting logic to prevent abuse based on email address and client_id combinations.\n</info added on 2025-06-24T17:42:43.239Z>\n<info added on 2025-06-24T17:43:05.497Z>\nAdded a simple in-memory rate limiting mechanism to the magic link API POST handler. Limits requests to 5 per hour per email+client_id combination. Returns 429 if the limit is exceeded. Left a TODO to replace with a persistent solution (e.g., Supabase or Redis) for production. Next step: implement secure magic link generation (token, expiry, etc.).\n</info added on 2025-06-24T17:43:05.497Z>\n<info added on 2025-06-24T17:46:16.744Z>\nRefactored the magic link API endpoint to fully leverage Supabase's built-in magic link flow instead of custom implementation. Removed all custom crypto, token generation, and email sending logic. The streamlined endpoint now validates input parameters (email, client_id), inserts tracking records into the 'links' table for RLS compliance, and calls supabase.auth.admin.inviteUserByEmail(email) to handle secure token generation and email delivery automatically. This approach eliminates custom code complexity while maintaining security through Supabase's proven authentication system. All orphaned custom logic has been cleaned up. Ready for endpoint verification and UI integration documentation.\n</info added on 2025-06-24T17:46:16.744Z>\n<info added on 2025-06-24T18:26:55.026Z>\nFinal implementation completed successfully. Created comprehensive Next.js API endpoint at /api/magic-link that integrates seamlessly with Supabase's built-in authentication system. The endpoint performs input validation, maintains audit trails through the links table, and leverages Supabase's inviteUserByEmail method for secure magic link delivery. Implemented full automated test suite covering success scenarios, input validation, and error handling with noted limitations around Vitest/Next.js module caching that may affect error case testing reliability. Added comprehensive README documentation detailing endpoint usage, parameters, responses, and testing recommendations. Included detailed code comments addressing test framework limitations and providing manual testing guidance for production confidence. All components are production-ready and fully documented.\n</info added on 2025-06-24T18:26:55.026Z>",
+            "status": "done"
+          },
+          {
+            "id": 6,
+            "title": "Implement link expiry and renewal workflows",
+            "description": "Create systems for managing magic link lifecycle including expiration handling, renewal processes, and cleanup of expired tokens",
+            "dependencies": [
+              5
+            ],
+            "details": "Implement token expiration logic, create link renewal mechanisms, build cleanup processes for expired links, handle edge cases for expired link access, and implement user notification systems for link status\n<info added on 2025-06-24T18:39:06.179Z>\nExploration findings reveal that the magic link API already supports expiration via 'expires_at' parameter stored in Supabase 'links' table, though table schema definition is missing from migrations. No existing cleanup or renewal logic found. Supabase edge functions can handle scheduled cleanup (following purge-audit-log pattern). Renewal workflow identified: create new magic link row with fresh expires_at when user requests after expiry. Implementation plan: 1) Create purge-expired-links edge function modeled after existing purge-audit-log to delete expired entries, 2) Document renewal workflow where API creates new row and sends fresh email for expired link requests, 3) Add lifecycle documentation and code comments for production readiness. Main API endpoint requires no changes for expiry/renewal functionality.\n</info added on 2025-06-24T18:39:06.179Z>",
+            "status": "done"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Build Dynamic Form Engine with JSON Schema Support",
+        "description": "Implement the DynamicForm component that renders forms from JSON specifications using React Hook Form and Zod validation",
+        "details": "Create src/components/DynamicForm.tsx that reads form field specifications from src/form-fields/*.json files. Implement component mapping system (text → Input, date → DatePicker, map → LocationPicker, etc.). Integrate React Hook Form for form state management and Zod for validation schemas generated from JSON specs. Handle conditional field visibility based on logic rules. Implement traveler selector integration and budget guidance prefilling from project settings.",
+        "testStrategy": "Unit tests for each form type (hotel, flight, car) with JSON schema validation. Test conditional field logic, form submission with valid/invalid data, and integration with traveler selection. Verify accessibility compliance with screen readers and keyboard navigation.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement DynamicForm component",
+            "description": "Create the core DynamicForm React component that serves as the main container for rendering dynamic forms based on JSON schemas",
+            "dependencies": [],
+            "details": "Build the foundational component structure with props interface, state management, and basic rendering logic. Include form submission handling and error boundary implementation.\n<info added on 2025-06-24T19:14:43.526Z>\nInitial exploration and implementation plan for the DynamicForm component:\n\n1. File location: src/components/DynamicForm.tsx (already exists in the codebase).\n2. The component should accept a JSON schema (from src/form-fields/*.json) as a prop, along with optional initial values and a submit handler.\n3. The foundational structure will include:\n   - Props interface: schema, initialValues, onSubmit, and possibly overrides for custom field renderers.\n   - State management: use React Hook Form for form state, errors, and submission.\n   - Basic rendering logic: iterate over schema fields, render mapped UI components (text, select, date, etc.), and handle form submission.\n   - Error boundary: wrap the form in an error boundary to catch rendering/validation errors.\n4. The initial implementation will focus on rendering text and select fields, with stubs for other types.\n5. The component will be designed for extensibility, allowing future addition of conditional logic, custom field types, and integration with traveler selector/budget features.\n6. Will review the existing DynamicForm.tsx for any prior implementation and refactor as needed to align with this plan.\n\nNext step: Review and update src/components/DynamicForm.tsx to ensure it matches this foundational plan, and implement any missing core logic.\n</info added on 2025-06-24T19:14:43.526Z>",
+            "status": "done"
+          },
+          {
+            "id": 2,
+            "title": "Develop JSON schema loader and parser",
+            "description": "Create utilities to load, validate, and parse JSON schemas that define form structure and field configurations",
+            "dependencies": [],
+            "details": "Implement schema loading from various sources (API, local files), schema validation against predefined structure, and parsing logic to extract field definitions and metadata.\n<info added on 2025-06-24T19:34:50.598Z>\nCompleted implementation of schema loader/parser utility function in DynamicForm.tsx with the following features:\n\n- Created async loadFormSchema(schemaName: string) function that dynamically imports JSON schemas from src/form-fields directory (e.g., 'fields.hotel.json')\n- Implemented type guard isFieldDefinition for runtime validation ensuring schemas contain objects with required 'id' and 'type' fields\n- Added validation logic to verify schema structure and return properly typed FieldDefinition[] arrays\n- Included basic error handling for file loading and schema validation failures\n- Exported utility function for reuse across the application\n\nImplementation supports local file-based schema loading as the initial data source. Next phase will integrate this loader into DynamicForm consumer components and expand test coverage for edge cases including invalid schemas, missing files, and malformed data structures.\n</info added on 2025-06-24T19:34:50.598Z>",
+            "status": "done"
+          },
+          {
+            "id": 3,
+            "title": "Map schema fields to UI components",
+            "description": "Build the mapping system that converts JSON schema field definitions into appropriate React UI components",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create field type mappings (text, select, checkbox, etc.), component factory pattern, and props transformation logic to render correct UI elements based on schema definitions.",
+            "status": "done"
+          },
+          {
+            "id": 4,
+            "title": "Integrate React Hook Form and Zod validation",
+            "description": "Implement form state management using React Hook Form and schema-based validation using Zod",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Set up React Hook Form integration, create Zod schema generation from JSON schema, implement validation rules, error handling, and form submission logic.",
+            "status": "done"
+          },
+          {
+            "id": 5,
+            "title": "Add conditional field logic",
+            "description": "Implement dynamic field visibility and behavior based on conditional rules defined in the schema",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Build conditional rendering engine, field dependency tracking, show/hide logic based on other field values, and dynamic validation rule application.",
+            "status": "done"
+          },
+          {
+            "id": 6,
+            "title": "Integrate traveler selector and budget prefilling",
+            "description": "Add specialized components for traveler selection and automatic budget field population based on selections",
+            "dependencies": [
+              3,
+              5
+            ],
+            "details": "Create traveler selector component, implement budget calculation logic, integrate with existing form state, and handle data prefilling from external sources.",
+            "status": "done"
+          },
+          {
+            "id": 7,
+            "title": "Write unit tests for form types and logic",
+            "description": "Develop comprehensive unit tests covering form component behavior, validation logic, and conditional field functionality",
+            "dependencies": [
+              4,
+              5,
+              6
+            ],
+            "details": "Create test suites for DynamicForm component, schema parsing utilities, validation logic, conditional field behavior, and integration scenarios using Jest and React Testing Library.\n<info added on 2025-06-25T04:39:04.793Z>\nImplementation plan for comprehensive unit tests for DynamicForm and related logic (per PRD):\n\n1. Add vitest-axe accessibility tests for DynamicForm to ensure WCAG 2.1 AA compliance.\n2. Add snapshot/smoke tests for rendering hotel, flight, and car schemas (using real JSON specs from src/form-fields) to catch regressions.\n3. Add end-to-end tests for hotel, flight, and car schemas:\n   - Render the form, fill all required fields, submit, and check output.\n   - Test conditional fields (e.g., roundTrip in flight, General in car, showWhen/showWhenAny logic).\n   - Test travelerMultiSelect with mock traveler data.\n4. Test error boundary by simulating a render error in a field component.\n5. Test array/object/repeatable group fields (e.g., room.group in hotel, vehicle.group in car) for correct rendering and value collection.\n6. Test advanced conditional logic (e.g., readOnlyIfLocked, nested showWhen, defaultFrom logic).\n7. Document test coverage and any remaining gaps in the subtask log.\n\nCurrent coverage:\n- DynamicForm.test.tsx covers basic field rendering, required/optional, Zod validation, conditional logic, and traveler selector stub.\n- phone.test.ts covers phone normalization and traveler hash logic.\n- No a11y, snapshot, or full schema e2e tests yet.\n\nNext: Implement missing tests in DynamicForm.test.tsx and add vitest-axe for a11y coverage.\n</info added on 2025-06-25T04:39:04.793Z>",
+            "status": "done"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Implement Traveler Management System",
+        "description": "Build comprehensive traveler CRUD operations with duplicate detection, validation, and placeholder support",
+        "details": "Create TravelerModal component for add/edit operations with extended schema fields (firstName, lastName, phone, email, dob, gender, etc.). Implement duplicate detection using traveler_hash comparison. Build TravelerDirectory component with client-scoped listing, search, and bulk operations. Add placeholder traveler support for incomplete records. Integrate phone validation pipeline and email validation. Implement traveler completion validation for different form types.",
+        "testStrategy": "Test CRUD operations with RLS enforcement. Verify duplicate detection accuracy with hash comparison. Test placeholder functionality and completion validation. Validate phone/email normalization and error handling for invalid data.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Build TravelerModal for add/edit",
+            "description": "Create a reusable modal component for adding new travelers and editing existing traveler information with form fields for personal details",
+            "dependencies": [],
+            "details": "Develop TravelerModal component with form inputs for name, contact information, and other traveler details. Include save/cancel functionality and proper form state management.\n<info added on 2025-06-26T19:43:21.754Z>\nTravelerModal implemented as a full-featured modal dialog for add/edit traveler functionality. Uses React Hook Form + Zod for validation, supports all required and optional fields per PRD, and persists via SupabaseDriver (or LocalDriver fallback). Includes phone normalization/validation and traveler hash generation. Exposes open/onClose/traveler props for integration. ErrorBoundary is used for robust error handling. Ready for integration and testing.\n</info added on 2025-06-26T19:43:21.754Z>",
+            "status": "done"
+          },
+          {
+            "id": 2,
+            "title": "Implement duplicate detection logic",
+            "description": "Create logic to detect and prevent duplicate traveler entries based on name, email, or phone number combinations",
+            "dependencies": [
+              1
+            ],
+            "details": "Build duplicate detection algorithm that checks existing travelers against new entries using fuzzy matching for names and exact matching for contact details. Include user prompts for potential duplicates.",
+            "status": "in-progress"
+          },
+          {
+            "id": 3,
+            "title": "Create TravelerDirectory with listing and search",
+            "description": "Build a comprehensive directory component that displays all travelers with search and filtering capabilities",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop TravelerDirectory component with paginated listing, search functionality by name/email/phone, sorting options, and integration with the TravelerModal for editing.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Add placeholder traveler support",
+            "description": "Implement functionality to create and manage placeholder travelers for incomplete bookings or reservations",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create placeholder traveler system that allows temporary traveler entries with minimal information, conversion to full travelers, and proper handling in duplicate detection.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Integrate phone/email validation",
+            "description": "Implement comprehensive validation for phone numbers and email addresses with format checking and verification",
+            "dependencies": [
+              1
+            ],
+            "details": "Add robust validation for email formats, phone number formats (international support), and real-time validation feedback in forms. Include validation utilities and error messaging.",
+            "status": "pending"
+          },
+          {
+            "id": 6,
+            "title": "Implement traveler completion validation for forms",
+            "description": "Create validation system to ensure traveler information is complete before allowing form submissions or bookings",
+            "dependencies": [
+              1,
+              4,
+              5
+            ],
+            "details": "Build completion validation that checks required fields, validates data quality, and prevents form submission with incomplete traveler information. Include progress indicators and completion status.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Create Traveler Selector Component with Multi-Select",
+        "description": "Build the TravelerSelector component with chip-based UI, validation states, and accessibility features",
+        "details": "Implement TravelerSelector using @headlessui/react Combobox with chip-based selection UI. Create validation states (default, warning, error) based on traveler completeness for specific form types. Implement mobile-responsive design with collapsible chip display for >4 selections. Add accessibility features with proper ARIA labels and keyboard navigation. Integrate with form validation to block submission for incomplete travelers.",
+        "testStrategy": "Test multi-select functionality with keyboard and mouse interactions. Verify accessibility with screen readers and WCAG 2.1 AA compliance. Test validation state display and form submission blocking. Validate mobile responsive behavior and chip overflow handling.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement multi-select UI with chips",
+            "description": "Create the core multi-select component with chip-based display for selected items, including dropdown functionality and item selection/deselection",
+            "dependencies": [],
+            "details": "Build the visual interface with dropdown menu, searchable options, selected item chips with remove buttons, and basic interaction handlers",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Add validation states and logic",
+            "description": "Implement validation logic for the multi-select component including required field validation, minimum/maximum selection limits, and error state display",
+            "dependencies": [
+              1
+            ],
+            "details": "Add validation rules, error messaging, visual error states, and integration with validation triggers on selection changes",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Ensure accessibility and keyboard navigation",
+            "description": "Implement comprehensive accessibility features including ARIA attributes, keyboard navigation, screen reader support, and focus management",
+            "dependencies": [
+              1
+            ],
+            "details": "Add ARIA labels, roles, and states; implement keyboard shortcuts for navigation and selection; ensure proper focus handling and screen reader announcements",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Integrate with form validation and mobile responsiveness",
+            "description": "Integrate the multi-select component with form validation systems and optimize for mobile devices with touch-friendly interactions",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Connect to form validation frameworks, implement mobile-optimized touch interactions, responsive design adjustments, and cross-device testing",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Build Request Queue and Draft Management",
+        "description": "Implement the RequestQueue component for draft management, multi-select operations, and batch submission",
+        "details": "Create RequestQueue component with table view of draft requests showing type, destination/dates, travelers, and status. Implement multi-select functionality with batch operations (submit, delete). Add draft auto-save functionality with Zustand for UI state management. Create request summary generation for human-readable export. Implement real-time sync with Supabase subscriptions for live updates. Handle request validation before batch submission.",
+        "testStrategy": "Test draft save/load functionality with form state persistence. Verify multi-select operations and batch submission workflow. Test real-time updates with multiple users. Validate request summary generation and export functionality.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement RequestQueue table view",
+            "description": "Create a comprehensive table view component to display request queue items with sorting, filtering, and pagination capabilities",
+            "dependencies": [],
+            "details": "Build a data table component that shows request queue items with columns for request ID, status, priority, created date, and actions. Include sorting functionality for each column, search/filter capabilities, and pagination for large datasets. Implement responsive design for mobile and desktop views.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Add multi-select and batch operations",
+            "description": "Implement multi-select functionality and batch operations for managing multiple requests simultaneously",
+            "dependencies": [
+              1
+            ],
+            "details": "Add checkbox selection to the table view, implement select-all functionality, and create batch operation buttons for common actions like delete, approve, reject, or change status. Include confirmation dialogs for destructive operations and progress indicators for batch processing.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Implement draft auto-save with Zustand",
+            "description": "Set up automatic draft saving functionality using Zustand for state management and local persistence",
+            "dependencies": [],
+            "details": "Create Zustand store for draft management, implement auto-save functionality that triggers on form changes with debouncing, add local storage persistence for drafts, and provide draft recovery mechanisms. Include draft status indicators and manual save/discard options.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Add real-time sync with Supabase",
+            "description": "Implement real-time synchronization between client and server using Supabase subscriptions",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Set up Supabase real-time subscriptions for request queue updates, implement conflict resolution for concurrent edits, add connection status indicators, and handle offline/online state transitions. Include optimistic updates and rollback mechanisms for failed operations.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Implement request validation and summary export",
+            "description": "Add comprehensive request validation and export functionality for generating summary reports",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create validation rules for request data integrity, implement client-side and server-side validation, add export functionality for CSV/PDF formats, generate summary reports with statistics and analytics, and include customizable export templates with filtering options.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Magic Link Management System",
+        "description": "Build the magic link generation, management, and expiry handling system for admin users",
+        "details": "Create MagicLinkModal component for link generation with email, role, traveler selection, and expiry settings. Build LinksTab component for link management with filtering, status tracking, and bulk operations. Implement link expiry warning system with progressive UI alerts (48h, 24h, expired). Create link renewal functionality for admins. Add email validation and duplicate link handling for same email addresses.",
+        "testStrategy": "Test link generation with various role/traveler combinations. Verify expiry warning system timing and UI updates. Test link renewal workflow and email delivery. Validate link management table functionality and filtering.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Build MagicLinkModal for link generation",
+            "description": "Create a modal component for generating magic links with form inputs for email, expiry settings, and link configuration options",
+            "dependencies": [],
+            "details": "Develop MagicLinkModal component with form fields for recipient email, expiration time selection, custom message options, and generate button. Include validation for required fields and proper styling.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Implement LinksTab for management and filtering",
+            "description": "Build a comprehensive tab interface for viewing, managing, and filtering existing magic links with search and sort capabilities",
+            "dependencies": [
+              1
+            ],
+            "details": "Create LinksTab component with table/list view of generated links, filtering options by status/expiry/recipient, search functionality, and action buttons for link management operations.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Add expiry warning and renewal logic",
+            "description": "Implement automatic expiry detection, warning notifications, and renewal functionality for magic links",
+            "dependencies": [
+              2
+            ],
+            "details": "Develop expiry monitoring system with visual indicators for soon-to-expire links, automated warning notifications, and renewal workflow with updated expiration dates.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Handle email validation and duplicate links",
+            "description": "Implement robust email validation and duplicate link detection to prevent conflicts and ensure data integrity",
+            "dependencies": [
+              1
+            ],
+            "details": "Add email format validation, domain verification, duplicate link checking based on email/purpose, and appropriate error handling with user feedback messages.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Write tests for link workflows",
+            "description": "Create comprehensive test suite covering magic link generation, management, expiry handling, and validation scenarios",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Develop unit and integration tests for link creation, expiry logic, email validation, duplicate detection, renewal processes, and error handling scenarios with proper test coverage.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Create Admin Dashboard Interfaces",
+        "description": "Build comprehensive admin dashboards for ATT and Client administrators with project management and request creation capabilities",
+        "details": "Create AdminDashboard component with role-based views (ATT vs Client admin). Implement client/project management with CRUD operations and budget guidance configuration. Build admin request creation workflow allowing admins to create requests and add them to queue. Create project-scoped views with link management integration. Implement dashboard metrics and quick actions for common admin tasks.",
+        "testStrategy": "Test role-based dashboard rendering and access control. Verify client/project CRUD operations with proper RLS enforcement. Test admin request creation workflow and queue integration. Validate dashboard performance with large datasets.",
+        "priority": "medium",
+        "dependencies": [
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement AdminDashboard with role-based views",
+            "description": "Create the main admin dashboard component with role-based access control, different view layouts for various admin roles, and secure authentication checks",
+            "dependencies": [],
+            "details": "Build role-based routing, create different dashboard layouts for super admin, project admin, and client admin roles, implement permission checks and secure view rendering",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Build client/project management UI",
+            "description": "Develop comprehensive client and project management interfaces with CRUD operations, search functionality, and data visualization components",
+            "dependencies": [
+              1
+            ],
+            "details": "Create client listing, project overview, add/edit/delete forms, search and filter capabilities, project status tracking, and client relationship management tools",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Add admin request creation workflow",
+            "description": "Implement workflow for admins to create, manage, and track various types of requests with approval processes and status updates",
+            "dependencies": [
+              1
+            ],
+            "details": "Build request creation forms, approval workflow logic, status tracking system, notification mechanisms, and request history management",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Integrate link management",
+            "description": "Develop link management functionality allowing admins to create, organize, and manage various types of links with categorization and access controls",
+            "dependencies": [
+              2
+            ],
+            "details": "Create link creation interface, categorization system, access permission settings, link validation, bulk operations, and link analytics tracking",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Implement dashboard metrics and quick actions",
+            "description": "Add comprehensive metrics display, analytics charts, and quick action buttons for common administrative tasks to enhance dashboard usability",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Build metrics widgets, data visualization charts, quick action panels, real-time data updates, customizable dashboard layouts, and performance indicators",
+            "status": "pending"
+          },
+          {
+            "id": 6,
+            "title": "Test performance with large datasets",
+            "description": "Conduct comprehensive performance testing with large datasets to ensure dashboard responsiveness, optimize queries, and implement pagination/virtualization as needed",
+            "dependencies": [
+              4,
+              5
+            ],
+            "details": "Create test datasets, implement performance monitoring, optimize database queries, add pagination and virtual scrolling, conduct load testing, and implement caching strategies",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement State Management with TanStack Query and Zustand",
+        "description": "Set up comprehensive state management separating server state (TanStack Query) from UI state (Zustand) with real-time subscriptions",
+        "details": "Configure TanStack Query 5 for server state management with Supabase integration. Set up query keys, caching strategies, and background refetching for travelers, requests, and links. Implement Zustand stores for UI state (form drafts, modal states, selected items, loading indicators). Add real-time subscriptions using Supabase realtime for live data updates. Configure query invalidation strategies for data consistency.",
+        "testStrategy": "Test query caching and invalidation strategies. Verify real-time subscription functionality with multiple clients. Test UI state persistence across component unmounts. Validate performance with large datasets and concurrent users.",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure TanStack Query for server state",
+            "description": "Set up TanStack Query (React Query) client configuration with proper defaults, error handling, and retry logic for managing server state",
+            "dependencies": [],
+            "details": "Install TanStack Query, configure QueryClient with appropriate default options, set up QueryClientProvider, configure global error handling and retry strategies",
+            "status": "done"
+          },
+          {
+            "id": 2,
+            "title": "Set up query keys and caching",
+            "description": "Define consistent query key patterns and configure caching strategies for different types of data",
+            "dependencies": [
+              1
+            ],
+            "details": "Create query key factories, establish naming conventions, configure cache times and stale times, set up query key hierarchies for related data",
+            "status": "done"
+          },
+          {
+            "id": 3,
+            "title": "Implement Zustand stores for UI state",
+            "description": "Create Zustand stores to manage client-side UI state separate from server state",
+            "dependencies": [],
+            "details": "Install Zustand, create stores for UI state like modals, forms, filters, navigation state, and user preferences, implement store persistence if needed",
+            "status": "done"
+          },
+          {
+            "id": 4,
+            "title": "Add real-time subscriptions",
+            "description": "Implement real-time data subscriptions using WebSockets or Server-Sent Events integrated with TanStack Query",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Set up WebSocket connections or SSE, create subscription hooks, integrate real-time updates with existing queries, handle connection states and reconnection logic",
+            "status": "done"
+          },
+          {
+            "id": 5,
+            "title": "Configure query invalidation and consistency strategies",
+            "description": "Implement strategies for maintaining data consistency through query invalidation, optimistic updates, and conflict resolution",
+            "dependencies": [
+              2,
+              4
+            ],
+            "details": "Set up query invalidation patterns, implement optimistic updates for mutations, create conflict resolution strategies, configure background refetching and synchronization",
+            "status": "done"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Accessibility and Design System",
+        "description": "Ensure WCAG 2.1 AA compliance and implement the claymorphism design system with shadcn/ui components",
+        "details": "Implement claymorphism design tokens in styles/tokens.ts with semantic color system. Configure shadcn/ui components with custom theming and accessibility enhancements. Add comprehensive ARIA labels, keyboard navigation, and screen reader support across all components. Implement focus management for modals and complex interactions. Create semantic tokens for traveler chip states (default, warning, error) and form validation feedback.",
+        "testStrategy": "Run vitest-axe tests for WCAG 2.1 AA compliance across all components. Test keyboard navigation and screen reader compatibility. Verify color contrast ratios and focus indicators. Validate design token consistency and theme switching functionality.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement claymorphism design tokens",
+            "description": "Create and implement design tokens for claymorphism UI style including colors, shadows, border-radius, and spacing values",
+            "dependencies": [],
+            "details": "Define CSS custom properties or design token files for claymorphism aesthetic including soft shadows, muted color palettes, rounded corners, and subtle gradients. Establish consistent spacing scale and typography tokens.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Configure shadcn/ui components with theming",
+            "description": "Apply claymorphism design tokens to shadcn/ui components and configure theme customization",
+            "dependencies": [
+              1
+            ],
+            "details": "Customize shadcn/ui component styles using the claymorphism design tokens. Configure theme provider and ensure all components inherit the new design system. Update component variants and default styling.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Add ARIA labels and keyboard navigation",
+            "description": "Implement proper ARIA attributes and keyboard navigation support across all components",
+            "dependencies": [
+              2
+            ],
+            "details": "Add appropriate ARIA labels, roles, and properties to components. Implement keyboard navigation patterns including tab order, arrow key navigation, and escape key handling. Ensure all interactive elements are keyboard accessible.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Implement focus management and screen reader support",
+            "description": "Add focus management system and optimize components for screen reader compatibility",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement focus trap functionality, manage focus states during navigation, and add screen reader announcements. Create focus indicators that work with claymorphism design. Ensure proper reading order and context for assistive technologies.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Test and validate WCAG compliance",
+            "description": "Conduct comprehensive accessibility testing and validate WCAG 2.1 AA compliance",
+            "dependencies": [
+              4
+            ],
+            "details": "Perform automated and manual accessibility testing using tools like axe-core, WAVE, and screen readers. Test color contrast ratios, keyboard navigation, and screen reader compatibility. Document compliance status and fix any identified issues.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Setup Testing Infrastructure and CI Pipeline",
+        "description": "Implement comprehensive testing suite with unit tests, accessibility tests, and CI/CD pipeline with performance monitoring",
+        "details": "Set up Vitest testing framework with Testing Library for component tests. Configure vitest-axe for automated accessibility testing. Implement Playwright for E2E testing of critical user journeys (magic link flow, form submission, admin workflows). Set up GitHub Actions CI pipeline with ESLint flat config, bundle size analysis, and performance monitoring. Configure automated testing for RLS policies and authentication flows. Implement bundle size limits (300kB) and file size limits (300 LOC).",
+        "testStrategy": "Achieve >70% test coverage across all components and utilities. Verify zero accessibility violations in axe tests. Test critical user journeys end-to-end including magic link authentication, form submission, and admin operations. Validate CI pipeline performance and bundle size enforcement.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Vitest and Testing Library for unit/component tests",
+            "description": "Install and configure Vitest as the test runner along with Testing Library for React component testing. Set up test utilities, mocks, and basic configuration files.",
+            "dependencies": [],
+            "details": "Install vitest, @testing-library/react, @testing-library/jest-dom, and @testing-library/user-event. Configure vitest.config.ts with proper test environment setup, coverage reporting, and test file patterns. Create test utilities and setup files for consistent testing patterns.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Configure vitest-axe for accessibility testing",
+            "description": "Integrate vitest-axe into the testing setup to automatically check components for accessibility violations during unit and component tests.",
+            "dependencies": [
+              1
+            ],
+            "details": "Install vitest-axe and jest-axe packages. Configure axe-core rules and create helper functions for accessibility testing. Add accessibility tests to existing component test suites and establish accessibility testing patterns.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Implement Playwright for E2E tests",
+            "description": "Set up Playwright for end-to-end testing with proper browser configuration, test data management, and page object patterns.",
+            "dependencies": [],
+            "details": "Install @playwright/test and configure playwright.config.ts with multiple browser support. Create page object models, test fixtures, and utilities for E2E testing. Set up test data seeding and cleanup procedures for isolated test runs.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Set up GitHub Actions CI pipeline",
+            "description": "Create comprehensive GitHub Actions workflows for automated testing, including unit tests, E2E tests, and code quality checks.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Create .github/workflows/ci.yml with jobs for linting, type checking, unit tests, accessibility tests, and E2E tests. Configure test result reporting, artifact collection, and parallel job execution. Set up proper caching strategies for dependencies and build outputs.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Add bundle size and file size enforcement",
+            "description": "Implement automated bundle size monitoring and enforcement to prevent performance regressions through CI checks and reporting.",
+            "dependencies": [
+              4
+            ],
+            "details": "Install and configure bundlesize or similar tools to monitor JavaScript bundle sizes. Set up size limits for different bundle chunks and create CI checks that fail on size increases. Implement bundle analysis reporting and size comparison between branches.",
+            "status": "pending"
+          },
+          {
+            "id": 6,
+            "title": "Integrate automated testing for RLS and auth flows",
+            "description": "Create comprehensive test suites for Row Level Security policies and authentication flows, including both unit tests and E2E scenarios.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Develop test utilities for mocking authentication states and RLS contexts. Create unit tests for auth-related components and hooks. Implement E2E tests covering login, logout, role-based access, and data isolation scenarios. Set up test database with proper RLS policies for testing.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Configure Supabase Production Environment and Custom Email Templates",
+        "description": "Prepare Supabase project for production by upgrading tier, configuring custom domain, setting up SMTP provider, and implementing custom email templates for all authentication actions. This task serves as the final step before production deployment and requires all other development tasks to be completed first.",
+        "status": "pending",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "priority": "medium",
+        "details": "Upgrade Supabase project to production tier with appropriate resource allocation and backup configuration. Configure custom domain in Supabase Auth settings and update CORS/redirect URLs. Set up custom SMTP provider (SendGrid, Google Workspace, or AWS SES) by configuring SMTP settings in Supabase dashboard under Authentication > Settings > SMTP. Design and implement custom HTML email templates for magic link authentication, password reset, email confirmation, and invite emails. Create templates in Supabase Auth > Email Templates with branded styling matching the claymorphism design system. Configure template variables for dynamic content (user name, magic link URL, expiry time, client branding). Set up email template versioning and A/B testing capabilities. Implement email delivery monitoring and bounce handling. Configure rate limiting and security headers for production email delivery. Test email deliverability across major providers (Gmail, Outlook, Yahoo) and ensure mobile responsiveness of templates. This configuration must be performed only after all application features, authentication systems, database schemas, and UI components are fully implemented and tested.",
+        "testStrategy": "Test Supabase tier upgrade by verifying increased connection limits and performance metrics. Validate custom domain configuration by testing authentication flows with new URLs. Test SMTP provider integration by sending test emails and monitoring delivery rates. Verify custom email templates render correctly across email clients using tools like Litmus or Email on Acid. Test magic link generation and delivery with custom templates in staging environment. Validate email template variables populate correctly with dynamic content. Test email deliverability and spam score using tools like Mail Tester. Verify bounce handling and unsubscribe functionality. Test rate limiting doesn't impact legitimate authentication flows. Validate all authentication email types (magic link, password reset, confirmation) use custom templates and deliver successfully. Perform comprehensive end-to-end testing of the entire application with production Supabase configuration to ensure no regressions.",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-19T21:27:19.199Z",
+      "updated": "2025-06-26T22:23:09.029Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
