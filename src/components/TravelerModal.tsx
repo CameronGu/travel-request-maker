@@ -72,7 +72,6 @@ export default function TravelerModal({ open, onClose, traveler, clientId }: Tra
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       errors.push("Invalid primary email address");
     }
-    // Zod field errors are handled by DynamicForm, but if you want to collect them here, you could pass them up
     if (errors.length > 0) {
       const errorString: string = (errors as string[]).join("\n");
       setError(errorString);
@@ -80,6 +79,19 @@ export default function TravelerModal({ open, onClose, traveler, clientId }: Tra
     }
     // Hash
     const hash = await generateTravelerHash(e164Phone, email);
+    // Duplicate detection
+    const driver = getActiveDriver();
+    let allTravelers: any[] = [];
+    try {
+      allTravelers = (await driver.get<any[]>("travelers")) || [];
+    } catch {}
+    // If editing, allow self; otherwise, block if hash matches another traveler's hash
+    const isEdit = Boolean(traveler?.id);
+    const duplicate = allTravelers.find((t) => t.traveler_hash === hash && (!isEdit || t.id !== traveler?.id));
+    if (duplicate) {
+      setError("A traveler with the same phone and email already exists.");
+      return;
+    }
     // Prepare object
     const travelerObj = {
       ...values,
@@ -88,8 +100,6 @@ export default function TravelerModal({ open, onClose, traveler, clientId }: Tra
       client_id: clientId,
       id: traveler?.id, // for update
     };
-    // Persist
-    const driver = getActiveDriver();
     try {
       await driver.set("travelers", travelerObj);
       onClose();

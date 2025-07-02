@@ -4,7 +4,7 @@ import type { FieldDefinition } from "./DynamicForm/types";
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import { axe } from 'vitest-axe';
 import * as matchers from 'vitest-axe/matchers';
 
@@ -365,5 +365,82 @@ describe("TravelerModal integration", () => {
     expect(screen.getByDisplayValue("ana@acme.com")).toBeInTheDocument();
     expect(screen.getByDisplayValue("+50688888888")).toBeInTheDocument();
     expect(screen.getByText(/Edit Traveler/i)).toBeInTheDocument();
+  });
+});
+
+describe("TravelerModal duplicate detection", () => {
+  const baseTraveler = {
+    id: "t1",
+    firstName: "Ana",
+    lastName: "Ramirez",
+    primaryEmail: "ana@acme.com",
+    phone: "+50688888888",
+    traveler_hash: "dummyhash1",
+    client_id: "c1",
+  };
+  beforeEach(() => {
+    // Mock getActiveDriver to return a driver with travelers
+    const driver = {
+      get: vi.fn(async (key) => {
+        if (key === "travelers") return [baseTraveler];
+        return null;
+      }),
+      set: vi.fn(async () => {}),
+    };
+    vi.spyOn(require("@/lib/storage"), "getActiveDriver").mockReturnValue(driver);
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+  it("blocks adding a duplicate traveler", async () => {
+    const onClose = vi.fn();
+    render(<TravelerModal open={true} onClose={onClose} clientId="c1" />);
+    await screen.findByLabelText(/First Name/i);
+    fireEvent.change(screen.getByLabelText(/First Name/i), { target: { value: "Ana" } });
+    fireEvent.change(screen.getByLabelText(/Last Name/i), { target: { value: "Ramirez" } });
+    fireEvent.change(screen.getByLabelText(/Primary Email/i), { target: { value: "ana@acme.com" } });
+    fireEvent.change(screen.getByLabelText(/Phone/i), { target: { value: "+50688888888" } });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/already exists/i)).toBeInTheDocument();
+      expect(onClose).not.toHaveBeenCalled();
+    });
+  });
+  it("allows editing the same traveler (no duplicate block)", async () => {
+    const onClose = vi.fn();
+    render(<TravelerModal open={true} onClose={onClose} clientId="c1" traveler={baseTraveler} />);
+    await screen.findByLabelText(/First Name/i);
+    fireEvent.change(screen.getByLabelText(/First Name/i), { target: { value: "Ana" } });
+    fireEvent.change(screen.getByLabelText(/Last Name/i), { target: { value: "Ramirez" } });
+    fireEvent.change(screen.getByLabelText(/Primary Email/i), { target: { value: "ana@acme.com" } });
+    fireEvent.change(screen.getByLabelText(/Phone/i), { target: { value: "+50688888888" } });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
+  it("allows adding a unique traveler", async () => {
+    const onClose = vi.fn();
+    // Mock driver to return a different hash for the new traveler
+    const driver = {
+      get: vi.fn(async (key) => {
+        if (key === "travelers") return [baseTraveler];
+        return null;
+      }),
+      set: vi.fn(async () => {}),
+    };
+    vi.spyOn(require("@/lib/storage"), "getActiveDriver").mockReturnValue(driver);
+    // Mock generateTravelerHash to return a different hash
+    vi.spyOn(require("@/lib/validation/phone"), "generateTravelerHash").mockImplementation(async (phone, email) => "uniquehash");
+    render(<TravelerModal open={true} onClose={onClose} clientId="c1" />);
+    await screen.findByLabelText(/First Name/i);
+    fireEvent.change(screen.getByLabelText(/First Name/i), { target: { value: "Bob" } });
+    fireEvent.change(screen.getByLabelText(/Last Name/i), { target: { value: "Jones" } });
+    fireEvent.change(screen.getByLabelText(/Primary Email/i), { target: { value: "bob@acme.com" } });
+    fireEvent.change(screen.getByLabelText(/Phone/i), { target: { value: "+50699999999" } });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalled();
+    });
   });
 }); 
