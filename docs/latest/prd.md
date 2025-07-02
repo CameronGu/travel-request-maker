@@ -1,6 +1,6 @@
 # **Product Requirements Document – Travel Request Management System**
 
-**Version:** v5.0.0 (Final Consolidated)  
+**Version:** v5.1.1 (Lean-Pepper Build Spec 1.1)  
 **Status:** Production-ready specification with authentication architecture, complete schemas, and implementation details.
 
 ---
@@ -35,13 +35,14 @@
 1. **Project‑based Request Flow** – each Request row references a Project row (budget defaults, client context).
 2. **Magic Link Authentication** – email-based identity with Supabase Auth integration; time-limited, revocable access.
 3. **DynamicForm (Declarative) Engine** – renders forms from JSON specs with RHF + Zod.
-4. **Traveler Management** – per‑client CRUD with placeholder toggle; required `phone`, `primaryEmail`; duplicate hash `sha256(E164(phone)+lower(email))`.
+4. **Traveler Management** – per‑client CRUD with placeholder toggle; required `phone`, `primaryEmail`; duplicate detection via `traveler_contacts` + `dup_findings` (EXACT/STRONG/SOFT).
 5. **Request Queue & Batch Submission** – save drafts, multi‑select, single payload submission to ATT.
 6. **Summary Generation** – human‑readable export plus link to Supabase row for audit/export.
 7. **Admin Dashboards** – ATT & Client Admin UIs; admins can *also* create requests and push them into queue.
 8. **Real‑time Sync** – Live updates via Supabase realtime subscriptions (MVP feature).
 9. **Claymorphism Theme** – shadcn/ui + claymorphism token file.
 10. **Accessibility First** – WCAG 2.1 AA; CI axe tests.
+11. **Duplicate-Traveller Detection (“Lean-Pepper”)** – multi-tier contact-hash checks (EXACT / STRONG / SOFT) with ≤ 100 ms p95 SLA.
 
 ---
 
@@ -68,7 +69,7 @@
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ |
 | `clients`     | `id uuid` PK, `name text`                                                                                                                                                            | Seed via ATT UI.         |
 | `projects`    | `id uuid` PK, `client_id uuid` FK, `name text`, `budget_guidance jsonb`, `clientReferenceLock bool`                                                                                  | Budget defaults, client context |
-| `travelers`   | `id uuid` PK, `client_id uuid` FK, `firstName text`, `lastName text`, `phone text`, `primaryEmail text`, `isPlaceholder bool`, `traveler_hash text`, `created_at timestamptz`, `updated_at timestamptz` | RLS isolates by client.  |
+| `travelers`   | `id uuid` PK, `client_id uuid` FK, `firstName text`, `lastName text`, `phone text`, `primaryEmail text`, `isPlaceholder bool`, `traveler_hash text` ⚠ DEPRECATED – superseded by `traveler_contacts`, `created_at timestamptz`, `updated_at timestamptz` | RLS isolates by client.  |
 | `requests`    | `id uuid` PK, `project_id uuid` FK, `type text` enum, `blob jsonb`, `created_via_link_id uuid`, `created_at timestamptz`                                                            | Stores request JSON.     |
 | `links`       | `id uuid` PK, `client_id uuid` FK, `project_id uuid` FK, `role text`, `target_email text`, `allow_add_travelers bool` default false, `traveler_ids uuid[]`, `expires_at timestamptz`, `created_by uuid`, `created_at timestamptz` | Email-based magic links. |
 | `access_logs` | `id uuid` PK, `link_id uuid` FK, `traveler_id uuid`, `ts timestamptz`                                                                                                               | **Phase 2** optional.    |
@@ -125,7 +126,7 @@ interface RequestBlob {
 | `dob`          | date    | ⬜        | Required for flight and car bookings                |
 | `gender`       | text    | ⬜        | Options: M/F/X/Unspecified (as on travel document) |
 | `isPlaceholder`| boolean | ⬜        | Blocks submission if true                           |
-| `traveler_hash`| text    | ⬜        | SHA-256(E164(phone)+lower(email)) for duplicate detection |
+| `traveler_hash`| text    | ⬜        | ⚠ **DEPRECATED** – legacy single-column hash; will be removed once all chips read from `dup_findings`. |
 
 ### 4.4 Phone Number Validation Pipeline
 
@@ -138,7 +139,6 @@ interface RequestBlob {
  * 2. Normalize: Use libphonenumber-js to convert to E.164
  * 3. Validate: Ensure result is valid E.164 format  
  * 4. Store: Save normalized E.164 in database
- * 5. Hash: Generate traveler_hash from normalized phone
  */
 export function normalizeAndValidatePhone(input: string, defaultCountry?: string): string | null;
 ```
@@ -146,6 +146,9 @@ export function normalizeAndValidatePhone(input: string, defaultCountry?: string
 ### 4.5 Schema Creation Script
 
 ```sql
+-- enable crypto
+create extension if not exists pgcrypto;
+
 -- Core schema for Travel Request Management System
 create table public.clients (
   id uuid primary key default gen_random_uuid(),
@@ -175,7 +178,7 @@ create table public.travelers (
   dob date,
   gender text check (gender in ('M', 'F', 'X', 'Unspecified')),
   isPlaceholder boolean default false,
-  traveler_hash text,
+  traveler_hash text, -- ⚠ DEPRECATED – see traveler_contacts
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -202,9 +205,51 @@ create table public.links (
   created_at timestamptz default now()
 );
 
+-- Duplicate-detection tables ------------------------------------------
+create table public.tenant_peppers (
+  client_id uuid primary key,
+  pepper    bytea not null
+);
+
+create table public.traveler_contacts (
+  contact_id   uuid primary key default gen_random_uuid(),
+  traveler_id  uuid not null references travelers(id) on delete cascade,
+  client_id    uuid not null references clients(id),
+  contact_type text check (contact_type in ('PHONE','EMAIL')),
+  contact_raw  text not null,
+  contact_norm text generated always as (
+      case when contact_type='PHONE'
+           then normalise_phone(contact_raw)
+           else normalise_email(contact_raw) end
+  ) stored,
+  contact_hash bytea generated always as (
+      hmac_sha256(contact_norm::bytea,
+                  get_tenant_pepper(client_id))
+  ) stored
+);
+create unique index uniq_contact_hash
+  on traveler_contacts(client_id, contact_type, contact_hash);
+
+create table public.dup_findings (
+  finding_id  uuid primary key default gen_random_uuid(),
+  traveler_id uuid not null references travelers(id) on delete cascade,
+  cand_id     uuid,     -- nullable for EXACT
+  client_id   uuid not null references clients(id),
+  confidence  text check (confidence in ('EXACT','STRONG','SOFT')),
+  src         text,
+  created_at  timestamptz default now(),
+  reviewed    boolean default false
+);
+
+-- Helper function stubs (full bodies in migrations)
+create or replace function normalise_phone(text) returns text as $$ begin return $1; end; $$ language plpgsql;
+create or replace function normalise_email(text) returns text as $$ begin return lower(trim($1)); end; $$ language plpgsql;
+create or replace function get_tenant_pepper(uuid) returns bytea as $$ begin return '\\x00'; end; $$ language plpgsql;
+create or replace function dup_collect(uuid, text, text) returns text as $$ begin return '[]'; end; $$ language plpgsql;
+create or replace function create_traveler(jsonb) returns jsonb as $$ begin return '{}'::jsonb; end; $$ language plpgsql;
+
 -- Indexes for performance
 create index idx_travelers_client_id on travelers(client_id);
-create index idx_travelers_hash on travelers(traveler_hash);
 create index idx_requests_project_id on requests(project_id);
 create index idx_links_client_id on links(client_id);
 create index idx_links_email on links(target_email);
@@ -226,7 +271,7 @@ create table public.audit_log (
   changed_by uuid,
   changed_at timestamptz default now()
 );
-````
+```
 
 ### Logging Function & Triggers
 
@@ -359,6 +404,25 @@ for select using (
     )
   )
 );
+
+-- traveler_contacts isolation ------------------------------------------
+alter table traveler_contacts enable row level security;
+create policy "TravelerContacts: client isolation"
+  on traveler_contacts
+  using (client_id = (auth.jwt() ->> 'client_id')::uuid)
+  with check (client_id = (auth.jwt() ->> 'client_id')::uuid);
+
+-- dup_findings isolation -----------------------------------------------
+alter table dup_findings enable row level security;
+create policy "DupFindings: requester limited"
+  on dup_findings for select
+  using (
+    client_id = (auth.jwt() ->> 'client_id')::uuid
+    and (
+      (auth.jwt() ->> 'role') = 'requester' and confidence <> 'EXACT'
+      or (auth.jwt() ->> 'role') in ('attAdmin','clientAdmin')
+    )
+  );
 ```
 
 #### **Access Logs Table RLS Policies**
@@ -644,7 +708,7 @@ Allow add travelers [ ] (disabled — Phase 2)
 │ | Bob Jones     | —          | —               |       | • | ▶ |
 │ | Carol Smith   | +1 555 …   | carol@acme.com  | ⚠     |   | ▶ |
 └──────────────────────────────────────────────────────────┘
-Legend: P? • = Placeholder (incomplete)  • Dup? ⚠ = hash match detected
+Legend: P? • = Placeholder (incomplete)  • Dup? ⚠ = potential duplicate (STRONG/EXACT)
 ```
 
 ### 9.6 Request Queue
@@ -703,6 +767,7 @@ Request Type: [ Hotel ▾ ]  [ Flight ]  [ Car ]
 | `<TravelerModal />`       | `src/components/TravelerModal.tsx`              | **stub created**    | Add/edit traveler form |
 | `<TravelerSelector />`    | `src/components/TravelerSelector.tsx`           | **planned**         | Multi-select with chips |
 | `<SummaryCard />`         | `src/components/SummaryCard.tsx`                | **planned**         | Request submission summary |
+| `/lib/contacts.ts`        | **new** | JS normalisers shared by forms & duplicate checker (new) |
 
 ### 10.2 Route Mapping
 
@@ -777,6 +842,7 @@ Request Type: [ Hotel ▾ ]  [ Flight ]  [ Car ]
 | ------ | -------------------------------- | --------------------------------------------------------------------------------------- |
 | **M1** | **Supabase Core & Auth**         | Schema + RLS compile; magic link auth flow works; tests prove role isolation.           |
 | **M2** | **DynamicForm Engine**           | Hotel/Flight/Car forms render; invalid submits blocked; unit tests snapshot validated.  |
+| **M2a** | **Duplicate-Detection Layer**    | `traveler_contacts` + `dup_findings` migrations applied; `create_traveler()` returns `findings[]`; front-end shows block/confirm/toast flow.<br>**Exit:** p95 insert ≤ 100 ms on 10 k-row bench. |
 | **M3** | **Magic Link System**            | Email-based links generate properly; DB lookup passes; link copy UI works.              |
 | **M4** | **Admin UI & Links Tab**         | ATT admin can create client/project + link; Client admin dashboard; Request Queue stub. |
 | **M5** | **Request Queue & Batch Submit** | Draft save, multi‑select, submit; Summary card output; real-time sync.                 |
@@ -816,7 +882,8 @@ export const features = {
 
 ### 15.1 Testing Strategy
 
-* **Unit Tests:** Vitest + Testing Library for all components
+* **Unit Tests:** Vitest + Testing Library for all components  
++* **pgTAP:** normalisation helpers, dup_collect() tiers, RLS isolation on `dup_findings`.
 * **Accessibility:** vitest-axe for WCAG 2.1 AA compliance
 * **E2E Tests:** Playwright for critical user journeys
 * **Bundle Analysis:** Automated size checking in CI
@@ -848,7 +915,7 @@ export const features = {
 * **Row Level Security (RLS)** enforces data isolation by client
 * **Magic link authentication** with Supabase Auth JWT tokens
 * **Input validation** via Zod schemas
-* **Hash-based duplicate detection** for traveler data
+* **Peppered contact-hash duplicate detection** (`traveler_contacts` + `dup_findings`) with per-tenant key rotation
 * **Phone number normalization** to E.164 format
 
 ### 16.2 Authentication & Authorization
@@ -884,6 +951,8 @@ export const features = {
 
 | Ver             | Date       | Notes                                                                                                                        |
 | --------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **5.1.1**       | 2025‑06‑28 | PRD now fully conforms to Lean-Pepper Build Spec v1.1: removed all legacy duplicate hash references, updated phone validation, added full DDL and RLS for new tables, helper function stubs, component and testing deliverables, and ensured internal consistency. |
+| **5.1.0**       | 2025‑06‑27 | **Lean-Pepper duplicate detection:** Added multi-tier contact-hash architecture (`traveler_contacts`, `dup_findings`, `tenant_peppers`), new RLS policies, and functional/UX goals for duplicate management. Marked `traveler_hash` as deprecated. Updated milestones, security, and testing sections for new system. |
 | **5.0.1**       | 2025‑06‑13 | Added lightweight audit logging with auto‑purge logic; replaced all RLS policies to use `app_role` and aligned with intended role scopes. |
 | **5.0.0**       | 2025‑05‑29 | **Final Consolidated PRD** - Added magic link auth, complete schemas, implementation details, removed legacy mappings      |
 | **4.0.0**       | 2025‑05‑29 | **Consolidated PRD** - merged all supporting documentation into single definitive document                                   |
@@ -980,3 +1049,26 @@ DEBUG_DYNAMIC_FORM=1 pnpm test
 # Or via the health check script
 ./check-clean.sh --only-test --debug
 ```
+
+### 10A Duplicate-Traveller Detection (“Lean-Pepper”)
+
+#### Functional Goals
+1. **EXACT** – block insert when phone **and** email match same candidate.  
+2. **STRONG** – modal confirmation on single contact match.  
+3. **SOFT** – non-blocking banner on fuzzy name match.  
+4. Zero PII leakage across tenants/roles.  
+5. Pure SQL/JS; no external workers.  
+
+#### Key Objects
+* `traveler_contacts` – per-contact normalization + HMAC hash  
+* `dup_findings` – audit trail of detected duplicates  
+* `dup_collect()` – central SQL collector  
+* `create_traveler()` – primary RPC wrapper  
+* `merge_travelers()` – admin-only stub  
+
+#### Pepper Rotation SOP
+1. Add `next_pepper` column.  
+2. Re-hash `contact_hash` in batches with `next_pepper`.  
+3. Swap columns, drop temp column.  
+
+See migration deliverable list in §11 Deliverables.
