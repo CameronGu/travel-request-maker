@@ -1,0 +1,213 @@
+{
+	"meta": {
+		"generatedAt": "2025-07-09T05:41:58.267Z",
+		"tasksAnalyzed": 25,
+		"totalTasks": 25,
+		"analysisCount": 25,
+		"thresholdScore": 5,
+		"projectName": "Travel Request Maker",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 14,
+			"taskTitle": "Setup Supabase Schema and RLS Policies",
+			"complexityScore": 9,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Break down the schema and RLS setup into granular steps: (1) detailed ERD for each entity, (2) migration scripts per table, (3) RLS policy per role/table, (4) triggers for each audit/status event, (5) schema deltas for each user/request field, (6) test cases for each policy and trigger, (7) documentation for each policy and schema change, (8) review and refactor for maintainability, (9) peer review, (10) deployment validation.",
+			"reasoning": "This task involves designing a multi-tenant schema, implementing complex RLS policies for multiple roles, writing triggers, and ensuring auditability. Each step requires careful planning, security review, and extensive testing, making it highly complex and justifying further breakdown."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Implement Lean-Pepper Duplicate Detection System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 12,
+			"expansionPrompt": "Expand by isolating each normalization function, hashing logic, duplicate detection tier, RPC endpoint, and performance optimization into separate subtasks. Add subtasks for edge-case handling, integration with RLS, admin merge workflow, and comprehensive test coverage for each detection scenario.",
+			"reasoning": "This system requires advanced SQL, cryptographic hashing, multi-tier detection logic, RPC integration, and strict performance SLAs. Each component is non-trivial and must be robustly tested for correctness, security, and speed."
+		},
+		{
+			"taskId": 16,
+			"taskTitle": "Create JavaScript Contact Normalization Library",
+			"complexityScore": 5,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand by splitting normalization and validation for phone and email into separate subtasks, add cross-language parity tests, error handling, and documentation for usage and edge cases.",
+			"reasoning": "While the logic is well-defined and libraries exist, ensuring exact parity with SQL, robust error handling, and comprehensive testing adds moderate complexity."
+		},
+		{
+			"taskId": 17,
+			"taskTitle": "Setup Supabase Client and Storage Driver Architecture",
+			"complexityScore": 6,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand by isolating Supabase client setup, each driver implementation, feature flag logic, type generation, memoization, and test coverage into distinct subtasks.",
+			"reasoning": "This task involves architectural decisions, abstraction layers, and type safety, but leverages existing patterns and libraries, making it moderately complex."
+		},
+		{
+			"taskId": 18,
+			"taskTitle": "Implement Magic Link Authentication System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Expand by separating link generation, email integration, JWT claims, middleware, role-based routing, session management, link expiration, revocation, and integration testing into individual subtasks.",
+			"reasoning": "Magic link auth with role-based access, JWT claims, and session management is security-critical and involves multiple integration points, requiring careful breakdown and validation."
+		},
+		{
+			"taskId": 19,
+			"taskTitle": "Setup State Management with TanStack Query and Zustand",
+			"complexityScore": 6,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand by splitting QueryClient config, Zustand store setup, custom hooks, SSR handling, optimistic updates, and test coverage into separate subtasks.",
+			"reasoning": "Combining two state management systems with SSR and optimistic updates adds moderate complexity, but follows established patterns."
+		},
+		{
+			"taskId": 20,
+			"taskTitle": "Enhance DynamicForm Component with Supabase Integration",
+			"complexityScore": 7,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand by isolating Supabase integration, JSON schema parsing, React Hook Form setup, Zod validation, conditional fields, duplicate detection, and comprehensive testing into distinct subtasks.",
+			"reasoning": "Dynamic forms with schema-driven rendering, validation, and Supabase integration require careful coordination and robust testing, making this a moderately high complexity task."
+		},
+		{
+			"taskId": 21,
+			"taskTitle": "Enhance TravelerModal with Duplicate Detection Integration",
+			"complexityScore": 7,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand by breaking out Supabase persistence, duplicate detection logic, modal UI for each confidence level, admin merge workflow, validation, notifications, and workflow testing into separate subtasks.",
+			"reasoning": "Integrating real-time duplicate detection with nuanced UI flows and admin merge logic increases complexity, especially with the need for robust validation and user feedback."
+		},
+		{
+			"taskId": 22,
+			"taskTitle": "Build Request Queue Management System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand by splitting component UI, multi-selection logic, preview/submit modal, batch RPC integration, draft persistence, real-time status tracking, and testing into individual subtasks.",
+			"reasoning": "While the UI and batch logic are standard, real-time updates and robust draft management add moderate complexity."
+		},
+		{
+			"taskId": 23,
+			"taskTitle": "Implement User Invitation and Role Management System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand by isolating invitation UI, role/flag logic, RPC backend, magic link integration, user management dashboard, audit logging, permission enforcement, and integration testing.",
+			"reasoning": "Role management and invitation flows with permission flags and audit logging require careful design and validation, especially for security and compliance."
+		},
+		{
+			"taskId": 24,
+			"taskTitle": "Build Admin Dashboard Components",
+			"complexityScore": 7,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Expand by breaking out dashboard shell, role-based views, user management, request oversight, system metrics, audit log, client/project management, traveler directory, and testing.",
+			"reasoning": "A comprehensive admin dashboard with multiple role-based features and data management interfaces is moderately complex and benefits from granular breakdown."
+		},
+		{
+			"taskId": 25,
+			"taskTitle": "Create Links Management Tab",
+			"complexityScore": 6,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand by splitting UI, link generation, tracking/stats, revocation/regeneration, audit/history, and testing into separate subtasks.",
+			"reasoning": "Link management with tracking and audit trail is moderately complex, but each feature can be isolated for clarity and maintainability."
+		},
+		{
+			"taskId": 26,
+			"taskTitle": "Implement Traveler Directory Management",
+			"complexityScore": 7,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand by isolating UI, CRUD operations, duplicate detection, merge logic, search/filtering, bulk operations, validation/normalization, and export functionality.",
+			"reasoning": "Managing a directory with advanced search, deduplication, merging, and export features is moderately high in complexity and requires careful modularization."
+		},
+		{
+			"taskId": 27,
+			"taskTitle": "Implement Real-time Synchronization",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand by splitting real-time hooks for each entity, optimistic update logic, connection/reconnection handling, notification system, feature flag support, and comprehensive testing.",
+			"reasoning": "Real-time data sync with optimistic updates and robust connection management is complex, especially when ensuring data consistency and user feedback."
+		},
+		{
+			"taskId": 28,
+			"taskTitle": "Implement Request Status Management System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand by breaking out state machine logic, status log/triggers, status update UI, permissions, audit/history, automated transitions, and test coverage.",
+			"reasoning": "Implementing a state machine with audit logging, permissions, and automated transitions is moderately complex and benefits from clear separation of concerns."
+		},
+		{
+			"taskId": 29,
+			"taskTitle": "Build Summary Generation and Export System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand by splitting summary logic, export formats, audit trail linking, template system, batch export/caching, and testing.",
+			"reasoning": "Summary generation and export with audit trail integration is moderately complex, especially with multiple formats and batch processing."
+		},
+		{
+			"taskId": 30,
+			"taskTitle": "Implement Claymorphism Theme and UI Components",
+			"complexityScore": 5,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand by isolating token file creation, component customization, library theming, dark/light mode, documentation, and visual regression testing.",
+			"reasoning": "Theming and UI customization are well-scoped but require attention to detail and consistency, making this a moderate complexity task."
+		},
+		{
+			"taskId": 31,
+			"taskTitle": "Implement Comprehensive Testing Suite",
+			"complexityScore": 8,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Expand by splitting Vitest setup, accessibility testing, Testing Library setup, unit tests, integration tests, pgTAP tests, coverage reporting, CI integration, and test documentation.",
+			"reasoning": "A full-stack testing suite covering frontend, backend, accessibility, and CI integration is highly complex and must be broken down for coverage and maintainability."
+		},
+		{
+			"taskId": 32,
+			"taskTitle": "Setup CI/CD Pipeline with Performance Monitoring",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand by isolating workflow setup, bundle monitoring, Lighthouse integration, accessibility automation, code quality checks, security scanning, and deployment validation.",
+			"reasoning": "A robust CI/CD pipeline with performance, accessibility, and security checks is moderately high in complexity and requires careful orchestration."
+		},
+		{
+			"taskId": 33,
+			"taskTitle": "Implement Environment Configuration and Validation",
+			"complexityScore": 6,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand by splitting validation script, feature flag system, environment-specific config, documentation, configuration testing, and error handling.",
+			"reasoning": "Environment config and validation is moderately complex, especially with feature flags and multi-environment support, but can be modularized."
+		},
+		{
+			"taskId": 34,
+			"taskTitle": "Optimize Bundle Size and Performance",
+			"complexityScore": 6,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand by isolating code splitting, tree-shaking, lazy loading, asset optimization, service worker setup, and legacy code removal.",
+			"reasoning": "Performance optimization involves several distinct techniques, each requiring careful implementation and validation, but is well-understood in modern web development."
+		},
+		{
+			"taskId": 35,
+			"taskTitle": "Implement Security Hardening and Audit Logging",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand by breaking out audit logging, security headers, CSRF protection, rate limiting, input validation, monitoring/alerting, error handling, and security testing.",
+			"reasoning": "Comprehensive security and audit logging is highly complex, requiring expertise in multiple domains and rigorous validation."
+		},
+		{
+			"taskId": 36,
+			"taskTitle": "Create Documentation and Deployment Guide",
+			"complexityScore": 5,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand by splitting deployment docs, API docs, user guides, schema/migration docs, troubleshooting/FAQ, and maintenance/onboarding docs.",
+			"reasoning": "Documentation is essential but can be modularized by audience and purpose, making it moderate in complexity."
+		},
+		{
+			"taskId": 37,
+			"taskTitle": "Conduct Final Integration Testing and Performance Validation",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Expand by isolating e2e workflow testing, load/performance testing, auth validation, admin function validation, real-time sync, security testing, accessibility, and disaster recovery.",
+			"reasoning": "Final integration and performance validation is highly complex, requiring coordination across all system components and rigorous scenario coverage."
+		},
+		{
+			"taskId": 38,
+			"taskTitle": "Production Deployment and Monitoring Setup",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand by splitting production deployment, monitoring, logging, backup/disaster recovery, analytics/tracking, feature flag management, and support/runbooks.",
+			"reasoning": "Production deployment with monitoring, backup, analytics, and support is highly complex, requiring robust automation, validation, and operational readiness."
+		}
+	]
+}
