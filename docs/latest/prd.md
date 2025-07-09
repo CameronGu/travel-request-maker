@@ -1,48 +1,71 @@
-# **Product Requirements Document – Travel Request Management System**
+# Product Requirements Document – Travel Request Management System (AI-Optimized)
 
-**Version:** v5.1.1 (Lean-Pepper Build Spec 1.1)  
-**Status:** Production-ready specification with authentication architecture, complete schemas, and implementation details.
+> **This is the authoritative PRD for Taskmaster and AI agents. All implementation and planning must reference this document.**
+
+**Version:** v6.0.0 (AI-Optimized, Lean-Pepper, RLS, JWT, State Management)  
+**Status:** Authoritative, up-to-date, and ready for Taskmaster parsing.
+
+---
+
+## 0 Glossary
+
+| Term                 | Definition                                                                                                                                                                        |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Drafts Workspace** | Personal area where users build or edit requests before submission. When a request is submitted it disappears from Drafts and re-appears in History.                              |
+| **History**          | Read-only table of requests already submitted. In MVP it shows only the *Submitted* status plus the unique *Request ID*.                                                          |
+| **Roles**            | **Super Admin**, **ATT Admin**, **ATT Staff**, **Client Super Admin**, **Client Admin**, **Requester**.                                                                           |
+| **Flags**            | Per-user booleans set by Super Admin:<br>• `can_invite_peer_admin` – may invite admins of the same rank.<br>• `can_invite_requesters` – may invite Requesters within their scope. |
+| **Preview & Submit** | A modal that shows all multi-selected drafts side-by-side for final review before confirming submission.                                                                          |
 
 ---
 
 ## 0  Purpose & Ownership
 
-* **Goal:** Ship a production‑ready Next.js 15 app backed by Supabase that replaces the legacy prototype, delivers Request Queue, magic link authentication, dynamic forms, and admin dashboards.
-* **Success metrics:** `pnpm build && pnpm test` green; Lighthouse ≥ 90; demo submits hotel/flight/car via magic link; RLS blocks unauthorized access.
+* **Goal:** Ship a production-ready Next.js 15 app backed by Supabase, replacing the legacy prototype, with robust duplicate detection, RLS, magic link authentication, dynamic forms, and admin dashboards.
+* **Success metrics:** `pnpm build && pnpm test` green; Lighthouse ≥ 90; demo submits hotel/flight/car via magic link; RLS blocks unauthorized access; duplicate detection meets p95 ≤ 100ms.
 
 ---
 
-## 1  Current Codebase Snapshot (May 28 2025)
+## 1  Current Codebase Snapshot (as of July 2025)
 
 | Path                               | Exists | State                                                       |
 | ---------------------------------- | ------ | ----------------------------------------------------------- |
 | `src/app/`                         | ✅      | Layout, Tailwind, claymorphism tokens.                      |
-| `src/components/DynamicForm.tsx`   | ✅      | **Empty stub** (to be built).                               |
-| `src/components/RequestQueue.tsx`  | ⬜      | **TODO**.                                                   |
-| `src/components/TravelerModal.tsx` | ✅      | **Empty stub**.                                             |
-| `src/form-fields/*.json`           | ✅      | Authoritative specs (v 2.3.4 with phone/email required).   |
-| `src/lib/supabase/*`               | ✅      | Client bootstrap but not wired.                             |
-| `src/lib/validation/phone.ts`      | ⬜      | **TODO** - E.164 normalization and validation.              |
-| `legacy/**`                        | ✅      | Frozen read‑only.                                           |
-| `docs/`                            | ✅      | Consolidated into this document.                             |
+| `src/components/DynamicForm.tsx`   | ✅      | **Implemented; core functionality present. May need further modularization/enhancements.** |
+| `src/components/RequestQueue.tsx`  | ⬜      | **TODO**                                                    |
+| `src/components/TravelerModal.tsx` | ✅      | **Implemented; functional for local storage. Supabase integration and further enhancements may be needed.** |
+| `src/components/LinksTab.tsx`      | ⬜      | **TODO**                                                    |
+| `src/components/AdminDashboard.tsx`| ⬜      | **TODO**                                                    |
+| `src/components/TravelerDirectory.tsx` | ⬜  | **TODO**                                                    |
+| `src/form-fields/*.json`           | ✅      | Authoritative specs (v2.3.4, phone/email required).         |
+| `src/lib/supabase/*`               | ✅      | Client bootstrap, not fully wired.                          |
+| `src/lib/validation/phone.ts`      | ⬜      | **TODO** – E.164 normalization and validation.              |
+| `src/lib/contacts.ts`              | ⬜      | **TODO** – JS normalizers for phone/email.                  |
+| `legacy/**`                        | ✅      | Frozen read-only.                                           |
+| `docs/`                            | ✅      | This document and supporting specs.                         |
 
-> **TaskMaster must treat any file marked ***stub*** or ***TODO*** as work.**
+> **TaskMaster must treat any file marked _TODO_ as work.**
 
 ---
 
 ## 2  Core Features (MVP)
 
-1. **Project‑based Request Flow** – each Request row references a Project row (budget defaults, client context).
-2. **Magic Link Authentication** – email-based identity with Supabase Auth integration; time-limited, revocable access.
-3. **DynamicForm (Declarative) Engine** – renders forms from JSON specs with RHF + Zod.
-4. **Traveler Management** – per‑client CRUD with placeholder toggle; required `phone`, `primaryEmail`; duplicate detection via `traveler_contacts` + `dup_findings` (EXACT/STRONG/SOFT).
-5. **Request Queue & Batch Submission** – save drafts, multi‑select, single payload submission to ATT.
-6. **Summary Generation** – human‑readable export plus link to Supabase row for audit/export.
-7. **Admin Dashboards** – ATT & Client Admin UIs; admins can *also* create requests and push them into queue.
-8. **Real‑time Sync** – Live updates via Supabase realtime subscriptions (MVP feature).
-9. **Claymorphism Theme** – shadcn/ui + claymorphism token file.
-10. **Accessibility First** – WCAG 2.1 AA; CI axe tests.
-11. **Duplicate-Traveller Detection (“Lean-Pepper”)** – multi-tier contact-hash checks (EXACT / STRONG / SOFT) with ≤ 100 ms p95 SLA.
+1. **User & Role Management** – invite, promote, deactivate users (permission-flag driven).
+2. **Requester Drafts Dashboard** – create or edit drafts, multi-select, then *Preview & Submit*.
+3. **Submitted Requests History** – read-only list (shows *Request ID*, *Submitted* status, submitted date).
+4. **Project-based Request Flow** – Each request references a project (budget defaults, client context).
+5. **Magic Link Authentication** – Email-based identity with Supabase Auth; time-limited, revocable access.
+6. **DynamicForm Engine** – Renders forms from JSON specs with RHF + Zod.
+7. **Traveler Management** – Per-client CRUD, placeholder toggle, required phone/email, duplicate detection (Lean-Pepper).
+8. **Request Queue & Batch Submission** – Save drafts, multi-select, single payload submission to ATT.
+9. **Summary Generation** – Human-readable export plus link to Supabase row for audit/export.
+10. **Admin Dashboards** – ATT & Client Admin UIs; admins can create requests and push to queue.
+11. **Real-time Sync** – Live updates via Supabase subscriptions.
+12. **Claymorphism Theme** – shadcn/ui + claymorphism token file.
+13. **Accessibility First** – WCAG 2.1 AA; CI axe tests.
+14. **Lean-Pepper Duplicate Detection** – Multi-tier contact-hash checks (EXACT/STRONG/SOFT) with ≤ 100 ms p95 SLA.
+
+> **Definition:** *The **Drafts Workspace** is a per-user draft area; once an item is submitted it vanishes from the Drafts Workspace and appears in **History***.
 
 ---
 
@@ -53,10 +76,10 @@
 | Framework    | **Next.js 15.3 (App Router)**, React 19.                      |
 | Lang / Build | TypeScript 5, pnpm.                                           |
 | State        | TanStack Query 5 (server state) + Zustand (UI state only).    |
-| Backend      | Supabase 2.49 (`@supabase/supabase-js`) + Row‑Level Security. |
+| Backend      | Supabase 2.49 (`@supabase/supabase-js`) + Row-Level Security. |
 | Styling      | Tailwind 3 + shadcn/ui tokens; claymorphism palette.          |
 | Auth         | Supabase Auth with magic links; no client-side encryption.    |
-| Testing      | Vitest + vitest‑axe + Testing‑Library.                        |
+| Testing      | Vitest + vitest-axe + Testing-Library.                        |
 | CI           | GitHub Actions; bundle ≤ 300 kB; every file ≤ 300 LOC.        |
 
 ---
@@ -65,255 +88,49 @@
 
 ### 4.1 Core Tables
 
-| Table         | Columns                                                                                                                                                                              | Notes                    |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ |
-| `clients`     | `id uuid` PK, `name text`                                                                                                                                                            | Seed via ATT UI.         |
-| `projects`    | `id uuid` PK, `client_id uuid` FK, `name text`, `budget_guidance jsonb`, `clientReferenceLock bool`                                                                                  | Budget defaults, client context |
-| `travelers`   | `id uuid` PK, `client_id uuid` FK, `firstName text`, `lastName text`, `phone text`, `primaryEmail text`, `isPlaceholder bool`, `traveler_hash text` ⚠ DEPRECATED – superseded by `traveler_contacts`, `created_at timestamptz`, `updated_at timestamptz` | RLS isolates by client.  |
-| `requests`    | `id uuid` PK, `project_id uuid` FK, `type text` enum, `blob jsonb`, `created_via_link_id uuid`, `created_at timestamptz`                                                            | Stores request JSON.     |
-| `links`       | `id uuid` PK, `client_id uuid` FK, `project_id uuid` FK, `role text`, `target_email text`, `allow_add_travelers bool` default false, `traveler_ids uuid[]`, `expires_at timestamptz`, `created_by uuid`, `created_at timestamptz` | Email-based magic links. |
-| `access_logs` | `id uuid` PK, `link_id uuid` FK, `traveler_id uuid`, `ts timestamptz`                                                                                                               | **Phase 2** optional.    |
+(See full DDL in migration files. Key tables: `clients`, `projects`, `travelers`, `requests`, `links`, `access_logs`, `traveler_contacts`, `dup_findings`, `tenant_peppers`, `audit_log`.)
 
-### 4.2 JSON Schema Definitions
+- **All tables have RLS enabled.**
+- **Duplicate detection uses `traveler_contacts` and `dup_findings` (see §7).**
+- **Audit logging via `audit_log` and triggers.**
 
-**Budget Guidance Schema:**
-```typescript
-interface BudgetGuidance {
-  hotel?: {
-    preference?: 'optimize' | 'mid-range' | 'premium';
-    hardCapUSD?: number; // e.g., 200
-  };
-  flight?: {
-    preference?: 'lowest-logical-fare' | 'flexible' | 'premium';
-    hardCapUSD?: number; // e.g., 500
-  };
-  car?: {
-    preference?: 'economy' | 'mid-size' | 'suv' | 'truck' | 'premium';
-    hardCapUSD?: number; // e.g., 100
-  };
-}
-```
+---
 
-**Request Blob Schema:**
-```typescript
-interface RequestBlob {
-  formType: 'hotel' | 'flight' | 'car';
-  travelerIds: string[];
-  formData: Record<string, any>; // specific to form type based on JSON specs
-  budgetOverride?: {
-    preference?: string;
-    hardCapUSD?: number;  
-  metadata: {
-    submittedAt: string;
-    linkId: string;
-    clientId: string;
-    projectId: string;
-  };
-}
-```
+### 4.2 Schema Deltas
 
-### 4.3 Extended Traveler Schema
-
-| Column         | Type    | Required | Notes                                               |
-| -------------- | ------- | -------- | --------------------------------------------------- |
-| `firstName`    | text    | ✅        | Must match travel document (given name)             |
-| `middleName`   | text    | ⬜        | Optional middle name                                |
-| `lastName`     | text    | ✅        | Must match travel document (surname)                |
-| `preferredName`| text    | ⬜        | Name used in communications                         |
-| `primaryEmail` | text    | ✅        | Deliverable address, validated with Zod email()     |
-| `secondaryEmail`| text   | ⬜        | Backup contact email                                |
-| `phone`        | text    | ✅        | E.164 format only, validated with `normalizeAndValidatePhone()` |
-| `dob`          | date    | ⬜        | Required for flight and car bookings                |
-| `gender`       | text    | ⬜        | Options: M/F/X/Unspecified (as on travel document) |
-| `isPlaceholder`| boolean | ⬜        | Blocks submission if true                           |
-| `traveler_hash`| text    | ⬜        | ⚠ **DEPRECATED** – legacy single-column hash; will be removed once all chips read from `dup_findings`. |
-
-### 4.4 Phone Number Validation Pipeline
-
-```typescript
-// Implementation location: src/lib/validation/phone.ts
-
-/**
- * Phone validation pipeline:
- * 1. Input: User types phone in any format
- * 2. Normalize: Use libphonenumber-js to convert to E.164
- * 3. Validate: Ensure result is valid E.164 format  
- * 4. Store: Save normalized E.164 in database
- */
-export function normalizeAndValidatePhone(input: string, defaultCountry?: string): string | null;
-```
-
-### 4.5 Schema Creation Script
+#### `users`
 
 ```sql
--- enable crypto
-create extension if not exists pgcrypto;
-
--- Core schema for Travel Request Management System
-create table public.clients (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  created_at timestamptz default now()
-);
-
-create table public.projects (
-  id uuid primary key default gen_random_uuid(),
-  client_id uuid not null references clients(id),
-  name text not null,
-  budget_guidance jsonb,
-  clientReferenceLock boolean default false,
-  created_at timestamptz default now()
-);
-
-create table public.travelers (
-  id uuid primary key default gen_random_uuid(),
-  client_id uuid not null references clients(id),
-  firstName text not null,
-  middleName text,
-  lastName text not null,
-  preferredName text,
-  primaryEmail text not null,
-  secondaryEmail text,
-  phone text not null,
-  dob date,
-  gender text check (gender in ('M', 'F', 'X', 'Unspecified')),
-  isPlaceholder boolean default false,
-  traveler_hash text, -- ⚠ DEPRECATED – see traveler_contacts
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
-
-create table public.requests (
-  id uuid primary key default gen_random_uuid(),
-  project_id uuid not null references projects(id),
-  type text not null check (type in ('hotel', 'flight', 'car')),
-  blob jsonb not null,
-  created_via_link_id uuid,
-  created_at timestamptz default now()
-);
-
-create table public.links (
-  id uuid primary key default gen_random_uuid(),
-  client_id uuid not null references clients(id),
-  project_id uuid references projects(id),
-  role text not null,
-  target_email text not null,
-  allow_add_travelers boolean not null default false,
-  traveler_ids uuid[] not null,
-  expires_at timestamptz not null,
-  created_by uuid,
-  created_at timestamptz default now()
-);
-
--- Duplicate-detection tables ------------------------------------------
-create table public.tenant_peppers (
-  client_id uuid primary key,
-  pepper    bytea not null
-);
-
-create table public.traveler_contacts (
-  contact_id   uuid primary key default gen_random_uuid(),
-  traveler_id  uuid not null references travelers(id) on delete cascade,
-  client_id    uuid not null references clients(id),
-  contact_type text check (contact_type in ('PHONE','EMAIL')),
-  contact_raw  text not null,
-  contact_norm text generated always as (
-      case when contact_type='PHONE'
-           then normalise_phone(contact_raw)
-           else normalise_email(contact_raw) end
-  ) stored,
-  contact_hash bytea generated always as (
-      hmac_sha256(contact_norm::bytea,
-                  get_tenant_pepper(client_id))
-  ) stored
-);
-create unique index uniq_contact_hash
-  on traveler_contacts(client_id, contact_type, contact_hash);
-
-create table public.dup_findings (
-  finding_id  uuid primary key default gen_random_uuid(),
-  traveler_id uuid not null references travelers(id) on delete cascade,
-  cand_id     uuid,     -- nullable for EXACT
-  client_id   uuid not null references clients(id),
-  confidence  text check (confidence in ('EXACT','STRONG','SOFT')),
-  src         text,
-  created_at  timestamptz default now(),
-  reviewed    boolean default false
-);
-
--- Helper function stubs (full bodies in migrations)
-create or replace function normalise_phone(text) returns text as $$ begin return $1; end; $$ language plpgsql;
-create or replace function normalise_email(text) returns text as $$ begin return lower(trim($1)); end; $$ language plpgsql;
-create or replace function get_tenant_pepper(uuid) returns bytea as $$ begin return '\\x00'; end; $$ language plpgsql;
-create or replace function dup_collect(uuid, text, text) returns text as $$ begin return '[]'; end; $$ language plpgsql;
-create or replace function create_traveler(jsonb) returns jsonb as $$ begin return '{}'::jsonb; end; $$ language plpgsql;
-
--- Indexes for performance
-create index idx_travelers_client_id on travelers(client_id);
-create index idx_requests_project_id on requests(project_id);
-create index idx_links_client_id on links(client_id);
-create index idx_links_email on links(target_email);
-create index idx_links_expires_at on links(expires_at);
+add column can_invite_peer_admin  boolean not null default false;
+add column can_invite_requesters  boolean not null default false;
 ```
 
-## 4.6 Change Logging & RLS Enforcement (Added June 13, 2025)
-
-### Audit Log Table
-
-An `audit_log` table was added to track insert/update/delete events across key tables (`travelers`, `requests`, etc.):
+#### `requests`
 
 ```sql
-create table public.audit_log (
+create type request_status as enum (
+  'draft','submitted','accepted','assigned',
+  'in_progress','pending_client','on_hold',
+  'completed','cancelled','rejected'
+);
+alter table requests add column status request_status not null default 'draft';
+alter table requests add column request_id text generated always as (lpad(id::text, 8, '0')) stored;
+```
+
+#### `request_status_log`
+
+```sql
+create table request_status_log (
   id uuid primary key default gen_random_uuid(),
-  table_name text not null,
-  operation text not null check (operation in ('INSERT', 'UPDATE', 'DELETE')),
-  record_id uuid not null,
-  changed_by uuid,
-  changed_at timestamptz default now()
+  request_id uuid references requests(id),
+  from_status request_status,
+  to_status   request_status,
+  changed_by  uuid references users(id),
+  changed_at  timestamptz default now()
 );
 ```
 
-### Logging Function & Triggers
-
-The following function records changes to the audit log:
-
-```sql
-create or replace function log_audit_event() returns trigger as $$
-begin
-  insert into audit_log (table_name, operation, record_id, changed_by)
-  values (TG_TABLE_NAME, TG_OP, NEW.id, null); -- placeholder for `changed_by` until JWT attribution added
-  return NEW;
-end;
-$$ language plpgsql;
-```
-
-Triggers are enabled on:
-
-```sql
--- Travelers table
-create trigger audit_travelers after insert or update or delete on travelers
-  for each row execute function log_audit_event();
-
--- Requests table
-create trigger audit_requests after insert or update or delete on requests
-  for each row execute function log_audit_event();
-```
-
-### Cleanup Logic
-
-To limit table growth, old logs are purged automatically (manual or scheduled via future cron/Edge function):
-
-```sql
-delete from audit_log where changed_at < now() - interval '90 days';
-```
-
-A Supabase Edge Function (`purge-audit-log`) has been added and may be scheduled later.
-
-### Next Steps
-
-* Consider extending audit triggers to other tables if needed.
-* Add `changed_by` attribution using JWT claims once user auth context is available.
-
+*Add trigger on `requests` that writes to `request_status_log` for every status change.*
 
 ---
 
@@ -321,754 +138,314 @@ A Supabase Edge Function (`purge-audit-log`) has been added and may be scheduled
 
 ### 5.1 Magic Link Authentication Flow
 
-```
 1. Client admin creates link in UI with target email
-2. System creates link record in database  
+2. System creates link record in database
 3. System sends magic link email via Supabase Auth
 4. User clicks magic link → auto-login with scoped JWT
 5. User lands on request form with proper permissions
-6. JWT contains link_ids and client_id for RLS enforcement
+6. JWT contains `link_ids` and `client_id` for RLS enforcement
+
+### 5.2 JWT Claims Structure (see also §20)
+
+- Claims are stored in `raw_app_meta_data` in `auth.users`.
+- **Required claims:**
+  - `role`: `app_att_admin` | `app_client_admin` | `app_requester`
+  - `client_id`: UUID (for client_admin/requester)
+  - `link_ids`: comma-separated UUIDs (for requester)
+
+**Example payloads:**
+```json
+// app_att_admin
+{ "role": "app_att_admin" }
+// app_client_admin
+{ "role": "app_client_admin", "client_id": "83081349-bc63-4ca3-9e4b-d8611deefdc7" }
+// app_requester
+{ "role": "app_requester", "client_id": "83081349-bc63-4ca3-9e4b-d8611deefdc7", "link_ids": "a1b2c3d4-e5f6-7890-1234-567890abcdef,b2c3d4e5-f6a7-8901-2345-67890abcdef0" }
 ```
 
-### 5.2 JWT Claims Structure
+- **Populate claims** via encrypted link/invitation system and backend logic (triggers/functions) on user creation or role change.
 
-```typescript
-interface AuthClaims {
-  sub: string;           // user ID
-  email: string;         // identity anchor  
-  role: 'attAdmin' | 'clientAdmin' | 'requester';
-  link_ids?: string[];   // accessible links (for requesters)
-  client_id?: string;    // for data isolation
-  exp: number;           // expiry
+### 5.3 Roles, Flags, and RLS Invitation Policy
+
+| Role                   | Scope                  | Default Flags                                                     | May invite / create                                |
+| ---------------------- | ---------------------- | ----------------------------------------------------------------- | -------------------------------------------------- |
+| **Super Admin**        | Entire platform        | —                                                                 | Super Admin, ATT Admin                             |
+| **ATT Admin**          | All ATT + all clients  | `can_invite_peer_admin = FALSE`<br>`can_invite_requesters = TRUE` | ATT Staff; Requester; **ATT Admin** if flag = TRUE |
+| **ATT Staff**          | ATT internal workspace | `can_invite_requesters = FALSE`                                   | Requester if flag = TRUE                           |
+| **Client Super Admin** | Single client tenant   | `can_invite_peer_admin = FALSE`                                   | Client Admin; Requester                            |
+| **Client Admin**       | Same tenant            | `can_invite_peer_admin = FALSE`                                   | Requester; **Client Admin** if flag = TRUE         |
+| **Requester**          | Own drafts & history   | —                                                                 | none                                               |
+
+**Propagation rule:** Newly-invited admins inherit `can_invite_peer_admin = FALSE` by default. The inviter must explicitly tick a check-box to grant the flag.
+
+**RLS invitation policy (pseudo-sql)**
+
+```
+-- peer-admin
+INSERT users WHEN new.app_role = current_user.app_role
+              AND current_user.can_invite_peer_admin
+-- requester
+OR (new.app_role = 'requester' AND current_user.can_invite_requesters)
+-- super override
+OR current_user.role = 'super_admin';
+```
+
+---
+
+## 6  State Management & Supabase Integration
+
+### 6.1 Environment Variables
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+- Required for Supabase features.
+- Validate with `pnpm exec tsx scripts/validate-env.ts`.
+
+### 6.2 Provider Setup (React/Next.js)
+
+- SSR-safe: `src/app/layout.tsx` is a Server Component.
+- Client-only providers (React Query, Theme) in `src/app/ClientProviders.tsx`:
+
+```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from "next-themes";
+export function ClientProviders({ children }) {
+  const [queryClient] = React.useState(() => new QueryClient({
+    defaultOptions: {
+      queries: { retry: 2, refetchOnWindowFocus: true, staleTime: 60 * 1000, gcTime: 5 * 60 * 1000 },
+      mutations: { retry: 1 },
+    },
+  }));
+  return (
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </ThemeProvider>
+  );
 }
 ```
 
-### 5.3 Role Definitions
-
-| Role            | Scope   | Can Create Links | Can Edit Travelers | Can Add Travelers via Link   | Can View All Requests | Can Approve |
-| --------------- | ------- | ---------------- | ------------------ | ---------------------------- | --------------------- | ----------- |
-| **attAdmin**    | Global  | ✅ any            | ✅ any              | N/A                          | ✅ all clients         | ✅           |
-| **clientAdmin** | Client  | ✅ own client     | ✅ own client       | N/A                          | ✅ own client          | ⬜ Phase 2   |
-| **requester**   | Project | ❌                | ❌                  | ⬜ (if `allow_add_travelers`) | Only assigned links   | ❌           |
-
-### 5.4 Row Level Security (RLS) Policies
-
-```sql
--- Enable RLS on all tables
-alter table clients enable row level security;
-alter table projects enable row level security;
-alter table travelers enable row level security;
-alter table requests enable row level security;
-alter table links enable row level security;
-
--- Client policies
-create policy "Clients: att_admin full access" on clients
-for all using (auth.jwt() ->> 'role' = 'attAdmin');
-
-create policy "Clients: client_admin own client" on clients
-for select using (
-  id = (auth.jwt() ->> 'client_id')::uuid
-);
-
--- Projects policies  
-create policy "Projects: client isolation" on projects
-for all using (
-  auth.jwt() ->> 'role' = 'attAdmin'
-  or client_id = (auth.jwt() ->> 'client_id')::uuid
-);
-
--- Travelers policies
-create policy "Travelers: client isolation" on travelers
-for all using (
-  auth.jwt() ->> 'role' = 'attAdmin'
-  or client_id = (auth.jwt() ->> 'client_id')::uuid
-);
-
--- Links policies
-create policy "Links: user can access assigned links" on links
-for select using (
-  auth.jwt() ->> 'role' = 'attAdmin'
-  or client_id = (auth.jwt() ->> 'client_id')::uuid
-  or id = any(string_to_array(auth.jwt() ->> 'link_ids', ',')::uuid[])
-);
-
--- Requests policies
-create policy "Requests: project access" on requests
-for select using (
-  exists (
-    select 1 from projects p
-    where p.id = project_id
-    and (
-      auth.jwt() ->> 'role' = 'attAdmin'
-      or p.client_id = (auth.jwt() ->> 'client_id')::uuid
-    )
-  )
-);
-
--- traveler_contacts isolation ------------------------------------------
-alter table traveler_contacts enable row level security;
-create policy "TravelerContacts: client isolation"
-  on traveler_contacts
-  using (client_id = (auth.jwt() ->> 'client_id')::uuid)
-  with check (client_id = (auth.jwt() ->> 'client_id')::uuid);
-
--- dup_findings isolation -----------------------------------------------
-alter table dup_findings enable row level security;
-create policy "DupFindings: requester limited"
-  on dup_findings for select
-  using (
-    client_id = (auth.jwt() ->> 'client_id')::uuid
-    and (
-      (auth.jwt() ->> 'role') = 'requester' and confidence <> 'EXACT'
-      or (auth.jwt() ->> 'role') in ('attAdmin','clientAdmin')
-    )
+- Usage in layout.tsx:
+```tsx
+import { ClientProviders } from "./ClientProviders";
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <ClientProviders>{children}</ClientProviders>
+      </body>
+    </html>
   );
+}
 ```
 
-#### **Access Logs Table RLS Policies**
+### 6.3 Supabase Client & Storage Driver
 
-- **RLS is enabled** on `access_logs`.
-- **attAdmin:** Full access (read/write).
-- **clientAdmin:** Can read logs for their own client's links.
-- **requester:** No access.
+- Supabase client:
+```ts
+import { getSupabaseClient } from '@/lib/supabase/client';
+const supabase = getSupabaseClient();
+```
+- Storage driver:
+```ts
+import { getActiveDriver } from '@/lib/storage';
+const driver = getActiveDriver();
+```
+- Feature flag: `features.supabase` (from `src/config.ts`) controls Supabase/LocalDriver.
 
-**SQL Example:**
+### 6.4 Test & Mock Patterns
+
+- Mock `getActiveDriver` in unit tests.
+- No global side effects; drivers/clients are memoized.
+- No env vars needed for tests unless testing Supabase integration directly.
+
+### 6.5 Real-time & Tree-shake
+
+- Real-time hooks (`useRequestsRealtime`, `useTravelersRealtime`) are no-ops if `features.supabase` is false.
+- When `features.supabase=false`, no `@supabase` code is included in the client bundle.
+
+### 6.6 E2E/Integration Mock Patterns
+
+- Use Playwright or Cypress for UI/real-time simulation.
+- For local Supabase, use the Supabase CLI to spin up a test instance.
+
+### 6.7 Troubleshooting
+
+- SSR errors: ensure hooks/providers are only in Client Components.
+- Build errors about Deno/Edge functions: ensure excluded from main app's `tsconfig.json`.
+
+---
+
+## 7  Lean-Pepper Duplicate-Traveler Detection (Spec v1.1)
+
+### 7.1 Business Context
+
+- Multitenant SaaS for corporate-travel management
+- Core table: `travelers(id uuid PK, client_id uuid, first_name, last_name, created_by, created_at, traveler_hash text **DEPRECATED**)`
+- Tenancy isolation: PostgreSQL RLS keyed on Supabase JWT claims (`client_id`, `role`)
+- Roles: `attAdmin`, `clientAdmin`, `requester` (magic-link)
+- Flag: `allow_add_travelers` (Boolean returned to the RPC)
+- SLA: Insert + duplicate-check ≤ 100 ms @ 95th percentile
+- Scale: ≤ 100k travelers, ≤ 300k contacts
+
+### 7.2 Functional Goals
+
+- **G1:** Block insert when *both* phone *and* email match an existing traveler (EXACT)
+- **G2:** Popup "Confirm?" when a single contact matches (STRONG)
+- **G3:** Show non-blocking banner when only fuzzy name matches (SOFT)
+- **G4:** Never leak PII across tenant or role boundaries
+- **G5:** Pure SQL/JS implementation — no external queues, workers, or triggers
+
+### 7.3 Normalization & Hashing Helpers (SQL + JS)
+
+- See `/lib/contacts.ts` for JS twins of SQL functions.
+- SQL:
 ```sql
-alter table access_logs enable row level security;
-
-create policy "AccessLogs: att_admin full access" on access_logs
-for all using (auth.jwt() ->> 'role' = 'attAdmin');
-
-create policy "AccessLogs: client_admin own client" on access_logs
-for select using (
-  exists (
-    select 1 from links l
-    where l.id = access_logs.link_id
-    and l.client_id = (auth.jwt() ->> 'client_id')::uuid
-  )
-);
+CREATE OR REPLACE FUNCTION normalise_phone(raw text) RETURNS text ...
+CREATE OR REPLACE FUNCTION normalise_email(raw text) RETURNS text ...
+CREATE TABLE IF NOT EXISTS tenant_peppers (...);
+CREATE OR REPLACE FUNCTION get_tenant_pepper(p_client uuid) RETURNS bytea ...;
 ```
+
+### 7.4 Schema Additions
+
+- `traveler_contacts` (many-to-one, per-contact normalization + HMAC hash)
+- `dup_findings` (audit trail of detected duplicates)
+- `tenant_peppers` (per-tenant pepper for hashing)
+- `dup_collect()` (central SQL collector)
+- `create_traveler()` (primary RPC wrapper)
+- `merge_travelers()` (admin-only stub)
+
+### 7.5 RLS Policies (see §5.3)
+
+- RLS enabled on all tables; policies enforce client/role isolation.
+
+### 7.6 Duplicate Collector Logic (SQL)
+
+- See full SQL in migration files. Key logic:
+  - EXACT: both phone + email match same candidate
+  - STRONG: any single contact hash clash
+  - SOFT: fuzzy first & last name similarity
+
+### 7.7 Pepper Rotation SOP
+
+1. Add `next_pepper` column to `tenant_peppers`
+2. Off-peak: batch re-hash `contact_hash` with `next_pepper`
+3. Swap `pepper ← next_pepper`, drop temp column, commit
+
+### 7.8 Front-end Integration Rules
+
+- Call `create_traveler()` with full contact JSON
+- Parse returned `findings[]`:
+  - Requester UI: block on EXACT, confirm modal on STRONG, toast on SOFT
+  - Admin UI: always show merge modal; on "Merge" call `merge_travelers(src,dst)`
+- React code must read from `dup_findings` (ANY confidence); keep legacy column until refactor complete
+- JS normalizers for phone/email must match SQL logic
+
+### 7.9 Testing & CI
+
+- **Unit SQL:** pgTAP (normalization, hash repeatability, threshold, RLS isolation)
+- **API:** Supabase JS + Vitest (block/confirm/toast paths)
+- **Browser:** Playwright (UI modals, merge removes dup chip)
+- **Load:** k6 or pgbench (10k inserts ≤ 100 ms @ p95)
+- CI matrix: Vitest + Playwright + pgTAP
+
+### 7.10 Deliverables
+
+1. SQL migration file(s) for §7.3–§7.7
+2. Supabase TypeScript service layer for `create_traveler`, `merge_travelers`
+3. JS normalizer helpers in `/lib/contacts.ts`
+4. React updates: modal, toast, chip source change
+5. README: pepper-rotation guide, test instructions
+6. Tests/CI: pgTAP, Vitest, Playwright
 
 ---
 
-## 6  State Management Strategy
-
-### 6.1 Clear Separation of Concerns
-
-**TanStack Query: Server State Only**
-- API calls (travelers, requests, links)
-- Caching and synchronization  
-- Background refetching
-- Real-time subscriptions
-
-**Zustand: UI State Only**  
-- Form draft state (offline)
-- Modal open/closed states
-- Selected travelers in multi-select
-- Current form step/page
-- Loading indicators
-
-### 6.2 Implementation Pattern
-
-```typescript
-// Server state via TanStack Query
-const { data: travelers } = useQuery({
-  queryKey: ['travelers', clientId],
-  queryFn: () => fetchTravelers(clientId)
-});
-
-// UI state via Zustand
-const { selectedTravelers, setSelectedTravelers } = useUIStore();
-```
-
----
-
-## 7  Link Expiry User Experience
-
-### 7.1 Expiry Warning System
-
-| Time Remaining | UI Treatment | User Action |
-|---------------|--------------|-------------|
-| **>48 hours** | No warning | Normal usage |
-| **24-48 hours** | Yellow banner: "Link expires in X hours" | Optional renewal request |
-| **<24 hours** | Red banner: "Link expires soon! Contact your project manager to extend." | Urgent renewal needed |
-| **Expired** | Block form access, show "Link expired" message with contact info | Must request new link |
-| **Mid-form expiry** | Auto-save draft, show renewal request message | Contact admin for extension |
-
----
-
-## 8  Form Specifications & Dynamic Form Engine
-
-### 8.1 Form Engine Implementation
-
-- **JSON field specs** in `src/form-fields/*.json` define field metadata
-- **`<DynamicForm formType="hotel" />`** reads hotel.json and renders fields
-- **React Hook Form + Zod** handle validation and submission  
-- **Component mapping**: field.type → appropriate input component (text → `<Input>`, date → `<DatePicker>`, etc.)
-
-### 8.2 Form Field Schema
-
-All form fields are defined with the following structure:
-
-| Column       | Purpose                                                                           |
-| ------------ | --------------------------------------------------------------------------------- |
-| **id**       | Stable, camelCase identifier (dot‑notation allowed for sub‑fields)                |
-| **label**    | User‑facing copy (i18n‑ready)                                                     |
-| **type**     | Input component (*text*, *date*, *radio*, *map*, *object*, etc.)                  |
-| **required** | `✅` if always required  •  `✅*cond*` if required **only when Logic is true**      |
-| **tooltip**  | Context help (optional)                                                           |
-| **notes**    | Misc. display or validation info                                                  |
-| **logic**    | Concise behaviour / dependency rules                                              |
-
-### 8.3 Shared Metadata Fields
-
-| id                               | label                    | type   | required | tooltip                                      | notes                                                     | logic                                   |
-| -------------------------------- | ------------------------ | ------ | -------- | -------------------------------------------- | --------------------------------------------------------- | --------------------------------------- |
-| client                           | Client                   | text   | ✅        | Client code or ID                            | populated from Admin link                                 | *claim* (not in `blob` if from link)    |
-| project                          | Project                  | text   | ✅        | Project code or ID                           | populated from Admin link                                 | *claim*                                 |
-| clientReference                  | Client Reference         | text   | ⬜        | Free text (team / PO #)                      | may be **read‑only** if Admin link locked                 | read‑only flag derived from link claims |
-| budgetGuidance.hotel.preference  | Hotel Budget Preference  | select | ⬜        | Prefill guidance for hotel requests          | dropdown presets (Optimize, Mid‑range, Premium)           | editable unless locked by link          |
-| budgetGuidance.hotel.hardCapUSD  | Hotel Budget Cap (USD)   | number | ⬜        | Optional max hotel budget per night (USD)    | pulled from project settings, editable per request        | override allowed                        |
-| budgetGuidance.flight.preference | Flight Budget Preference | select | ⬜        | Prefill guidance for flight requests         | dropdown presets (Lowest Logical Fare, Flexible, Premium) | editable unless locked by link          |
-| budgetGuidance.flight.hardCapUSD | Flight Budget Cap (USD)  | number | ⬜        | Optional max flight budget per segment (USD) | pulled from project settings, editable per request        | override allowed                        |
-| budgetGuidance.car.preference    | Car Budget Preference    | select | ⬜        | Prefill guidance for car rental requests     | dropdown presets (Economy, Mid‑size, SUV, Truck, Premium) | editable unless locked by link          |
-| budgetGuidance.car.hardCapUSD    | Car Budget Cap (USD)     | number | ⬜        | Optional max car rental budget per day (USD) | pulled from project settings, editable per request        | override allowed                        |
-
-
-### 8.4 Hotel Request Fields
-
-| id | label | type | required | tooltip | notes | logic |
-| :---- | :---- | :---- | :---- | :---- | :---- | :---- |
-| targetLocationType | Target Location Type | radio | ✅ | Specific / General | drives Map Input mode | shows/hides radius |
-| location.text | Location Input | map | ✅ | HERE Places autocomplete | populates lat/lng | always visible |
-| location.lat | Latitude | hidden | ✅ | resolved coord | hidden | auto‑set by map |
-| location.lng | Longitude | hidden | ✅ | resolved coord | hidden | auto‑set by map |
-| location.radius | Search Radius (mi) | slider | ⬜ | 1‑50 (default 10) | – | visible when `targetLocationType = general` |
-| checkInDate | Check‑In Date | date | ✅ | Planned arrival | min ≥ today | – |
-| checkOutDate | Check‑Out Date | date | ✅ | Planned departure | – | must be `> checkInDate` |
-| room.group\[\].roomType | Room Type | select | ⬜ | King/Double/Suite | per‑room sub‑field | inside expandable room list |
-| room.group\[\].travelerIds | Room Assignment | array | ⬜ | traveller IDs | JSON | defaults: 1 traveller per room |
-| notes | Notes | textarea | ⬜ | Special needs / preferences | multiline | – |
-| budgetGuidance | Budget Guidance | select | ⬜ | May prefill default | – | editable if no lock |
-
-### 8.5 Flight Request Fields
-
-| id | label | type | required | tooltip | notes | logic |
-| :---- | :---- | :---- | :---- | :---- | :---- | :---- |
-| departureAirport | Departure Airport | airportPicker | ✅ | IATA / name | – | – |
-| arrivalAirport | Arrival Airport | airportPicker | ✅ | IATA / name | – | – |
-| tripType | Trip Type | select | ✅ | One‑Way / Round‑Trip | – | if `oneWay` hide all *Return* fields |
-| flightDate | Departure Date | date | ✅ | – | – | – |
-| returnDate | Return Date | date | ✅*cond* | Round‑trip only | – | shown when `tripType = roundTrip` |
-| flightTimePrefDepart | Time Pref – Departure | select | ⬜ | Optimise / Morning … | default Optimise | drives departure custom/specific fields |
-| flightTimePrefReturn | Time Pref – Return | select | ⬜*cond* | Optimise / Morning … | only round‑trip | visible when `tripType = roundTrip`; drives return custom fields |
-| flightTimeDepart.range.start | Depart Time Start | time | ⬜ | custom range | – | visible when `flightTimePrefDepart = custom` |
-| flightTimeDepart.range.end | Depart Time End | time | ⬜ | custom range | – | – |
-| flightTimeDepart.type | Depart Time Type | select | ⬜ | Departure vs Arrival | indicates whether range refers to take‑off or landing | pairs with depart range |
-| flightTimeReturn.range.start | Return Time Start | time | ⬜*cond* | custom range | – | visible when `flightTimePrefReturn = custom` |
-| flightTimeReturn.range.end | Return Time End | time | ⬜*cond* | custom range | – | – |
-| flightTimeReturn.type | Return Time Type | select | ⬜*cond* | Departure vs Arrival | indicates whether range refers to take‑off or landing | pairs with return range |
-| specificFlightInfo | Specific Flight Info | textarea | ⬜ | Airline / flight \# | multiline | visible when any *Time Pref* \= specific |
-| notes | Notes | textarea | ⬜ | Alternate requests, split travellers | multiline | – |
-| budgetGuidance | Budget Guidance | select | ⬜ | May prefill default | – | editable if no lock |
-
-### 8.6 Rental Car Request Fields
-
-| id | label | type | required | tooltip | notes | logic |
-| :---- | :---- | :---- | :---- | :---- | :---- | :---- |
-| pickupType | Pickup Location Type | select | ✅ | Airport / Specific / General | controls map vs airport | – |
-| pickup.location.text | Pickup Location | map/airportPicker | ✅ | dynamic component | map if specific/general, airport picker if airport | – |
-| pickup.location.lat | Pickup Lat | hidden | ✅ | – | – | auto via component |
-| pickup.location.lng | Pickup Lng | hidden | ✅ | – | – | – |
-| pickup.location.radius | Pickup Search Radius | slider | ⬜ | general only | – | shown when `pickupType = general` |
-| rentalStart | Pickup Date | date | ✅ | – | – | – |
-| pickupTime | Pickup Time | time | ⬜ | – | note if non‑airport | – |
-| sameDropoff | Drop‑Off = Pickup? | checkbox | ✅ | toggle | default checked | – |
-| dropoffType | Drop‑Off Location Type | select | ✅*cond* | when different | – | shown when `sameDropoff = false` |
-| dropoff.location.text | Drop‑Off Location | map/airportPicker | ✅*cond* | dynamic component | follows rules of pickup | – |
-| dropoff.location.lat | Drop‑Off Lat | hidden | ✅*cond* | – | – | – |
-| dropoff.location.lng | Drop‑Off Lng | hidden | ✅*cond* | – | – | – |
-| dropoff.location.radius | Drop‑Off Radius | slider | ⬜ | general only | – | shown when `dropoffType = general` |
-| rentalEnd | Drop‑Off Date | date | ✅ | – | – | – |
-| dropoffTime | Drop‑Off Time | time | ⬜ | – | – | shown when `pickupTime` present |
-| vehicle.group\[\].travelerIds | Vehicle Assignment | array | ⬜ | traveller IDs | hidden section | expands to configure cars |
-| vehicle.group\[\].primaryDriver | Primary Driver | select | ✅*cond* | inside block | – | required per vehicle |
-| notes | Notes | textarea | ⬜ | requests like 4WD | multiline | – |
-| budgetGuidance | Budget Guidance | select | ⬜ | May prefill default | – | editable if no lock |
-
-### 8.7 Traveler Selector Component
-
-The traveler selector is a key UI pattern used across all forms:
-
-| Component Spec        | Implementation Details                                                                                                                                                           |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Control**               | `<TravelerSelector formType="hotel" value={ids} onChange={…} editable={boolean} />`                                                                                            |
-| **Internals**             | Combines `@headlessui/react` `<Combobox>` with a chip row.                                                                                                     |
-| **Chip states**           | `default` (all required fields present) ▪ `warning` (incomplete but non‑blocking) ▪ `error` (blocks submit).                                                   |
-| **Edit / Remove actions** | Shown only when `editable=true` **and** user has `role ∈ {admin, coordinator}` **OR** link flag `allow_add_travelers`.                                         |
-| **Validation util**       | `isTravelerComplete(traveler, formType)` exported by `src/lib/travelers/rules.ts`.`REQUIREMENTS_BY_TYPE` centralises the per‑form field lists.                 |
-| **Accessibility**         | Each chip is a `button role="button"` with `aria-pressed="true"`, `aria-description` = "Missing : phone, passport expiry". Combobox complies with WCAG 2.1 AA. |
-| **Mobile overflow**       | If > 4 chips or viewport `< sm`, chips collapse into `[ + N selected ]` pill; tapping opens `TravelerListSheet`.                                               |
-
----
-
-## 9  Admin User Interface Specifications
-
-### 9.1 Screen Map
-
-```
-ATT Admin
-│
-├── Dashboard
-│   ├── Clients Table ─┐
-│   └── Projects Table │
-│       └── Generate Link ➜ Magic Link Modal
-│   └── **Create Request** ➜ Admin Request Maker
-│
-├── Links Tab  (table view)
-│
-└── Traveler Directory  (client‑scoped)
-
-Client Admin
-│
-├── Dashboard (Projects list)
-│   ├── Edit Project Modal
-│   └── **Create Request** ➜ Admin Request Maker
-│
-├── Links Tab
-└── Traveler Directory
-
-Requester (via Magic Link)
-│
-├── Request Queue
-│   ├── Drafts Table
-│   │   | □ | Dest./Dates | Travelers | Status |  ⋯ |
-│   │   | ☑ | SJO → MIA 5‑8 Aug | 3 trav | draft | ▶ |
-│   │   | □ | SJO → BOG 12 Aug | 1 trav | draft | ▶ |
-│   └── **Submit Selected**  (disabled until ≥1 checked)
-│
-└── Request Maker  (opens from +New Request or editing a draft)
-```
-
-### 9.2 ATT Admin Dashboard
-
-```
-┌ Admin Dashboard ───────────────────────────────┐
-│ + New Client  + New Project                    │
-│                                               │
-│ Clients                                       │
-│ ───────────────────────────────────────────── │
-│ |  ACME Corp          | 4 projects | 12 links | ▶ |         │
-│ |  Beta Ltd.          | 1 project  |  3 links | ▶ |         │
-│                                               │
-│ Projects (selected client)                                  │
-│ ───────────────────────────────────────────── │
-│ |  2025 Rollout       | 6 links     | Link ▶  |             │
-│ |  Pilot Phase        | 2 links     | Link ▶  |             │
-└────────────────────────────────────────────────┘
-```
-
-### 9.3 Magic Link Generation Modal
-
-```
-Generate Magic Link
-──────────────────────────────
-Send to Email    [ user@company.com ]
-Role             [ requester ▾ ]
-Travelers        [ multi‑select list ]
-Expiry           [ 30 days ▾ ]
-Allow add travelers [ ] (disabled — Phase 2)
-──────────────────────────────
-» Magic link will be sent to the specified email address.
-» Recipients can access other links sent to the same email.
-
-          [ Send Link ] [ Cancel ]
-```
-
-### 9.4 Links Management Tab
-
-```
-┌ Links ─────────────────────────────────────────────────────┐   
-│ ⍈ filter by email/status                                   │
-│ | Email           | Role | Travelers | Expires  | Status | ⋯ |
-│ | user@acme.com   | req  | 3         | Jun 30   | active | ▾ |
-│ | mgr@acme.com    | req  | 2         | May 15   | expired| ▾ |
-│ | team@beta.com   | req  | 5         | Jul 10   | active | ▾ |
-└──────────────────────────────────────────────────────────────┘
-```
-
-### 9.5 Traveler Directory
-
-```
-┌ Traveler Directory (client) ─────────────────────────────┐
-│ + Add Traveler   + Quick Placeholder                     │
-│                                                          │
-│ | Name          | Phone      | Email           | ✔Dup? | P? | ⋯ |
-│ | Ana Ramírez   | +506 …     | ana@acme.com    |       |   | ▶ |
-│ | Bob Jones     | —          | —               |       | • | ▶ |
-│ | Carol Smith   | +1 555 …   | carol@acme.com  | ⚠     |   | ▶ |
-└──────────────────────────────────────────────────────────┘
-Legend: P? • = Placeholder (incomplete)  • Dup? ⚠ = potential duplicate (STRONG/EXACT)
-```
-
-### 9.6 Request Queue
-
-```
-┌ Request Queue ────────────────────────────────────────┐
-│ + New Request                                           │
-│                                                       │
-│ | □ | Type  | Dest./Dates | Travelers | Status | ⋯ |   │
-│ | ☑ | Hotel | SJO→MIA 5‑8 Aug | 3 | draft | ▶ |        │
-│ | □ | Flight| SJO→BOG 12 Aug | 1 | draft | ▶ |         │
-│ | ☑ | Car   | MIA 5‑10 Aug | 2 | draft | ▶ |           │
-│                                                       │
-│       [ Submit Selected (2) ]  [ Delete ]               │
-└─────────────────────────────────────────────────────────┘
-```
-
-### 9.7 Request Maker Interface
-
-```
-┌ (if expiry ≤ 72 h) Yellow Banner                     ┐
-│ This link expires on Jun 30, 23:59.                  │
-└──────────────────────────────────────────────────────┘
-
-Request Type: [ Hotel ▾ ]  [ Flight ]  [ Car ]
-
- ┌─────────────────── Request Maker ────────────────────┐
- │ Traveler(s)                                          │
- │ ┌──────────────────────────────────────────────────┐ │
- │ │  ⌄  Ana Ramírez                             ✎  × │ │
- │ │  ⌄  Bob Jones •missing phone                ✎  × │ │
- │ │  +  Add Traveler (if allowed)                   │ │
- │ └──────────────────────────────────────────────────┘ │
- │                                                     │
- │ [DynamicForm renders here based on selected type]   │
- │                                                     │
- │ [ Save Draft ]                            [ Submit ]│
- └─────────────────────────────────────────────────────┘
-  legend: red ring = blocking error • amber ring = warning
-```
-
----
-
-## 10  Component Implementation Mapping
-
-### 10.1 Core Components to Build
-
-| Component                 | File Path                                       | Status              | Purpose |
-| ------------------------- | ----------------------------------------------- | ------------------- | ------- |
-| `<DynamicForm />`         | `src/components/DynamicForm.tsx`                | **stub – to build** | Form engine that renders from JSON specs |
-| `<RequestQueue />`        | `src/components/RequestQueue.tsx`               | **stub – to build** | Draft management and batch submission |  
-| `<MagicLinkModal />`      | `src/components/MagicLinkModal.tsx`             | **stub – to build** | Link generation interface |
-| `<LinksTab />`            | `src/components/LinksTab.tsx`                   | **stub – to build** | Link management table |
-| `<TravelerDirectory />`   | `src/components/TravelerDirectory.tsx`          | **stub – to build** | Traveler CRUD interface |
-| `<AdminDashboard />`      | `src/components/AdminDashboard.tsx`             | **stub – to build** | ATT/Client admin landing |
-| `<TravelerModal />`       | `src/components/TravelerModal.tsx`              | **stub created**    | Add/edit traveler form |
-| `<TravelerSelector />`    | `src/components/TravelerSelector.tsx`           | **planned**         | Multi-select with chips |
-| `<SummaryCard />`         | `src/components/SummaryCard.tsx`                | **planned**         | Request submission summary |
-| `/lib/contacts.ts`        | **new** | JS normalisers shared by forms & duplicate checker (new) |
-
-### 10.2 Route Mapping
-
-| Legacy Path       | New Route                           | Notes                        |
-| ----------------- | ----------------------------------- | ---------------------------- |
-| `/travelers`      | `/traveler-directory`               | ATT & Client scoped          |
-| `/link-generator` | `/admin/projects/[id]/link` (modal) | Magic link generation        |
-| *(none)*          | `/admin`                            | ATT admin landing            |
-| *(none)*          | `/client`                           | Client admin landing         |
-| *(none)*          | `/requests`                         | Request Queue for requesters |
-| *(none)*          | `/magic/[token]`                    | Magic link landing page      |
-
----
-
-## 11  Design System & Theming
-
-### 11.1 Core Design Tokens
-
-* **Base System:** shadcn/ui + Tailwind semantic classes
-* **Theme:** Claymorphism token file
-* **Components:** `@headlessui/react` for advanced interactions
-
-### 11.2 Semantic Tokens (Traveler Chips)
-
-| Token          | Fallback                    | Usage                          |
-|----------------|-----------------------------|--------------------------------|
-| `bg-chip`      | `colors.surface.200`        | Chip background                |
-| `ring-warning` | `colors.amber.500 / 40%`    | Incomplete but non-blocking    |
-| `ring-error`   | `colors.rose.500 / 40%`     | Blocks submission / hard error |
-
-### 11.3 Design System Implementation
-
-- All design tokens live in `styles/tokens.ts` and are typed for use across Tailwind, runtime TS, and CSS variable theming.  
-- The generated CSS variables are defined in `styles/theme.css` for runtime theming.  
-- Themes are hot-swappable via `next-themes` (`.theme-claymorphism`, `.dark`, etc.).
-
----
-
-## 12  Error Handling & User Experience
-
-### 12.1 Error Handling Strategy
-
-- **Error Boundaries**: Wrap each major component (DynamicForm, RequestQueue, etc.)  
-- **Toast System**: Use sonner for user notifications
-- **Retry Logic**: TanStack Query automatic retries for network errors
-- **Validation Errors**: Inline form errors with clear messaging
-
-### 12.2 Loading States  
-
-- **Skeleton Screens**: For data tables and cards
-- **Spinner Pattern**: Small actions (save draft, submit)
-- **Progressive Loading**: Load form structure first, then populate data
-
-### 12.3 Form Validation Timing
-
-- **Real-time**: Field-level validation on blur
-- **Submit-time**: Full form validation before submission  
-- **Server-side**: Final validation in API routes
-- **Draft Save**: Validate only completed fields
-
-### 12.4 Offline Behavior (if enabled)
-
-- **Draft Storage**: IndexedDB via TanStack Query persistence
-- **Sync Detection**: Show offline indicator  
-- **Conflict Resolution**: Last-write-wins for drafts
-
----
-
-## 13  Implementation Milestones & Exit Criteria
+## 8  Implementation Milestones & Exit Criteria
 
 | ID     | Milestone                        | Exit Criteria                                                                           |
 | ------ | -------------------------------- | --------------------------------------------------------------------------------------- |
 | **M1** | **Supabase Core & Auth**         | Schema + RLS compile; magic link auth flow works; tests prove role isolation.           |
 | **M2** | **DynamicForm Engine**           | Hotel/Flight/Car forms render; invalid submits blocked; unit tests snapshot validated.  |
-| **M2a** | **Duplicate-Detection Layer**    | `traveler_contacts` + `dup_findings` migrations applied; `create_traveler()` returns `findings[]`; front-end shows block/confirm/toast flow.<br>**Exit:** p95 insert ≤ 100 ms on 10 k-row bench. |
+| **M2a**| **Duplicate-Detection Layer**    | `traveler_contacts` + `dup_findings` migrations applied; `create_traveler()` returns `findings[]`; front-end shows block/confirm/toast flow. p95 insert ≤ 100 ms on 10k-row bench. |
 | **M3** | **Magic Link System**            | Email-based links generate properly; DB lookup passes; link copy UI works.              |
 | **M4** | **Admin UI & Links Tab**         | ATT admin can create client/project + link; Client admin dashboard; Request Queue stub. |
-| **M5** | **Request Queue & Batch Submit** | Draft save, multi‑select, submit; Summary card output; real-time sync.                 |
+| **M5** | **Request Queue & Batch Submit** | Draft save, multi-select, submit; Summary card output; real-time sync.                 |
 | **M6** | **QA & Accessibility**           | Vitest ≥ 70 %; axe tests zero violations; CI green.                                     |
 | **M7** | **Bundle optimization**          | No `/legacy` imports; JS bundle < 300 kB; performance targets met.                      |
 
 ---
 
-## 14  Environment & Configuration
+## 9  Change Log & Version History
 
-### 14.1 Required Environment Variables
+| Ver     | Date       | Notes                                                                                   |
+| ------- | ---------- | ------------------------------------------------------------------------------------- |
+| **6.0.0** | 2025‑07‑01 | AI-optimized PRD: merged Lean-Pepper, RLS, JWT, state management, and test strategies. |
+| **5.1.1** | 2025‑06‑28 | PRD conformed to Lean-Pepper Build Spec v1.1.                                         |
+| ...     | ...        | ...                                                                                   |
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-# Note: No JWE key needed - Supabase handles all JWT signing
+---
+
+## 10  References & Dependencies
+
+- HERE Maps API, Supabase, ATT Booking System
+- Next.js 15.3, TanStack Query 5, Zustand, React Hook Form, Zod, @headlessui/react, libphonenumber-js, sonner
+
+---
+
+> Any deviation from this spec must be reflected by editing the prompt and re-running Taskmaster. 
+
+---
+
+## Status-Label System
+
+| Code             | Display badge    | Visible to requester   | Notes                                 |
+| ---------------- | ---------------- | ---------------------- | ------------------------------------- |
+| `draft`          | *Draft*          | Drafts only            |                                       |
+| `submitted`      | *Submitted*      | History                | MVP badge                             |
+| `accepted`       | *Accepted*       | Internal               | Item passed validation & got ticket # |
+| `assigned`       | *Assigned*       | Optional future expose | Shows assignee                        |
+| `in_progress`    | *In Progress*    | Phase 2                | Booker actively working               |
+| `pending_client` | *Waiting on You* | Phase 2                | Info requested from requester         |
+| `on_hold`        | *On Hold*        | Internal               | External dependency                   |
+| `completed`      | *Completed*      | Phase 1                | Booking confirmed                     |
+| `cancelled`      | *Cancelled*      | Phase 1                | Stopped before completion             |
+| `rejected`       | *Rejected*       | Phase 2                | Out of policy / duplicate             |
+
+**State Machine**
+
+```
+draft → submitted → accepted → assigned → in_progress
+         ↘ cancelled      ↘ pending_client ↘ on_hold
+pending_client / on_hold / in_progress → completed | cancelled
 ```
 
-### 14.2 Feature Flags
+---
 
-```typescript
-export const features = {
-  /** Enables client‑side caching of drafts when offline. */
-  offlineDrafts: false,
+## 9.5 Preview & Submit
 
-  /** Switches persistence layer to Supabase when both env vars are set. */
-  supabase:
-    typeof process !== 'undefined' &&
-    !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-} as const;
-```
+* Front-end only; no schema change.
+* Calls batch RPC `submit_requests(ids[])` which sets `status='submitted'`, `submitted_at=now()`.
+* Empty selection disables **Submit**.
 
 ---
 
-## 15  Testing & Quality Assurance
+## Invite Flow
 
-### 15.1 Testing Strategy
-
-* **Unit Tests:** Vitest + Testing Library for all components  
-+* **pgTAP:** normalisation helpers, dup_collect() tiers, RLS isolation on `dup_findings`.
-* **Accessibility:** vitest-axe for WCAG 2.1 AA compliance
-* **E2E Tests:** Playwright for critical user journeys
-* **Bundle Analysis:** Automated size checking in CI
-
-### 15.2 RLS Testing Strategy  
-
-- **Development**: Use Supabase local development with test JWT tokens
-- **Test Users**: Create fixtures with different roles/clients
-- **Automated Tests**: Verify data isolation in integration tests
-
-### 15.3 CI Pipeline
-
-* ESLint flat config with 300 LOC file limit enforced
-* GitHub Action sequence: lint → test → a11y → build → bundle analyze
-* All tests must pass before deployment
-
-### 15.4 Performance Targets
-
-* Lighthouse score ≥ 90
-* JavaScript bundle ≤ 300 kB (updated from 250kB)
-* Individual file limit ≤ 300 LOC
+1. Authorized user opens **Invite User** modal.
+2. Inputs *Email*, *Role*; optional check-boxes: “Can invite peer admins”, “Can invite requesters”.
+3. API `invite_user()` writes to `auth.users`, sets flags, sends magic link.
+4. Super Admin can later toggle flags in **Users** tab; each change logs to `audit_user_flags`.
 
 ---
 
-## 16  Security Considerations
+## Road-map staging note
 
-### 16.1 Data Protection
+| Phase       | Requester-visible statuses        |
+| ----------- | --------------------------------- |
+| **MVP**     | *Draft*, *Submitted*              |
+| **Phase 1** | + *Completed*, *Cancelled*        |
+| **Phase 2** | + *In Progress*, *Waiting on You* |
 
-* **Row Level Security (RLS)** enforces data isolation by client
-* **Magic link authentication** with Supabase Auth JWT tokens
-* **Input validation** via Zod schemas
-* **Peppered contact-hash duplicate detection** (`traveler_contacts` + `dup_findings`) with per-tenant key rotation
-* **Phone number normalization** to E.164 format
-
-### 16.2 Authentication & Authorization
-
-* **JWT-based roles** for admin interfaces
-* **Magic link access** for requesters via Supabase Auth
-* **Permission matrices** enforced at database level
-* **Email-based identity aggregation** for link management
-
----
-
-## 17  Phase 2+ Roadmap (Post-MVP)
-
-### 17.1 Phase 2 Features
-
-* **Column‑level PII encryption** via pgcrypto + key rotation
-* **Traveler Pools & Tags** for rapid assignment
-* **Live link editing** (update traveler\_ids / expiry without new token)
-* **Enhanced real‑time sync** with conflict resolution
-* **Allow add travelers** via link flag implementation
-
-### 17.2 Phase 3+ Features
-
-* **Access‑log analytics** & anomaly alerts
-* **Bulk CSV traveler import**
-* **Time‑boxed roles** with automatic expiry
-* **Advanced reporting dashboard**
-* **Mobile app** for on-the-go requests
-
----
-
-## 18  Change Log & Version History
-
-| Ver             | Date       | Notes                                                                                                                        |
-| --------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **5.1.1**       | 2025‑06‑28 | PRD now fully conforms to Lean-Pepper Build Spec v1.1: removed all legacy duplicate hash references, updated phone validation, added full DDL and RLS for new tables, helper function stubs, component and testing deliverables, and ensured internal consistency. |
-| **5.1.0**       | 2025‑06‑27 | **Lean-Pepper duplicate detection:** Added multi-tier contact-hash architecture (`traveler_contacts`, `dup_findings`, `tenant_peppers`), new RLS policies, and functional/UX goals for duplicate management. Marked `traveler_hash` as deprecated. Updated milestones, security, and testing sections for new system. |
-| **5.0.1**       | 2025‑06‑13 | Added lightweight audit logging with auto‑purge logic; replaced all RLS policies to use `app_role` and aligned with intended role scopes. |
-| **5.0.0**       | 2025‑05‑29 | **Final Consolidated PRD** - Added magic link auth, complete schemas, implementation details, removed legacy mappings      |
-| **4.0.0**       | 2025‑05‑29 | **Consolidated PRD** - merged all supporting documentation into single definitive document                                   |
-| **3.1.2‑patch** | 2025‑05‑29 | Added explicit `docs/latest/{file}` prefixes to every cross‑document reference; no functional changes.                       |
-| **3.1.2**       | 2025‑05‑28 | Consolidated final Expansion Pack decisions and traveler chips pattern.                                                      |
-| 3.1.1           | 2025‑05‑28 | Added traveler chips + inline data‑quality warnings pattern.                                                                 |
-| 3.1.0‑rev3      | 2025‑05‑28 | Added `links` table, Request Queue, traveler placeholders, hash duplicate detection, admin request path, DynamicForm rename. |
-
----
-
-## 19  References & Dependencies
-
-### 19.1 External Services
-
-* **HERE Maps API** for location/geocoding services
-* **Supabase** for backend data persistence, auth, and real-time features
-* **ATT Booking System** for final request submission
-
-### 19.2 Key Libraries
-
-* **Next.js 15.3** with App Router
-* **TanStack Query 5** for server state management
-* **Zustand** for UI state management
-* **React Hook Form** + **Zod** for form validation
-* **@headlessui/react** for accessible components
-* **libphonenumber-js** for phone number validation
-* **sonner** for toast notifications
-
-### 19.3 Bundle Size Analysis
-
-**Current Dependencies Estimate:**
-- Next.js 15 + React 19: ~45kB
-- TanStack Query: ~15kB  
-- React Hook Form + Zod: ~25kB
-- Headless UI: ~20kB
-- Tailwind (runtime): ~5kB
-- Supabase client: ~35kB
-- Phone validation: ~15kB
-- Form utilities: ~15kB
-- UI components: ~25kB
-
-**Total Estimated: ~200kB** (leaves 100kB buffer within 300kB limit)
-
----
-
-This consolidated PRD serves as the complete, production-ready specification for building the Travel Request Management System. All authentication concerns have been resolved with magic link implementation, JSON schemas are defined, state management is clarified, and comprehensive implementation details are provided for successful development.
-
-## Magic Link Lifecycle: Expiry, Renewal, and Cleanup
-
-- **Expiry:** Each magic link has an `expires_at` timestamp stored in the `links` table. The API endpoint accepts this value and stores it on creation.
-- **Renewal:** If a user requests a new magic link after the previous one has expired, the API creates a new row in the `links` table with a fresh `expires_at` and sends a new magic link email. No update of the old row is needed.
-- **Cleanup:** Expired links are periodically deleted from the `links` table by a Supabase edge function (`purge-expired-links`), which runs a scheduled job to remove all rows where `expires_at` is in the past. This keeps the table clean and enforces security.
-- **No manual intervention is required:** The system is designed to be self-maintaining using Supabase's built-in features and scheduled edge functions.
-
-## Debug and Test Environment Flag Convention
-
-To enable module-specific debug output during tests or scripts, use environment variables with the `DEBUG_` prefix. For example:
-
-- `DEBUG_DYNAMIC_FORM=1 pnpm test` — enables verbose logging for DynamicForm.
-- `./check-clean.sh --only-test --debug` — enables DynamicForm debug output via the script.
-
-### Adding New Debug Flags
-
-1. In your module/component, check for the environment variable:
-   ```js
-   if (process.env.DEBUG_MYMODULE === '1') {
-     // debug output
-   }
-   ```
-2. In scripts, add a flag (e.g., `--debug-mymodule`) that sets and passes the variable:
-   ```bash
-   # In check-clean.sh
-   --debug-mymodule) DEBUG_MYMODULE=1 ;;
-   ...
-   DEBUG_MYMODULE=$DEBUG_MYMODULE pnpm test
-   ```
-3. Document the flag in the PRD and README.
-
-**Best Practice:**
-Always pass debug flags as environment variables inline to subprocesses for reliability.
-
-### Current Debug Flags
-
-| Flag                | Purpose                        | How to Enable                        |
-|---------------------|--------------------------------|--------------------------------------|
-| DEBUG_DYNAMIC_FORM  | DynamicForm debug output       | `--debug` or `DEBUG_DYNAMIC_FORM=1`  |
-
-### Example Usage
-
-```bash
-# Enable DynamicForm debug output in tests
-DEBUG_DYNAMIC_FORM=1 pnpm test
-
-# Or via the health check script
-./check-clean.sh --only-test --debug
-```
-
-### 10A Duplicate-Traveller Detection (“Lean-Pepper”)
-
-#### Functional Goals
-1. **EXACT** – block insert when phone **and** email match same candidate.  
-2. **STRONG** – modal confirmation on single contact match.  
-3. **SOFT** – non-blocking banner on fuzzy name match.  
-4. Zero PII leakage across tenants/roles.  
-5. Pure SQL/JS; no external workers.  
-
-#### Key Objects
-* `traveler_contacts` – per-contact normalization + HMAC hash  
-* `dup_findings` – audit trail of detected duplicates  
-* `dup_collect()` – central SQL collector  
-* `create_traveler()` – primary RPC wrapper  
-* `merge_travelers()` – admin-only stub  
-
-#### Pepper Rotation SOP
-1. Add `next_pepper` column.  
-2. Re-hash `contact_hash` in batches with `next_pepper`.  
-3. Swap columns, drop temp column.  
-
-See migration deliverable list in §11 Deliverables.
+--- 
