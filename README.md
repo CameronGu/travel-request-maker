@@ -113,7 +113,7 @@ Run this script before merging, releasing, or after major changes to ensure a he
 - To add a new theme from tweakcn, run:
 
   ```bash
-  npx shadcn@latest add https://tweakcn.com/r/themes/claymorphism.json
+  pnpm dlx shadcn@latest add https://tweakcn.com/r/themes/claymorphism.json
   ```
 
 * Toggle themes using `next-themes`:
@@ -145,7 +145,7 @@ No direct pushes to `main` — enforced via GitHub rules (public repos only).
   task-master parse-prd prd.md -k docs/latest/ -o tasks.json
   ```
 
-  (wrapped as `npm run parse-prd`)
+  (wrapped as `pnpm run parse-prd`)
 
 * **Supabase & Vercel setup**:
 
@@ -310,3 +310,12 @@ DEBUG_DYNAMIC_FORM=1 pnpm test
 ```
 
 ---
+
+> **⚠️ This project requires [pnpm](https://pnpm.io/) for all dependency management and scripts.**
+> 
+> - Do **not** use `npm` or `yarn`—they are not supported and will fail.
+> - If you do not have pnpm, install it globally with:
+>   ```sh
+>   npm install -g pnpm
+>   ```
+> - Always use `pnpm install` and `pnpm run <script>`.

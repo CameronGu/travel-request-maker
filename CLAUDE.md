@@ -84,7 +84,7 @@ Task Master provides an MCP server that Claude Code can connect to. Configure in
 {
   "mcpServers": {
     "task-master-ai": {
-      "command": "npx",
+      "command": "pnpm dlx",
       "args": ["-y", "--package=task-master-ai", "task-master-ai"],
       "env": {
         "ANTHROPIC_API_KEY": "your_key_here",
@@ -217,7 +217,7 @@ Add to `.claude/settings.json`:
     "Bash(task-master *)",
     "Bash(git commit:*)",
     "Bash(git add:*)",
-    "Bash(npm run *)",
+    "Bash(pnpm run *)",
     "mcp__task_master_ai__*"
   ]
 }
