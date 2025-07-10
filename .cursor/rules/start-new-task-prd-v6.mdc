@@ -1,0 +1,21 @@
+---
+description: >
+  This is not a greenfield project. PRD v6 defines the task set, but parts of the codebase may already exist. 
+  Review existing code to identify what is complete, what requires refactoring, and what remains TODO. 
+  Do not duplicate implemented functionality. Use Supabase MCP where relevant.
+
+  Follow Taskmaster procedure: fetch tasks, track progress, and report status using the standard mcp. 
+  Begin implementation immediately after task retrieval. Do not wait for review unless blocked by ambiguity.
+
+  When starting a new task, call the appropriate Taskmaster API to fetch the task, mark it in progress, and begin execution immediately. 
+  Do not wait for confirmation or instructions unless the task cannot proceed due to ambiguity.
+
+  Execute the task to completion. A task is only complete when its behavior is verified by tests. 
+  All code changes must be test-covered. Add or update tests to match code behavior. If testing is not possible, explain in chat and note in task Implementation Details.
+
+  Refer to `docs/latest/prd.md` for architectural and feature details, including Lean-Pepper duplicate detection, RLS policies, and JWT claims.
+
+globs:
+  - "**/*"
+alwaysApply: false
+---
