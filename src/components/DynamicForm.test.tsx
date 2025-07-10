@@ -14,6 +14,8 @@ import hotelFields from '../form-fields/fields.hotel.json';
 
 import DynamicForm from './DynamicForm';
 import TravelerModal from "./TravelerModal";
+import * as storage from "@/lib/storage";
+import * as phoneValidation from "@/lib/validation/phone";
 
 beforeAll(() => {
   vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => setTimeout(() => cb(performance.now()), 0));
@@ -387,7 +389,7 @@ describe("TravelerModal duplicate detection", () => {
       }),
       set: vi.fn(async () => {}),
     };
-    vi.spyOn(require("@/lib/storage"), "getActiveDriver").mockReturnValue(driver);
+    vi.spyOn(storage, "getActiveDriver").mockReturnValue(driver);
   });
   afterEach(() => {
     vi.restoreAllMocks();
@@ -429,9 +431,9 @@ describe("TravelerModal duplicate detection", () => {
       }),
       set: vi.fn(async () => {}),
     };
-    vi.spyOn(require("@/lib/storage"), "getActiveDriver").mockReturnValue(driver);
+    vi.spyOn(storage, "getActiveDriver").mockReturnValue(driver);
     // Mock generateTravelerHash to return a different hash
-    vi.spyOn(require("@/lib/validation/phone"), "generateTravelerHash").mockImplementation(async (phone, email) => "uniquehash");
+    vi.spyOn(phoneValidation, "generateTravelerHash").mockImplementation(async (phone, email) => "uniquehash");
     render(<TravelerModal open={true} onClose={onClose} clientId="c1" />);
     await screen.findByLabelText(/First Name/i);
     fireEvent.change(screen.getByLabelText(/First Name/i), { target: { value: "Bob" } });

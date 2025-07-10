@@ -1,8 +1,8 @@
 ---
 description: >
   This is not a greenfield project. The PRD v6 has generated a new task set,
-  but much of the codebase is already implemented. Please review the current
-  code (see PRD §1) to determine what is complete, what needs refactoring, and
+  but parts of the codebase may have already been implemented. Please review the current
+  code to determine what is complete, what needs refactoring, and
   what is still TODO. Avoid rebuilding functionality that already exists.
   Supabase integration is partially complete — use the Superbase MCP where
   relevant. Refer to the PRD v6 (`docs/prd.md`) for all architectural
