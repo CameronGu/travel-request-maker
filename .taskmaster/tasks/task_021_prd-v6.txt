@@ -1,0 +1,55 @@
+# Task ID: 21
+# Title: Enhance TravelerModal with Duplicate Detection Integration
+# Status: pending
+# Dependencies: 15, 16, 18, 20
+# Priority: medium
+# Description: Upgrade existing TravelerModal component with Supabase integration and duplicate detection workflow
+# Details:
+Enhance existing TravelerModal.tsx with Supabase persistence replacing local storage. Integrate duplicate detection workflow with EXACT/STRONG/SOFT confidence levels. Implement block modal for EXACT matches, confirmation modal for STRONG matches, and toast notifications for SOFT matches. Add merge functionality for admin users. Include phone/email validation with normalization.
+
+# Test Strategy:
+Write unit tests for duplicate detection workflow. Test modal behavior for different confidence levels. Verify admin merge functionality. Test phone/email validation and normalization integration.
+
+# Subtasks:
+## 1. Supabase persistence [pending]
+### Dependencies: None
+### Description: Set up Supabase database schema and implement data persistence layer for storing and retrieving records with proper indexing and relationships
+### Details:
+Create database tables, configure RLS policies, implement CRUD operations, and establish connection pooling for optimal performance
+
+## 2. Integrate duplicate detection [pending]
+### Dependencies: 21.1
+### Description: Implement duplicate detection algorithms to identify potential duplicate records based on configurable matching criteria and similarity thresholds
+### Details:
+Develop fuzzy matching logic, implement scoring algorithms, create detection rules engine, and optimize for performance with large datasets
+
+## 3. Implement modal logic for confidence levels [pending]
+### Dependencies: 21.2
+### Description: Create modal components to display duplicate matches with confidence scores and provide user interface for reviewing and managing potential duplicates
+### Details:
+Design modal UI/UX, implement confidence level visualization, add user interaction controls for accepting/rejecting matches, and handle modal state management
+
+## 4. Admin merge functionality [pending]
+### Dependencies: 21.3
+### Description: Develop administrative tools for merging duplicate records with conflict resolution, data preservation, and audit trail capabilities
+### Details:
+Create merge workflow UI, implement field-level conflict resolution, maintain data history, and provide rollback capabilities for merged records
+
+## 5. Phone/email validation [pending]
+### Dependencies: 21.1
+### Description: Implement comprehensive validation for phone numbers and email addresses with format checking, domain verification, and real-time validation feedback
+### Details:
+Add regex patterns for phone/email formats, integrate with validation services, implement real-time validation UI feedback, and handle international formats
+
+## 6. Toast notifications [pending]
+### Dependencies: 21.4, 21.5
+### Description: Create toast notification system to provide user feedback for various operations including success, error, and warning messages with proper positioning and timing
+### Details:
+Design notification component, implement different notification types, add auto-dismiss functionality, and ensure accessibility compliance
+
+## 7. Write tests for workflows [pending]
+### Dependencies: 21.6
+### Description: Develop comprehensive test suite covering unit tests, integration tests, and end-to-end tests for all duplicate detection and merge workflows
+### Details:
+Create test cases for duplicate detection algorithms, modal interactions, merge operations, validation logic, and notification systems with proper mocking and test data
+

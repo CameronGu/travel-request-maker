@@ -1,0 +1,49 @@
+# Task ID: 22
+# Title: Build Request Queue Management System
+# Status: pending
+# Dependencies: 18, 19, 20
+# Priority: medium
+# Description: Create RequestQueue component for draft management, multi-selection, and batch submission
+# Details:
+Build RequestQueue.tsx component for managing draft requests. Implement multi-selection with checkboxes and bulk actions. Create Preview & Submit modal showing selected drafts side-by-side. Implement batch submission via submit_requests() RPC. Add draft persistence and auto-save functionality. Include request status tracking and real-time updates.
+
+# Test Strategy:
+Write unit tests for multi-selection logic and batch operations. Test Preview & Submit modal functionality. Verify batch submission and status updates. Test real-time sync and auto-save features.
+
+# Subtasks:
+## 1. Build RequestQueue component [pending]
+### Dependencies: None
+### Description: Create the main RequestQueue component with basic UI structure, request list display, and individual request item rendering
+### Details:
+Implement the core component structure with request list rendering, item components, basic styling, and initial state management for displaying queued requests
+
+## 2. Implement multi-selection and bulk actions [pending]
+### Dependencies: 22.1
+### Description: Add multi-selection functionality with checkboxes and implement bulk action controls for selected requests
+### Details:
+Create selection state management, checkbox UI components, bulk action toolbar, and handlers for selecting/deselecting multiple requests with actions like delete, approve, or modify
+
+## 3. Preview & Submit modal [pending]
+### Dependencies: 22.2
+### Description: Build a modal component for previewing selected requests and confirming batch submission with validation
+### Details:
+Create modal UI with request preview, validation checks, confirmation controls, and integration with the multi-selection system to show selected items before submission
+
+## 4. Batch submission RPC [pending]
+### Dependencies: 22.3
+### Description: Implement the backend RPC endpoint and frontend integration for processing batch request submissions
+### Details:
+Create RPC service for handling batch operations, implement error handling, response processing, and integrate with the preview modal for actual submission execution
+
+## 5. Draft persistence and auto-save [pending]
+### Dependencies: 22.1
+### Description: Implement automatic saving of draft requests and persistence mechanisms to prevent data loss
+### Details:
+Create auto-save functionality, local storage or database persistence for drafts, recovery mechanisms, and UI indicators for save status and draft management
+
+## 6. Real-time status tracking [pending]
+### Dependencies: 22.4, 22.5
+### Description: Implement real-time updates for request status changes and progress tracking across the queue
+### Details:
+Set up WebSocket or polling mechanisms for real-time updates, status change notifications, progress indicators, and synchronization between multiple clients viewing the same queue
+

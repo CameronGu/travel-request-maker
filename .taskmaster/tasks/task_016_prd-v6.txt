@@ -1,0 +1,43 @@
+# Task ID: 16
+# Title: Create JavaScript Contact Normalization Library
+# Status: pending
+# Dependencies: 15
+# Priority: medium
+# Description: Implement client-side contact normalization helpers that match SQL logic for phone and email validation
+# Details:
+Create /lib/contacts.ts with normalizePhone() and normalizeEmail() functions using libphonenumber-js for E.164 formatting. Implement validation helpers that match server-side SQL logic exactly. Add TypeScript types for contact data structures. Include error handling for invalid formats and edge cases.
+
+# Test Strategy:
+Write Vitest unit tests comparing JS normalization output with SQL function results. Test edge cases like international numbers, various email formats, and invalid inputs. Verify consistency between client and server normalization.
+
+# Subtasks:
+## 1. Implement normalizePhone() [pending]
+### Dependencies: None
+### Description: Create a phone number normalization function that standardizes phone number formats by removing special characters, handling country codes, and ensuring consistent output format
+### Details:
+Implement phone number parsing and normalization logic including: strip non-numeric characters except +, handle international prefixes, validate phone number length, format to standard representation, handle edge cases like extensions and short codes
+
+## 2. Implement normalizeEmail() [pending]
+### Dependencies: None
+### Description: Create an email normalization function that standardizes email addresses by handling case sensitivity, domain normalization, and common email provider rules
+### Details:
+Implement email normalization including: convert to lowercase, trim whitespace, handle plus addressing (gmail +tags), normalize common domains (gmail.com, googlemail.com), validate email format, handle internationalized domain names
+
+## 3. Add validation helpers [pending]
+### Dependencies: 16.1, 16.2
+### Description: Create utility functions for validating normalized phone numbers and emails to ensure they meet expected format requirements
+### Details:
+Implement validation functions including: isValidPhone() to check normalized phone format, isValidEmail() to validate normalized email format, error handling and descriptive error messages, input sanitization helpers
+
+## 4. Write TypeScript types [pending]
+### Dependencies: 16.1, 16.2, 16.3
+### Description: Define comprehensive TypeScript type definitions for all normalization functions, validation helpers, and their input/output parameters
+### Details:
+Create TypeScript definitions including: function signatures for normalizePhone and normalizeEmail, validation helper types, error types and interfaces, input/output type constraints, generic types for extensibility
+
+## 5. Write Vitest tests for edge cases and parity with SQL [pending]
+### Dependencies: 16.1, 16.2, 16.3, 16.4
+### Description: Create comprehensive test suite using Vitest to verify normalization functions handle edge cases correctly and maintain parity with server-side SQL logic
+### Details:
+Implement test cases covering: edge cases for phone/email normalization, parity tests comparing with SQL server logic, invalid input handling, performance benchmarks, integration tests for validation helpers, mock data generation for comprehensive testing
+

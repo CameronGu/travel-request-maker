@@ -1,0 +1,79 @@
+# Task ID: 15
+# Title: Implement Lean-Pepper Duplicate Detection System
+# Status: pending
+# Dependencies: 14
+# Priority: high
+# Description: Build the complete duplicate traveler detection system with normalization, hashing, and multi-tier confidence levels
+# Details:
+Create SQL functions for phone/email normalization (E.164 format, lowercase). Implement tenant_peppers table with HMAC-based hashing. Build dup_collect() function for EXACT/STRONG/SOFT duplicate detection. Create create_traveler() RPC that returns findings array. Implement traveler_contacts table for normalized contact storage. Add merge_travelers() stub for admin functionality. Ensure p95 performance ≤ 100ms for insert operations.
+
+# Test Strategy:
+Write pgTAP tests for normalization functions, hash repeatability, and confidence thresholds. Load test with k6 or pgbench to verify 10k inserts meet p95 ≤ 100ms SLA. Test RLS isolation prevents cross-tenant data leakage. Unit test all duplicate detection scenarios.
+
+# Subtasks:
+## 1. Implement normalization SQL functions [pending]
+### Dependencies: None
+### Description: Create SQL functions to normalize traveler data including name standardization, phone number formatting, email cleaning, and address normalization for consistent duplicate detection
+### Details:
+Develop functions for: normalize_name() for case/spacing/punctuation, normalize_phone() for international formats, normalize_email() for case/domain handling, normalize_address() for street abbreviations and formatting
+<info added on 2025-07-10T22:58:42.053Z>
+Implementation completed successfully. Created three SQL normalization functions in Supabase: normalise_phone() converts phone numbers to E.164 format when possible or digits-only format otherwise, tested with formats like '(555) 123-4567', '+1-555-123-4567', '555.123.4567'; normalise_email() lowercases and trims emails while applying Gmail/Googlemail dot and plus rules, with domain handling bug fixed via migration 20250711_fix_normalise_email_function.sql; normalize_name() lowercases and trims whitespace from names. All functions tested directly in Supabase database with SELECT queries confirming expected normalization outputs. Migration files created and applied using Supabase CLI with database synchronized to remote project.
+</info added on 2025-07-10T22:58:42.053Z>
+
+## 2. Build tenant_peppers table and HMAC logic [pending]
+### Dependencies: None
+### Description: Create secure tenant-specific pepper storage table and implement HMAC-based hashing functions for privacy-preserving duplicate detection across tenants
+### Details:
+Design tenant_peppers table with encrypted storage, implement generate_hmac() function using tenant-specific peppers, ensure cryptographic security for cross-tenant data protection
+<info added on 2025-07-10T23:05:49.450Z>
+Implementation completed with migration 20250712_create_tenant_peppers_and_hmac.sql. Migration creates tenant_peppers table with client_id (uuid PRIMARY KEY), pepper (bytea NOT NULL), and next_pepper (bytea) for future rotation support. Includes get_tenant_pepper(p_client uuid) RETURNS bytea function with SECURITY DEFINER and hardened search_path. Uses built-in hmac_sha256 for hashing per Lean-Pepper specification. Migration is idempotent and ready for Supabase deployment. Next: apply migration and test functionality before proceeding to traveler_contacts implementation.
+</info added on 2025-07-10T23:05:49.450Z>
+
+## 3. Develop dup_collect() with confidence tiers [pending]
+### Dependencies: 15.1, 15.2
+### Description: Implement sophisticated duplicate detection algorithm with multiple confidence levels (high/medium/low) based on field matching combinations and fuzzy logic
+### Details:
+Create dup_collect() function with weighted scoring system, implement confidence tiers based on exact/partial/fuzzy matches, handle edge cases and false positives
+
+## 4. Create create_traveler() RPC [pending]
+### Dependencies: 15.3
+### Description: Build RPC endpoint for traveler creation that integrates duplicate detection, handles conflicts, and manages data insertion with proper error handling
+### Details:
+Implement create_traveler() RPC with duplicate checking, conflict resolution strategies, transaction management, and appropriate response formatting
+
+## 5. Implement traveler_contacts table [pending]
+### Dependencies: 15.1
+### Description: Design and create traveler_contacts table structure with proper relationships, indexing, and constraints to support contact management and duplicate detection
+### Details:
+Create table schema with foreign keys to travelers, implement contact type handling, add appropriate indexes for performance, ensure data integrity constraints
+
+## 6. Add merge_travelers() stub [pending]
+### Dependencies: 15.4, 15.5
+### Description: Create placeholder function for traveler merging functionality that will handle combining duplicate records while preserving data integrity
+### Details:
+Implement merge_travelers() stub with basic structure, parameter validation, and placeholder logic for future enhancement with actual merging algorithms
+
+## 7. Integrate with RLS [pending]
+### Dependencies: 15.2, 15.5
+### Description: Implement Row Level Security policies to ensure tenant isolation and proper access control for all traveler-related tables and functions
+### Details:
+Create RLS policies for travelers and traveler_contacts tables, ensure tenant-based filtering, implement security context handling in all functions
+
+## 8. Write pgTAP tests for all logic [pending]
+### Dependencies: 15.6, 15.7
+### Description: Develop comprehensive test suite using pgTAP framework covering all normalization functions, duplicate detection logic, RPC endpoints, and edge cases
+### Details:
+Create test cases for normalization functions, duplicate detection accuracy, RPC functionality, RLS policies, error handling, and data integrity scenarios
+
+## 9. Load test for performance [pending]
+### Dependencies: 15.8
+### Description: Conduct performance testing to ensure the duplicate detection system meets SLA requirements under various load conditions and data volumes
+### Details:
+Design load test scenarios, measure response times for duplicate detection, test concurrent user handling, identify bottlenecks, and optimize query performance
+
+## 10. Document detection logic and findings [pending]
+### Dependencies: 15.9
+### Description: Create comprehensive documentation covering the duplicate detection algorithm, confidence scoring methodology, performance characteristics, and operational guidelines
+### Details:
+Document algorithm design decisions, confidence tier thresholds, performance benchmarks, troubleshooting guides, and best practices for system maintenance
+

@@ -1,0 +1,61 @@
+# Task ID: 24
+# Title: Build Admin Dashboard Components
+# Status: pending
+# Dependencies: 18, 19, 23
+# Priority: medium
+# Description: Create comprehensive admin dashboard with user management, request oversight, and system administration
+# Details:
+Build AdminDashboard.tsx with role-specific views (ATT Admin, Client Admin). Implement user management interface with invitation, role changes, and deactivation. Create request oversight with status tracking and assignment capabilities. Add system metrics and audit log viewing. Implement client and project management for ATT admins. Include traveler directory management with merge capabilities.
+
+# Test Strategy:
+Write unit tests for role-specific dashboard views. Test user management operations and permission enforcement. Verify request oversight and status management. Test system metrics and audit log functionality.
+
+# Subtasks:
+## 1. AdminDashboard Shell [pending]
+### Dependencies: None
+### Description: Create the main administrative dashboard shell with navigation, layout structure, and common UI components
+### Details:
+Implement the core dashboard framework including header, sidebar navigation, main content area, and responsive layout. Set up routing structure and common UI elements like breadcrumbs, notifications, and user profile dropdown.
+
+## 2. Role-specific Views [pending]
+### Dependencies: 24.1
+### Description: Implement role-based view rendering and access control logic for different administrative roles
+### Details:
+Create role-based routing and view components that dynamically render appropriate dashboard sections based on user permissions. Implement access control middleware and role-specific menu items.
+
+## 3. User Management [pending]
+### Dependencies: 24.1, 24.2
+### Description: Build comprehensive user management interface for creating, editing, and managing user accounts
+### Details:
+Develop user CRUD operations interface including user creation forms, profile editing, role assignment, account status management, and bulk user operations. Include user search and filtering capabilities.
+
+## 4. Request Oversight [pending]
+### Dependencies: 24.1, 24.2
+### Description: Create request monitoring and management dashboard for overseeing travel requests and approvals
+### Details:
+Build interface for viewing, filtering, and managing travel requests across the system. Include request status tracking, approval workflows, escalation handling, and request analytics.
+
+## 5. System Metrics [pending]
+### Dependencies: 24.1, 24.2
+### Description: Implement system performance and usage metrics dashboard with charts and analytics
+### Details:
+Create metrics visualization components showing system usage statistics, performance indicators, user activity trends, and operational KPIs. Include interactive charts and exportable reports.
+
+## 6. Audit Log Viewing [pending]
+### Dependencies: 24.1, 24.2
+### Description: Build audit log interface for viewing and searching system activity logs
+### Details:
+Develop comprehensive audit log viewer with advanced search, filtering, and export capabilities. Include log entry details, user activity tracking, and security event monitoring.
+
+## 7. Client/Project Management [pending]
+### Dependencies: 24.1, 24.2
+### Description: Create client and project management interface for organizational structure administration
+### Details:
+Build CRUD interfaces for managing clients, projects, and organizational hierarchies. Include project assignment, client relationship management, and project status tracking capabilities.
+
+## 8. Traveler Directory Management [pending]
+### Dependencies: 24.1, 24.2, 24.3
+### Description: Implement traveler directory management system for maintaining traveler profiles and information
+### Details:
+Create comprehensive traveler directory with profile management, travel preferences, document tracking, and traveler status monitoring. Include search, filtering, and bulk operations for traveler data management.
+

@@ -1,0 +1,55 @@
+# Task ID: 23
+# Title: Implement User Invitation and Role Management System
+# Status: pending
+# Dependencies: 18, 19
+# Priority: medium
+# Description: Build complete user invitation system with role-based permissions and flag management
+# Details:
+Create user invitation modal with email input and role selection. Implement permission flags (can_invite_peer_admin, can_invite_requesters) with checkbox controls. Build invite_user() RPC with magic link generation. Create user management interface for admins to toggle flags. Implement audit logging for user flag changes via audit_user_flags table. Add role hierarchy validation and permission enforcement.
+
+# Test Strategy:
+Write integration tests for complete invitation flow. Test permission flag enforcement and role hierarchy. Verify audit logging for flag changes. Test magic link generation and user onboarding.
+
+# Subtasks:
+## 1. Invitation Modal UI [pending]
+### Dependencies: None
+### Description: Design and implement the user interface for inviting new users, including form fields for email, role selection, and invitation message
+### Details:
+Create a responsive modal component with form validation, role dropdown, email input field, optional message textarea, and proper error handling for user feedback
+
+## 2. Role/Flag Selection Logic [pending]
+### Dependencies: 23.1
+### Description: Implement the business logic for role assignment and permission flag management during user invitation
+### Details:
+Develop role hierarchy validation, permission flag mapping, role conflict detection, and default permission assignment based on organizational policies
+
+## 3. invite_user() RPC Implementation [pending]
+### Dependencies: 23.2
+### Description: Create the backend RPC endpoint for processing user invitations with proper validation and security checks
+### Details:
+Implement server-side validation, database operations for invitation records, email notification triggers, and proper error handling with appropriate HTTP status codes
+
+## 4. Magic Link Integration [pending]
+### Dependencies: 23.3
+### Description: Integrate magic link functionality for secure user onboarding and account activation
+### Details:
+Implement token generation, secure link creation, expiration handling, one-time use validation, and seamless user activation flow
+
+## 5. User Management Interface [pending]
+### Dependencies: 23.4
+### Description: Build comprehensive user management dashboard for viewing, editing, and managing user accounts and permissions
+### Details:
+Create user listing with search/filter capabilities, role editing interface, user status management, bulk operations, and responsive design for different screen sizes
+
+## 6. Audit Logging for Flag Changes [pending]
+### Dependencies: 23.5
+### Description: Implement comprehensive audit logging system to track all permission and role changes for security and compliance
+### Details:
+Design audit log schema, implement logging triggers for all permission changes, create log viewing interface, and ensure tamper-proof logging with proper retention policies
+
+## 7. Permission Enforcement and Validation [pending]
+### Dependencies: 23.6
+### Description: Implement robust permission checking and validation system across all user operations and API endpoints
+### Details:
+Create middleware for permission validation, implement role-based access control, add authorization checks to all sensitive operations, and ensure proper error handling for unauthorized access attempts
+

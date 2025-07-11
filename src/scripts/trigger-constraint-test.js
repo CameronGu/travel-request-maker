@@ -1,5 +1,16 @@
+/*
+ * Trigger & Constraint Test Script (Schema-Driven)
+ *
+ * - Tests triggers and constraints for the current schema (requests table, etc.).
+ * - Only uses columns present in the current schema. Update payloads and queries as schema evolves.
+ * - For new columns/features, add or uncomment relevant test logic.
+ * - For future stages, add new constraint/trigger scenarios as needed.
+ * - If schema changes, update payloads and queries accordingly.
+ * - Optimized for Cursor AI: always check the current schema and update this script for full coverage of all implemented and prior features.
+ * - Leave TODOs for any not-yet-implemented features or columns.
+ */
 /* eslint-disable no-console */
-import 'dotenv/config';
+import "./bootstrap-env.js";
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -21,10 +32,10 @@ async function testTriggersAndConstraints() {
   // 1. Insert into requests (should fire status trigger)
   try {
     const { data, error } = await supabase.from('requests').insert({
-      type: 'hotel',
-      blob: { test: true, state: 'pending' },
       project_id: 'cfbcabd5-0d53-49f2-97ae-e017e3e0add9', // Use a valid project_id from your seed data
+      traveler_id: '00000000-0000-0000-0000-000000000000', // TODO: Use a valid traveler_id
       created_via_link_id: '04fb00c1-8082-42be-a951-4d2888b05537', // Use a valid link_id from your seed data
+      // status: 'draft', // optional
     }).select().single();
     if (error || !data) throw new Error(error?.message || 'No data returned');
     testRequestId = data.id;
@@ -54,9 +65,8 @@ async function testTriggersAndConstraints() {
   // 4. Attempt constraint violation (missing NOT NULL field)
   try {
     const { error } = await supabase.from('requests').insert({
-      // missing required fields like project_id
-      type: 'hotel',
-      blob: { test: true },
+      // missing required fields like project_id, traveler_id
+      created_via_link_id: '00000000-0000-0000-0000-000000000000',
     });
     if (!error) throw new Error('Constraint violation not detected');
     console.log('✅ Constraint violation detected (NOT NULL)');
@@ -68,9 +78,8 @@ async function testTriggersAndConstraints() {
   // 5. Attempt FK violation
   try {
     const { error } = await supabase.from('requests').insert({
-      type: 'hotel',
-      blob: { test: true },
       project_id: '00000000-0000-0000-0000-000000000000', // invalid FK
+      traveler_id: '00000000-0000-0000-0000-000000000000', // invalid FK
       created_via_link_id: '00000000-0000-0000-0000-000000000000',
     });
     if (!error) throw new Error('FK constraint violation not detected');

@@ -1,0 +1,61 @@
+# Task ID: 31
+# Title: Implement Comprehensive Testing Suite
+# Status: pending
+# Dependencies: 20, 21, 22, 24, 26
+# Priority: high
+# Description: Create complete testing infrastructure with unit, integration, and accessibility tests
+# Details:
+Setup Vitest testing framework with proper configuration. Implement vitest-axe for accessibility testing. Create Testing Library setup for component testing. Write comprehensive unit tests for all components and utilities. Implement integration tests for critical user flows. Add pgTAP tests for database functions and RLS policies. Setup test coverage reporting and CI integration.
+
+# Test Strategy:
+Achieve ≥70% test coverage across all modules. Ensure zero accessibility violations in axe tests. Verify all critical user flows work end-to-end. Test database functions and RLS policies thoroughly.
+
+# Subtasks:
+## 1. Vitest Setup [pending]
+### Dependencies: None
+### Description: Configure Vitest as the primary testing framework for the project with proper configuration files and test environment setup
+### Details:
+Install Vitest dependencies, create vitest.config.js with appropriate settings for TypeScript, JSX, and module resolution. Set up test environment configuration for DOM testing and configure path aliases to match project structure.
+
+## 2. Accessibility Testing [pending]
+### Dependencies: 31.1
+### Description: Implement accessibility testing tools and create tests to ensure WCAG compliance across components
+### Details:
+Install and configure axe-core and jest-axe for automated accessibility testing. Create accessibility test utilities and establish testing patterns for screen readers, keyboard navigation, and ARIA compliance.
+
+## 3. Testing Library Setup [pending]
+### Dependencies: 31.1
+### Description: Configure React Testing Library and related utilities for component testing with proper rendering and query utilities
+### Details:
+Install @testing-library/react, @testing-library/jest-dom, and @testing-library/user-event. Set up custom render function with providers, configure testing utilities, and establish best practices for component testing.
+
+## 4. Unit Tests for Components [pending]
+### Dependencies: 31.2, 31.3
+### Description: Create comprehensive unit tests for individual React components covering props, state, and user interactions
+### Details:
+Write unit tests for all major components including form components, UI elements, and utility components. Test component rendering, prop handling, event handlers, and edge cases. Ensure proper mocking of external dependencies.
+
+## 5. Integration Tests for Flows [pending]
+### Dependencies: 31.4
+### Description: Develop integration tests that verify complete user workflows and component interactions across the application
+### Details:
+Create end-to-end user flow tests covering authentication, data submission, navigation, and complex user interactions. Mock API calls appropriately and test error handling scenarios.
+
+## 6. pgTAP Tests for Database [pending]
+### Dependencies: None
+### Description: Implement pgTAP testing framework for PostgreSQL database schema, functions, and data integrity testing
+### Details:
+Install and configure pgTAP extension, create database test scripts for schema validation, stored procedures, triggers, and data constraints. Set up test database environment and migration testing.
+
+## 7. Test Coverage Reporting [pending]
+### Dependencies: 31.4, 31.5, 31.6
+### Description: Configure comprehensive test coverage reporting with thresholds and detailed coverage analysis
+### Details:
+Set up coverage reporting with c8 or built-in Vitest coverage. Configure coverage thresholds, exclude appropriate files, generate HTML and JSON reports, and establish coverage quality gates.
+
+## 8. CI Integration [pending]
+### Dependencies: 31.7
+### Description: Integrate all testing layers into continuous integration pipeline with proper test execution and reporting
+### Details:
+Configure GitHub Actions or similar CI system to run unit tests, integration tests, accessibility tests, and database tests. Set up test result reporting, coverage uploads, and failure notifications with proper caching for dependencies.
+

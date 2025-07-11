@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-import 'dotenv/config';
-
+import "./bootstrap-env.js";
 import { createClient } from '@supabase/supabase-js';
 import fetch from 'node-fetch';
 
@@ -69,59 +67,50 @@ async function runTest(userConfig, session) {
   const { tests } = userConfig;
   for (const test of tests) {
     const headers = {};
-        if (session) {
-              const projectRef = new URL(supabaseUrl).hostname.split('.')[0];
-              const baseName   = `sb-${projectRef}-auth-token`;
-        
-              // The format Supabase writes on the client: URI-encoded JSON array
-              const rawValue   = encodeURIComponent(
-                JSON.stringify([session.access_token, session.refresh_token]),
-              );
-        
-              const CHUNK_SIZE = 4000;           // keep below browser 4 096-byte limit
-              const parts      = [];
-        
-                    if (rawValue.length <= CHUNK_SIZE) {
-                        // single-chunk still gets the "0" suffix
-                        parts.push(`${baseName}.0=${rawValue}`);
-              } else {
-                for (let i = 0; i < rawValue.length; i += CHUNK_SIZE) {
-                  const chunkName = `${baseName}.${parts.length}`; // .0, .1, ...
-                  parts.push(`${chunkName}=${rawValue.slice(i, i + CHUNK_SIZE)}`);
-                }
-              }
-        
-              headers['Cookie']        = parts.join('; ');
-              headers['Authorization'] = `Bearer ${session.access_token}`; // optional
-            }
+    if (session) {
+      const projectRef = new URL(supabaseUrl).hostname.split('.')[0];
+      const baseName = `sb-${projectRef}-auth-token`;
+      // The format Supabase writes on the client: URI-encoded JSON array
+      const rawValue = encodeURIComponent(
+        JSON.stringify([session.access_token, session.refresh_token]),
+      );
+      const CHUNK_SIZE = 4000; // keep below browser 4 096-byte limit
+      const parts = [];
+      if (rawValue.length <= CHUNK_SIZE) {
+        // single-chunk still gets the "0" suffix
+        parts.push(`${baseName}.0=${rawValue}`);
+      } else {
+        for (let i = 0; i < rawValue.length; i += CHUNK_SIZE) {
+          const chunkName = `${baseName}.${parts.length}`;
+          parts.push(`${chunkName}=${rawValue.slice(i, i + CHUNK_SIZE)}`);
+        }
+      }
+      headers['Cookie'] = parts.join('; ');
+      headers['Authorization'] = `Bearer ${session.access_token}`; // optional
+    }
     const response = await fetch(`${appUrl}${test.path}`, { headers, redirect: 'manual' });
-
     if (response.status !== test.expect) {
       console.error(`❌ FAIL: [${userConfig.email || 'unauthenticated'}] ${test.path} -> Expected ${test.expect}, got ${response.status}`);
     } else {
       console.log(`✅ PASS: [${userConfig.email || 'unauthenticated'}] ${test.path} -> Got ${response.status}`);
     }
-
     // Log debug headers
     if (response.headers.get('x-debug-user')) {
-        console.log(`  [DEBUG] User: ${response.headers.get('x-debug-user')}`);
-        console.log(`  [DEBUG] Cookie Sent: ${session ? 'Yes' : 'No'}`);
-        console.log(`  [DEBUG] Cookie Value: ${response.headers.get('x-debug-cookie-value')}`);
-        console.log(`  [DEBUG] Auth Error: ${response.headers.get('x-debug-error')}`);
+      console.log(`  [DEBUG] User: ${response.headers.get('x-debug-user')}`);
+      console.log(`  [DEBUG] Cookie Sent: ${session ? 'Yes' : 'No'}`);
+      console.log(`  [DEBUG] Cookie Value: ${response.headers.get('x-debug-cookie-value')}`);
+      console.log(`  [DEBUG] Auth Error: ${response.headers.get('x-debug-error')}`);
     }
   }
 }
 
 async function main() {
   const createdUserIds = [];
-
   try {
     for (const role in testUsers) {
       if (role === 'unauthenticated') continue;
-
       const config = testUsers[role];
       console.log(`\n--- Setting up user: ${config.email} ---`);
-
       // Create user
       const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.createUser({
         email: config.email,
@@ -129,29 +118,21 @@ async function main() {
         email_confirm: true,
         app_metadata: config.metadata,
       });
-
       if (userError) throw new Error(`Error creating user ${config.email}: ${userError.message}`);
-      
       const userId = user.id;
       createdUserIds.push(userId);
       console.log(`User ${userId} created.`);
-
       // Sign in and get session
       const { data: { session }, error: sessionError } = await createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY).auth.signInWithPassword({
         email: config.email,
         password: config.password,
       });
-
       if (sessionError) throw new Error(`Error signing in ${config.email}: ${sessionError.message}`);
-      
       if (!session) throw new Error('Session not found after sign-in.');
-
       await runTest(config, session);
     }
-
     console.log('\n--- Testing unauthenticated user ---');
     await runTest(testUsers.unauthenticated);
-
   } catch (error) {
     console.error('\n🚨 Test run failed:', error.message);
   } finally {
@@ -169,4 +150,4 @@ async function main() {
   }
 }
 
-main(); 
+main();

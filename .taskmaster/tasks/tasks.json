@@ -928,7 +928,7 @@
         "testStrategy": "Write pgTAP tests to verify RLS isolation between tenants and roles. Test that users can only access data within their scope. Verify triggers fire correctly for audit logging. Test schema constraints and foreign key relationships.",
         "priority": "high",
         "dependencies": [],
-        "status": "done",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -946,7 +946,7 @@
             "dependencies": [
               1
             ],
-            "details": "Write SQL migration files for each table creation, including all constraints, indexes, and initial data. Ensure migrations are properly ordered to handle foreign key dependencies. Include rollback scripts for each migration.\n<info added on 2025-07-09T06:02:29.889Z>\n# Plan for Migration Files\n\n## Tables to Create (per PRD v6)\n- clients\n- projects\n- travelers\n- requests\n- links\n- access_logs\n- traveler_contacts\n- dup_findings\n- tenant_peppers\n- audit_log\n- request_status_log\n- users (add columns)\n\n## Migration File Structure\n- Each table gets its own migration file in supabase/migrations/\n- Use sequential naming for migration files (timestamped)\n- Include schema deltas for users and requests\n- Add all constraints, indexes, and foreign keys\n- Write rollback (down) scripts for each migration\n\n## Next Steps\n- Write SQL for each table creation\n- Add RLS policies after tables are created\n- Add triggers and test data as needed\n\n## Notes\n- Follow PRD for column types, constraints, and relationships\n- Ensure all tables have client_id where required\n- Use UUIDs for primary keys\n- Add status enum and request_id to requests\n- Add can_invite_peer_admin and can_invite_requesters to users\n\nReady to proceed with writing migration SQL files for each table.\n</info added on 2025-07-09T06:02:29.889Z>",
+            "details": "Write SQL migration files for each table creation, including all constraints, indexes, and initial data. Ensure migrations are properly ordered to handle foreign key dependencies. Include rollback scripts for each migration.\n<info added on 2025-07-09T06:02:29.889Z>\n# Plan for Migration Files\n\n## Tables to Create (per PRD v6)\n- clients\n- projects\n- travelers\n- requests\n- links\n- access_logs\n- traveler_contacts\n- dup_findings\n- tenant_peppers\n- audit_log\n- request_status_log\n- users (add columns)\n\n## Migration File Structure\n- Each table gets its own migration file in supabase/migrations/\n- Use sequential naming for migration files (timestamped)\n- Include schema deltas for users and requests\n- Add all constraints, indexes, and foreign keys\n- Write rollback (down) scripts for each migration\n\n## Next Steps\n- Write SQL for each table creation\n- Add RLS policies after tables are created\n- Add triggers and test data as needed\n\n## Notes\n- Follow PRD for column types, constraints, and relationships\n- Ensure all tables have client_id where required\n- Use UUIDs for primary keys\n- Add status enum and request_id to requests\n- Add can_invite_peer_admin and can_invite_requesters to users\n\nReady to proceed with writing migration SQL files for each table.\n</info added on 2025-07-09T06:02:29.889Z>\n<info added on 2025-07-11T03:46:15.116Z>\n# Baseline Migration Analysis Completed\n\n## Current State Assessment\n- Reviewed existing migration file `supabase/migrations/20250712_baseline_schema.sql`\n- Confirmed comprehensive baseline migration contains all required tables from PRD v6\n- All tables properly implemented with correct column types, constraints, and indexes\n- Multi-tenancy (client_id) correctly implemented across all relevant tables\n- Foreign key dependencies properly ordered in migration sequence\n\n## Tables Verified in Baseline Migration\n- clients (with proper UUID primary key and tenant isolation)\n- projects (with client_id foreign key)\n- travelers (with client_id and proper contact fields)\n- requests (with status enum and request_id as specified)\n- links (with proper relationship constraints)\n- access_logs (with comprehensive logging fields)\n- traveler_contacts (with proper normalization)\n- dup_findings (with deduplication logic fields)\n- tenant_peppers (for security isolation)\n- audit_log (with comprehensive audit trail)\n- request_status_log (for status tracking)\n- users (with added can_invite_peer_admin and can_invite_requesters columns)\n\n## Migration File Structure Confirmed\n- Single comprehensive baseline migration approach used\n- Proper timestamped naming convention followed\n- All constraints, indexes, and foreign keys included\n- Rollback scripts present and complete\n- Sequential dependency ordering maintained\n\n## Findings Summary\n- No additional migration files needed - baseline migration is complete and accurate\n- All PRD v6 requirements satisfied in existing migration\n- Ready to proceed to RLS policy implementation (subtask 14.3)\n- Migration structure supports proper rollback capabilities\n</info added on 2025-07-11T03:46:15.116Z>",
             "status": "done",
             "testStrategy": ""
           },
@@ -957,8 +957,8 @@
             "dependencies": [
               2
             ],
-            "details": "Define and implement RLS policies for each user role (admin, user, guest, etc.). Ensure tenant-level data isolation and role-based access controls. Test policy effectiveness across different scenarios.\n<info added on 2025-07-09T06:07:16.190Z>\n# RLS Policy Implementation Status\n\n## Review\n- Migration file `20250622_final_rls_policy.sql` implements RLS policies for all major tables (clients, projects, travelers, links, requests) as required by PRD v6.\n- Helper functions for extracting role, client_id, and link_ids from JWT are present.\n- Blanket deny and permissive policies for attAdmin, clientAdmin, and requester are implemented.\n- Policies enforce tenant isolation and role-based access as specified in the PRD.\n- All tables have RLS enabled and forced.\n\n## Next Steps\n- Confirm that all edge cases and future roles are covered.\n- Ensure policies are tested in pgTAP (next subtask).\n- Document any deviations or additional requirements.\n\nRLS policies are implemented as required by the PRD and are ready for testing.\n</info added on 2025-07-09T06:07:16.190Z>",
-            "status": "done",
+            "details": "Define and implement RLS policies for each user role (admin, user, guest, etc.). Ensure tenant-level data isolation and role-based access controls. Test policy effectiveness across different scenarios.\n<info added on 2025-07-09T06:07:16.190Z>\n# RLS Policy Implementation Status\n\n## Review\n- Migration file `20250622_final_rls_policy.sql` implements RLS policies for all major tables (clients, projects, travelers, links, requests) as required by PRD v6.\n- Helper functions for extracting role, client_id, and link_ids from JWT are present.\n- Blanket deny and permissive policies for attAdmin, clientAdmin, and requester are implemented.\n- Policies enforce tenant isolation and role-based access as specified in the PRD.\n- All tables have RLS enabled and forced.\n\n## Next Steps\n- Confirm that all edge cases and future roles are covered.\n- Ensure policies are tested in pgTAP (next subtask).\n- Document any deviations or additional requirements.\n\nRLS policies are implemented as required by the PRD and are ready for testing.\n</info added on 2025-07-09T06:07:16.190Z>\n<info added on 2025-07-11T03:56:22.454Z>\n# Implementation Log: RLS Policies per Role (Subtask 14.3)\n\n## 1. Policy File Review\n- Located and reviewed `supabase/migrations/archive/20250622_final_rls_policy.sql`.\n- File defines helper functions for extracting `role`, `client_id`, and `link_ids` from JWT claims, matching PRD §5.2/§5.3.\n- Blanket permissive policies for `app_att_admin` on all major tables (`clients`, `projects`, `travelers`, `links`, `requests`).\n- `app_client_admin` policies scoped to their own `client_id` for all tables, with project-level scoping for requests.\n- `app_requester` policies restrict access to only their links and travelers, with select/insert/update/delete as appropriate.\n- All tables have RLS enabled and forced.\n\n## 2. Schema Verification\n- Baseline schema (`supabase/migrations/20250712_baseline_schema.sql`) confirms all referenced tables exist and are structured for RLS enforcement.\n- All tables have `client_id` where required for tenant isolation.\n- Enum types, foreign keys, and indexes are present as per PRD.\n\n## 3. PRD Cross-Check\n- PRD v6 reviewed for all role definitions, JWT claim requirements, and RLS edge cases.\n- All required roles (`app_att_admin`, `app_client_admin`, `app_requester`) are covered by policies.\n- Tenant isolation and role-based access are enforced as specified.\n- No additional roles or edge cases found in PRD that are not covered by the current policy file.\n\n## 4. Next Steps\n- Confirmed that RLS policies are implemented as required by the PRD and ready for testing (pgTAP in next subtask).\n- No further changes needed for this subtask unless new requirements emerge during testing.\n\n**Ready to mark subtask complete.**\n</info added on 2025-07-11T03:56:22.454Z>",
+            "status": "in-progress",
             "testStrategy": ""
           },
           {
@@ -969,7 +969,7 @@
               2
             ],
             "details": "Add any additional columns, tables, or schema modifications needed for user authentication, authorization, and request processing. Include any performance optimizations or additional indexes required.\n<info added on 2025-07-09T06:08:23.470Z>\nSchema Deltas for users and requests\n\nusers table:\n- Add column: can_invite_peer_admin boolean not null default false\n- Add column: can_invite_requesters boolean not null default false\n\nrequests table:\n- Create enum: request_status (draft, submitted, accepted, assigned, in_progress, pending_client, on_hold, completed, cancelled, rejected)\n- Add column: status request_status not null default 'draft'\n- Add column: request_id text generated always as (lpad(id::text, 8, '0')) stored\n\nrequest_status_log table:\n- Create table: request_status_log (id uuid PK, request_id uuid FK, from_status, to_status, changed_by uuid FK, changed_at timestamptz default now())\n- Add trigger on requests to write to request_status_log for every status change\n\nStatus: All required schema deltas are present in migration files per PRD v6. Next: Confirm triggers are implemented and tested in next subtask.\n</info added on 2025-07-09T06:08:23.470Z>",
-            "status": "done",
+            "status": "pending",
             "testStrategy": ""
           },
           {
@@ -980,7 +980,7 @@
               4
             ],
             "details": "Create triggers for audit trail logging, automatic timestamp updates, status change tracking, and data validation. Ensure triggers are efficient and don't impact performance significantly.\n<info added on 2025-07-09T06:09:07.773Z>\nPRD Requirements Analysis:\n- Audit trail logging triggers targeting audit_log table\n- Automatic status update triggers for request_status_log table\n- Timestamp and data validation triggers\n- Performance optimization requirements\n\nMigration File Review Findings:\n- Migration files contain references to audit_log and request_status_log table creation\n- PRD mandates trigger on requests table for status change logging to request_status_log\n- Audit logging triggers needed for user flag modifications and sensitive operations\n\nImplementation Requirements:\n- Verify trigger presence in existing migration files\n- If missing, implement triggers for:\n  - requests table: INSERT into request_status_log on status changes\n  - users table: INSERT into audit_log on flag modifications\n- Ensure trigger efficiency to prevent performance degradation\n- Prepare for testing validation in subsequent subtask\n\nCurrent Status: PRD-mandated triggers identified and ready for verification/implementation in migration files\n</info added on 2025-07-09T06:09:07.773Z>",
-            "status": "done",
+            "status": "pending",
             "testStrategy": ""
           },
           {
@@ -991,7 +991,7 @@
               3
             ],
             "details": "Write pgTAP tests to verify RLS policies work correctly for different roles and scenarios. Test tenant isolation, role-based access, and edge cases. Ensure comprehensive coverage of all security policies.\n<info added on 2025-07-09T06:10:09.448Z>\n# Plan for pgTAP Tests for RLS\n\n## Objectives\n- Validate RLS policies for all roles (attAdmin, clientAdmin, requester)\n- Test tenant isolation: users cannot access data outside their client\n- Test role-based access: only permitted actions allowed per role\n- Test edge cases and negative scenarios\n\n## Test Coverage\n- SELECT, INSERT, UPDATE, DELETE for each table (clients, projects, travelers, links, requests)\n- Attempt cross-tenant access (should fail)\n- Attempt unauthorized actions (should fail)\n- Confirm allowed actions for each role (should succeed)\n\n## Next Steps\n- Write pgTAP tests for each table and role\n- Run tests and verify all pass\n- Document any failures or policy gaps\n\nReady to proceed with writing and running pgTAP tests for RLS policies.\n</info added on 2025-07-09T06:10:09.448Z>",
-            "status": "done",
+            "status": "pending",
             "testStrategy": ""
           },
           {
@@ -1002,7 +1002,7 @@
               5
             ],
             "details": "Test all triggers for proper functionality, performance impact, and edge cases. Validate all constraints work as expected. Test cascade operations, data validation, and error handling scenarios.\n<info added on 2025-07-09T06:24:19.138Z>\nBased on codebase analysis conducted on 2025-07-09, found that existing automated RLS tests (src/scripts/rls-test.js) cover role-based permissions but do not test database triggers or constraints. No pgTAP or SQL-based automated tests for triggers/constraints were found in the codebase.\n\nImplemented comprehensive automated testing plan:\n1. Created/extended test script (src/scripts/trigger-constraint-test.js) to test:\n   - Insert/update/delete operations on tables with triggers (requests, users tables)\n   - Audit log and request status log validation to confirm triggers fire correctly\n   - Constraint violation testing (missing required fields, FK violations) with proper error handling validation\n   - Cascade operations and edge case scenarios\n\n2. Leveraged existing seed scripts and JWT generators for test data and role simulation support\n\n3. Documented any manual testing steps for scenarios not suitable for automation\n\nTest script validates all triggers for proper functionality, performance impact, and edge cases while ensuring all constraints work as expected including cascade operations, data validation, and comprehensive error handling scenarios.\n</info added on 2025-07-09T06:24:19.138Z>\n<info added on 2025-07-09T06:25:08.749Z>\nExecuted comprehensive automated trigger and constraint testing plan as outlined. Created src/scripts/trigger-constraint-test.js implementing all planned test scenarios:\n\n**Test Coverage Implemented:**\n- Insert/update/delete operations on requests and users tables with trigger validation\n- Audit log verification confirming audit_trigger fires correctly on all CRUD operations\n- Request status log validation ensuring request_status_trigger captures status changes\n- Constraint violation testing with proper error validation for missing required fields and FK violations\n- Cascade operation testing for referential integrity\n- Edge case scenarios including concurrent operations and boundary conditions\n\n**Key Test Results:**\n- All audit triggers functioning correctly, capturing user_id, operation type, and timestamps\n- Request status triggers properly logging status transitions with metadata\n- Database constraints properly enforcing data integrity with appropriate error messages\n- Cascade operations working as expected for dependent record cleanup\n- Performance impact minimal for trigger operations under normal load conditions\n\n**Automation Success:**\n- Leveraged existing seed scripts for consistent test data setup\n- Utilized JWT generators for multi-role testing scenarios\n- All planned test scenarios successfully automated with comprehensive error handling validation\n- No manual testing steps required - full automation achieved\n\nTesting confirms all triggers and constraints are functioning properly with expected performance characteristics and robust error handling.\n</info added on 2025-07-09T06:25:08.749Z>",
-            "status": "done",
+            "status": "pending",
             "testStrategy": ""
           },
           {
@@ -1014,8 +1014,19 @@
               7
             ],
             "details": "Document the complete schema design, all RLS policies and their purposes, trigger functionality, and provide usage guidelines. Include examples, best practices, and troubleshooting information for developers.",
-            "status": "done",
+            "status": "pending",
             "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Expand Tables to Include All Required Fields for Dynamic Forms",
+            "description": "Review all business requirements, form specifications, and anticipated UI needs. Expand the database schema for all core tables (travelers, requests, links, users, etc.) to include all fields required for dynamic forms and business logic. Update migrations, seed data, and documentation accordingly. Coordinate with frontend to ensure all fields are available before starting UI implementation.",
+            "details": "- Review current and planned dynamic form field specs\n- Identify all missing or anticipated fields for each table\n- Update migrations to add new columns and constraints\n- Update seed/test scripts to use new fields\n- Document all changes and coordinate with frontend team\n- Mark this task as a blocker for any UI/form-building work that requires a complete schema.",
+            "status": "pending",
+            "dependencies": [
+              "14.4"
+            ],
+            "parentTaskId": 14
           }
         ]
       },
@@ -1037,7 +1048,7 @@
             "description": "Create SQL functions to normalize traveler data including name standardization, phone number formatting, email cleaning, and address normalization for consistent duplicate detection",
             "dependencies": [],
             "details": "Develop functions for: normalize_name() for case/spacing/punctuation, normalize_phone() for international formats, normalize_email() for case/domain handling, normalize_address() for street abbreviations and formatting\n<info added on 2025-07-10T22:58:42.053Z>\nImplementation completed successfully. Created three SQL normalization functions in Supabase: normalise_phone() converts phone numbers to E.164 format when possible or digits-only format otherwise, tested with formats like '(555) 123-4567', '+1-555-123-4567', '555.123.4567'; normalise_email() lowercases and trims emails while applying Gmail/Googlemail dot and plus rules, with domain handling bug fixed via migration 20250711_fix_normalise_email_function.sql; normalize_name() lowercases and trims whitespace from names. All functions tested directly in Supabase database with SELECT queries confirming expected normalization outputs. Migration files created and applied using Supabase CLI with database synchronized to remote project.\n</info added on 2025-07-10T22:58:42.053Z>",
-            "status": "in-progress",
+            "status": "pending",
             "testStrategy": ""
           },
           {
@@ -3170,7 +3181,7 @@
     ],
     "metadata": {
       "created": "2025-07-09T04:12:09.046Z",
-      "updated": "2025-07-11T00:49:28.854Z",
+      "updated": "2025-07-11T03:54:34.779Z",
       "description": "Tasks for prd-v6 context"
     }
   }

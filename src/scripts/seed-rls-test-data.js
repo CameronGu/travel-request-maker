@@ -1,10 +1,16 @@
-/* eslint-disable no-console */
-/**
- * RLS Test Data Seeder
- * Creates test projects and data for RLS verification
+/*
+ * RLS Test Data Seeder (Schema-Driven)
+ *
+ * - Seeds test data for RLS and constraint testing, using only valid columns for the current schema.
+ * - Update inserted fields as schema evolves; add new columns as needed.
+ * - For new features, add or uncomment relevant seed logic.
+ * - For future stages, add more comprehensive or edge-case data as needed.
+ * - If schema changes, update all inserts accordingly.
+ * - Optimized for Cursor AI: always check the current schema and update this script for full coverage of all implemented and prior features.
+ * - Leave TODOs for any not-yet-implemented features or columns.
  */
 
-import 'dotenv/config';
+import "./bootstrap-env.js";
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -83,27 +89,24 @@ async function seedTestData() {
 
     // Create test travelers
     console.log('Creating test travelers...');
-    const { error: travelersError } = await supabase
+    const { data: travelers, error: travelersError } = await supabase
       .from('travelers')
       .insert([
         {
           client_id: clientA.id,
-          firstname: 'Test',
-          lastname: `Traveler A ${timestamp}`,
-          primaryemail: `traveler.a.${timestamp}@test.com`,
-          phone: '555-0001'
+          first_name: 'Test',
+          last_name: `Traveler A ${timestamp}`
         },
         {
           client_id: clientB.id,
-          firstname: 'Test',
-          lastname: `Traveler B ${timestamp}`,
-          primaryemail: `traveler.b.${timestamp}@test.com`,
-          phone: '555-0002'
+          first_name: 'Test',
+          last_name: `Traveler B ${timestamp}`
         }
-      ]);
+      ])
+      .select();
 
-    if (travelersError) {
-      throw new Error(`Failed to create travelers: ${travelersError.message}`);
+    if (travelersError || !travelers || travelers.length < 2) {
+      throw new Error(`Failed to create travelers: ${travelersError?.message || 'No data returned'}`);
     }
 
     // Create test links
@@ -112,11 +115,7 @@ async function seedTestData() {
       .from('links')
       .insert({
         client_id: clientA.id,
-        project_id: projectA.id,
-        role: 'requester',
-        target_email: `traveler.a.${timestamp}@test.com`,
         allow_add_travelers: true,
-        traveler_ids: [],
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
       })
       .select()
@@ -130,11 +129,7 @@ async function seedTestData() {
       .from('links')
       .insert({
         client_id: clientB.id,
-        project_id: projectB.id,
-        role: 'requester',
-        target_email: `traveler.b.${timestamp}@test.com`,
         allow_add_travelers: false,
-        traveler_ids: [],
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
       })
       .select()
@@ -151,14 +146,12 @@ async function seedTestData() {
       .insert([
         {
           project_id: projectA.id,
-          type: 'hotel',
-          blob: { test: true, state: 'pending' },
+          traveler_id: travelers[0].id,
           created_via_link_id: linkA.id
         },
         {
           project_id: projectB.id,
-          type: 'flight',
-          blob: { test: true, state: 'pending' },
+          traveler_id: travelers[1].id,
           created_via_link_id: linkB.id
         }
       ]);

@@ -1,0 +1,49 @@
+# Task ID: 19
+# Title: Setup State Management with TanStack Query and Zustand
+# Status: pending
+# Dependencies: 17
+# Priority: medium
+# Description: Configure client-side state management with TanStack Query for server state and Zustand for UI state
+# Details:
+Setup ClientProviders.tsx with QueryClient configuration (retry: 2, staleTime: 60s, gcTime: 5min). Implement Zustand stores for UI state management (modals, form state, selections). Create custom hooks for server state management using TanStack Query. Setup proper SSR handling with Next.js App Router. Implement optimistic updates and error handling patterns.
+
+# Test Strategy:
+Write unit tests for Zustand stores and custom hooks. Test SSR compatibility and hydration. Verify optimistic updates work correctly. Test error handling and retry logic.
+
+# Subtasks:
+## 1. Configure QueryClient [pending]
+### Dependencies: None
+### Description: Set up React Query QueryClient with proper configuration for caching, stale time, retry logic, and error handling
+### Details:
+Configure QueryClient with appropriate default options including cache time, stale time, retry attempts, and error boundaries. Set up query client provider at the app root level and configure devtools for development environment.
+
+## 2. Implement Zustand stores [pending]
+### Dependencies: None
+### Description: Create Zustand stores for client-side state management with proper TypeScript typing and middleware integration
+### Details:
+Design and implement Zustand stores for application state management. Include proper TypeScript interfaces, middleware for persistence and devtools, and store slicing for better organization. Ensure stores are properly structured for SSR compatibility.
+
+## 3. Create custom hooks [pending]
+### Dependencies: 19.1, 19.2
+### Description: Develop custom React hooks that integrate React Query with Zustand stores for seamless state management
+### Details:
+Build custom hooks that bridge React Query and Zustand, providing unified interfaces for data fetching and state updates. Include hooks for common patterns like data synchronization, loading states, and error handling across both state management systems.
+
+## 4. SSR handling [pending]
+### Dependencies: 19.1, 19.2
+### Description: Implement server-side rendering support for both React Query and Zustand with proper hydration strategies
+### Details:
+Configure SSR support including query dehydration/hydration for React Query, Zustand store initialization on the server, and proper client-side hydration to prevent hydration mismatches. Handle initial data population and state synchronization between server and client.
+
+## 5. Optimistic updates [pending]
+### Dependencies: 19.1, 19.2, 19.3
+### Description: Implement optimistic update patterns using React Query mutations with Zustand store coordination
+### Details:
+Create optimistic update mechanisms that immediately update Zustand stores while React Query handles the actual API calls. Implement rollback strategies for failed mutations, proper error handling, and state reconciliation between optimistic and actual server responses.
+
+## 6. Write tests for stores and hooks [pending]
+### Dependencies: 19.2, 19.3, 19.5
+### Description: Develop comprehensive test suites for Zustand stores, custom hooks, and their integration with React Query
+### Details:
+Create unit and integration tests covering Zustand store actions and selectors, custom hook behavior, React Query integration, optimistic updates, error scenarios, and SSR functionality. Include mock strategies for API calls and proper test utilities for state management testing.
+

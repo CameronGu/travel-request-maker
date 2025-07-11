@@ -1,4 +1,7 @@
 -- 20250712_baseline_schema.sql
+-- NEW BASELINE MIGRATION AFTER FULL RESET
+-- All previous migrations are deprecated and archived in supabase/legacy_migrations/.
+-- Do not apply any files from the archive to the current database.
 -- Baseline schema for Travel Request Management System (PRD v6, July 2025)
 -- This file creates all core tables, relationships, and constraints for a fresh Supabase instance.
 
@@ -39,7 +42,19 @@ CREATE TABLE travelers (
     created_at timestamptz DEFAULT now()
 );
 
--- 5. requests
+-- 5. links (created before requests, request_id is nullable, no FK yet)
+CREATE TABLE links (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    request_id uuid, -- FK added after both tables exist
+    user_id uuid REFERENCES users(id),
+    client_id uuid NOT NULL REFERENCES clients(id),
+    allow_add_travelers boolean NOT NULL DEFAULT false,
+    email text,
+    expires_at timestamptz,
+    created_at timestamptz DEFAULT now()
+);
+
+-- 6. requests
 CREATE TYPE request_status AS ENUM (
   'draft','submitted','accepted','assigned','in_progress','pending_client','on_hold','completed','cancelled','rejected'
 );
@@ -49,11 +64,15 @@ CREATE TABLE requests (
     traveler_id uuid NOT NULL REFERENCES travelers(id),
     status request_status NOT NULL DEFAULT 'draft',
     request_id text GENERATED ALWAYS AS (lpad((id::text), 8, '0')) STORED,
+    created_via_link_id uuid REFERENCES links(id),
     submitted_at timestamptz,
     created_at timestamptz DEFAULT now()
 );
 
--- 6. request_status_log
+-- Add FK from links.request_id to requests(id) after both tables exist
+ALTER TABLE links ADD CONSTRAINT links_request_id_fkey FOREIGN KEY (request_id) REFERENCES requests(id);
+
+-- 7. request_status_log
 CREATE TABLE request_status_log (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     request_id uuid REFERENCES requests(id),
@@ -63,7 +82,7 @@ CREATE TABLE request_status_log (
     changed_at timestamptz DEFAULT now()
 );
 
--- 7. traveler_contacts
+-- 8. traveler_contacts
 CREATE TABLE traveler_contacts (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     traveler_id uuid NOT NULL REFERENCES travelers(id),
@@ -74,7 +93,7 @@ CREATE TABLE traveler_contacts (
     created_at timestamptz DEFAULT now()
 );
 
--- 8. dup_findings
+-- 9. dup_findings
 CREATE TABLE dup_findings (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     traveler_id uuid NOT NULL REFERENCES travelers(id),
@@ -83,21 +102,11 @@ CREATE TABLE dup_findings (
     finding_at timestamptz DEFAULT now()
 );
 
--- 9. tenant_peppers
+-- 10. tenant_peppers
 CREATE TABLE tenant_peppers (
     client_id uuid PRIMARY KEY REFERENCES clients(id),
     pepper bytea NOT NULL,
     next_pepper bytea
-);
-
--- 10. links
-CREATE TABLE links (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    request_id uuid REFERENCES requests(id),
-    user_id uuid REFERENCES users(id),
-    email text,
-    expires_at timestamptz,
-    created_at timestamptz DEFAULT now()
 );
 
 -- 11. access_logs

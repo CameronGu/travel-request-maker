@@ -1,0 +1,61 @@
+# Task ID: 18
+# Title: Implement Magic Link Authentication System
+# Status: pending
+# Dependencies: 14, 17
+# Priority: high
+# Description: Build complete magic link authentication flow with JWT claims and role-based access control
+# Details:
+Implement magic link generation and email sending via Supabase Auth. Create JWT claims structure with role, client_id, and link_ids in raw_app_meta_data. Build authentication middleware for Next.js App Router. Implement role-based routing and access control. Create user session management with proper token refresh. Add link expiration and revocation functionality.
+
+# Test Strategy:
+Write integration tests for complete auth flow from link generation to user login. Test JWT claims validation and role enforcement. Verify link expiration and revocation works correctly. Test session management and token refresh.
+
+# Subtasks:
+## 1. Magic link generation [pending]
+### Dependencies: None
+### Description: Implement secure magic link generation system with cryptographic tokens and URL construction
+### Details:
+Create a service to generate unique, secure magic links with cryptographically strong tokens. Include URL construction with proper encoding, token storage mechanism, and configurable link parameters. Implement rate limiting to prevent abuse and ensure tokens are sufficiently random and unpredictable.
+
+## 2. Email sending integration [pending]
+### Dependencies: 18.1
+### Description: Set up email service integration for delivering magic links to users
+### Details:
+Integrate with email service provider (SendGrid, AWS SES, or similar) to send magic link emails. Create email templates with proper styling and security considerations. Implement email queue system for reliability, delivery tracking, and error handling. Include bounce and complaint handling mechanisms.
+
+## 3. JWT claims structure [pending]
+### Dependencies: None
+### Description: Design and implement JWT token structure with appropriate claims for authentication
+### Details:
+Define JWT payload structure including standard claims (iss, exp, iat, sub) and custom claims for user roles, permissions, and session data. Implement token signing and verification with proper key management. Include refresh token mechanism and token blacklisting capability for security.
+
+## 4. Auth middleware for Next.js [pending]
+### Dependencies: 18.3
+### Description: Create authentication middleware to protect routes and validate JWT tokens
+### Details:
+Develop Next.js middleware to intercept requests, validate JWT tokens, and handle authentication state. Implement token extraction from headers/cookies, verification logic, and user context injection. Include error handling for expired/invalid tokens and redirect logic for unauthenticated users.
+
+## 5. Role-based routing [pending]
+### Dependencies: 18.3, 18.4
+### Description: Implement role-based access control for different application routes
+### Details:
+Create role-based routing system that checks user permissions from JWT claims. Implement route protection based on user roles (admin, user, guest). Include dynamic route generation based on permissions and fallback mechanisms for unauthorized access attempts.
+
+## 6. Session management [pending]
+### Dependencies: 18.3, 18.4
+### Description: Implement comprehensive session management with storage and lifecycle handling
+### Details:
+Build session management system with secure storage (Redis/database), session lifecycle management, and concurrent session handling. Implement session invalidation, timeout mechanisms, and cross-device session synchronization. Include session monitoring and analytics capabilities.
+
+## 7. Link expiration/revocation [pending]
+### Dependencies: 18.1, 18.6
+### Description: Implement magic link expiration and revocation mechanisms for security
+### Details:
+Create system to handle magic link expiration with configurable timeouts and automatic cleanup. Implement link revocation functionality for security incidents or user requests. Include database tracking of link usage, one-time use enforcement, and audit logging for security compliance.
+
+## 8. Integration tests [pending]
+### Dependencies: 18.1, 18.2, 18.3, 18.4, 18.5, 18.6, 18.7
+### Description: Develop comprehensive integration tests for the entire authentication flow
+### Details:
+Create end-to-end integration tests covering magic link generation, email delivery, token validation, authentication middleware, role-based access, session management, and link expiration. Include test scenarios for security edge cases, error conditions, and performance under load. Implement automated test suite with CI/CD integration.
+
