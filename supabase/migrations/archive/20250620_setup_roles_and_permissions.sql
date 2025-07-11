@@ -1,9 +1,23 @@
 begin;
 
--- Create application roles as database users with NOLOGIN
-create role "app_att_admin" nologin;
-create role "app_client_admin" nologin;
-create role "app_requester" nologin;
+-- Create application roles as database users with NOLOGIN (idempotent)
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'app_att_admin') THEN
+    CREATE ROLE "app_att_admin" NOLOGIN;
+  END IF;
+END $$;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'app_client_admin') THEN
+    CREATE ROLE "app_client_admin" NOLOGIN;
+  END IF;
+END $$;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'app_requester') THEN
+    CREATE ROLE "app_requester" NOLOGIN;
+  END IF;
+END $$;
 
 -- Grant usage on schemas
 grant usage on schema public to "app_att_admin", "app_client_admin", "app_requester";
