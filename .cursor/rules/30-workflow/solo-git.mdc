@@ -1,0 +1,31 @@
+---
+description: Solo-Developer Git Workflow
+globs:
+alwaysApply: false
+---
+
+## Branches
+
+### main
+- Default branch.
+- Commit directly.
+- Tag semantic versions when stable.
+
+### feature/*
+- Branch from main when work spans > one session.
+- Merge back with fast-forward (`--no-ff`) if you need a merge commit marker.
+- Delete after merge.
+
+### hotfix/*
+- Branch from tagged commit when a production patch is needed.
+- Merge back into main, retag.
+
+## Commit messages
+Format: `type: short statement`
+Types: feat, fix, docs, refactor, test, chore.
+
+## Pull requests
+Optional. Use only when CI or code-review tooling adds value.
+
+## Protection
+Enable only if you add automated tests or deployment hooks.

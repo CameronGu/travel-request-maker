@@ -1,0 +1,32 @@
+---
+description: Project Tooling + Task Rules
+globs:
+alwaysApply: true
+---
+
+## Tooling
+
+- Use **Supabase MCP** for every supported action (functions, seeds, data imports, etc.).  
+- Use **Supabase CLI** only for database migrations (`supabase db *`).  
+- If MCP fails for a non-migration task, log the failure and fall back to the CLI.  
+- Run JavaScript/TypeScript commands with **pnpm**.  
+  - Prefer `pnpm dlx`; never run `npm` or create `package-lock.json` or `yarn.lock`.  
+- Store migrations under `supabase/migrations`, ordered by timestamp.
+
+## Taskmaster flow
+
+1. Fetch task → mark *in-progress* → execute.  
+2. Ask the user only when blocked by ambiguity.  
+3. Update Taskmaster status after each milestone.
+
+## Definition of done
+
+1. Implementation committed (code, migration, or config).  
+2. Tests written and run (unit, integration, pgTAP, or manual SQL).  
+3. All tests pass, or manual verification logged with evidence.  
+4. Document any test gaps in **Implementation Details**.  
+5. Reuse existing code when possible; no redundant re-implementation.
+
+## Reference
+
+- See `docs/latest/prd.md` for architecture, Lean-Pepper duplicate detection, RLS, JWT claims.
